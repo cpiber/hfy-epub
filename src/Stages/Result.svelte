@@ -2,6 +2,7 @@
   export let series: string;
 
   import download from 'downloadjs';
+  import { retryFetch } from '../fetch';
   import { apiToRegular,decode,toApiCall } from '../util';
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
@@ -35,8 +36,8 @@
 
       const content = json.data.content_md as string;
       const d = ({
-        author: content.match(/\[\*\*([^*\]]+)\*\*\]/)[1],
-        title: content.match(/##\s*\*\*(.+)\*\*/)[1],
+        author: content.match(/\[\*\*([^*\]]+)\*\*\]|A Story By \[(?:\*\*)?([^\]]+?)(?:\*\*)?\]/i).slice(1).find(Boolean),
+        title: content.match(/##?\s*\*\*(.+)\*\*/)?.[1],
         chapters: [...content.matchAll(/\[([^\]]+)\]\s*\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/comments\/[^)]+)\)/igm)].map(matches => ({
           title: matches[1],
           url: toApiCall(new URL(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`)),
@@ -56,14 +57,17 @@
     stage = Result.FETCHING;
 
     try {
-      // TODO: make these run in parallel, better support errors
-      for (const chapter of data.chapters) {
-        const res = await fetch(chapter.url);
-        const json = await res.json();
-        // TODO: support comments?
-        const { selftext_html: html, title, url } = json[0].data.children[0].data;
-        finishedChapters.push({ title, content: decode(html), url });
-        finishedChapters = finishedChapters;
+      // bunch up in 100s
+      for (let i = 0; i < data.chapters.length; i += 100) {
+        await Promise.all(data.chapters.slice(i, i + 100).map(chapter =>
+          retryFetch(chapter.url)
+            .then(res => res.json())
+            .then(json => {
+              const { selftext_html: html, title, url } = json[0].data.children[0].data;
+              finishedChapters.push({ title, content: decode(html), url });
+              finishedChapters = finishedChapters;
+            })
+        ));
       }
     } catch (err) {
       stage = Result.ERROR;
