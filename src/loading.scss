@@ -1,0 +1,49 @@
+@import './variables';
+
+.loading {
+  font-style: italic;
+  margin: 0;
+
+  &-container {
+    display: flex;
+    gap: 10px;
+  }
+
+  &-slider {
+    position: absolute;
+    display: block;
+    animation: 0.7s ease-in-out infinite alternate slide;
+
+    &-container {
+      position: relative;
+      flex: 0 0 2em;
+    }
+  }
+}
+
+.error {
+  color: $error;
+
+  &::before {
+    content: '\26a0';
+    margin-right: 0.5em;
+  }
+}
+
+.valid {
+  color: $ok;
+
+  &::before {
+    content: '\1f44d';
+    margin-right: 0.5em;
+  }
+}
+
+@keyframes slide {
+  0% {
+    left: 0;
+  }
+  100% {
+    left: 1em;
+  }
+}

@@ -19,6 +19,10 @@ module.exports = (_ /* env */, argv) => ({
     },
     extensions: ['.mjs', '.js', '.svelte', '.ts'],
     mainFields: ['svelte', 'browser', 'module', 'main'],
+    fallback: {
+      fs: false,
+      path: require.resolve("path-browserify"),
+    }
   },
   module: {
     rules: [

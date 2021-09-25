@@ -2,12 +2,12 @@
   import Footer from './Footer.svelte';
   import Header from './Header.svelte';
   import Input from './Stages/Input.svelte';
+  import Result from './Stages/Result.svelte';
   import Search from './Stages/Search.svelte';
 
   enum Stage {
     INPUT,
     SEARCH,
-    FETCH,
     RESULT,
   };
   let stage = Stage.INPUT;
@@ -30,7 +30,7 @@
     border-bottom: none;
 
     @include mobile {
-      padding: 10px 8px;
+      padding: 10px;
     }
   }
 
@@ -50,6 +50,8 @@
       <Input goNext={s => (search = s.trim(), goNext())} {search} />
     {:else if stage === Stage.SEARCH}
       <Search goNext={s => (series = s, goNext())} {search} />
+    {:else if stage === Stage.RESULT}
+      <Result {series} />
     {:else}
       {search}
       {series}
