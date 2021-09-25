@@ -2,13 +2,8 @@
   export let series: string;
 
   import download from 'downloadjs';
-  import epub from 'epub-gen-memory';
-
-  // https://stackoverflow.com/a/34064434/
-  const decode = (() => {
-    const parser = new DOMParser();
-    return (text: string) => parser.parseFromString(text, 'text/html').documentElement.textContent;
-  })();
+  import { decode,toApiCall } from '../util';
+  const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
 
   enum Result {
@@ -40,16 +35,10 @@
       const d = ({
         author: content.match(/\[\*\*([^*\]]+)\*\*\]/)[1],
         title: content.match(/##\s*\*\*(.+)\*\*/)[1],
-        chapters: [...content.matchAll(/\[([^\]]+)\]\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/comments\/[^)]+)\)/igm)].map(matches => {
-          const url = new URL(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`);
-          url.hostname = 'api.reddit.com';
-          url.pathname += '.json';
-          url.protocol = 'https';
-          return {
-            title: matches[1],
-            url: url.toString(),
-          };
-        })
+        chapters: [...content.matchAll(/\[([^\]]+)\]\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/comments\/[^)]+)\)/igm)].map(matches => ({
+          title: matches[1],
+          url: toApiCall(new URL(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`)),
+        }))
       });
 
       data = d;
@@ -85,6 +74,7 @@
   const generate = async () => {
     stage = Result.GENERATING;
 
+    const { default: epub } = await epubPromise;
     book = await epub({
       title: data.title,
       author: data.author,

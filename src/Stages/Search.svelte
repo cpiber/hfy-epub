@@ -2,6 +2,8 @@
   export let search: string;
   export let goNext: (series: string) => void;
 
+  import { toApiCall } from '../util';
+
   let series: string;
 
   enum Search {
@@ -17,14 +19,7 @@
   try {
     if (!search.match(/^https?:\/\/(?:[^.]+\.)?reddit\.com\/r\/hfy\/wiki\/series\//i))
       throw new Error();
-    const url = new URL(search);
-    url.hostname = 'api.reddit.com';
-    if (url.pathname.endsWith('/'))
-      url.pathname = `${url.pathname.slice(0, url.pathname.length - 1)}.json`;
-    else if (!url.pathname.endsWith('.json'))
-      url.pathname += '.json';
-    url.protocol = 'https';
-    series = url.toString();
+    series = toApiCall(new URL(search));
 
     fetch(series).then(res => {
       ok = res.ok ? Search.OK : Search.ERROR;
@@ -36,16 +31,10 @@
   } catch {
     const searchSmall = search.toLowerCase();
     fetch(`https://api.reddit.com/r/hfy/wiki/series.json`).then(res => res.json()).then(json => json.data.content_md as string).then(content =>
-      [...content.matchAll(/\[([^\]]+)\]\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)/igm)].map(matches => {
-        const url = new URL(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`);
-        url.hostname = 'api.reddit.com';
-        url.pathname += '.json';
-        url.protocol = 'https';
-        return {
-          title: matches[1],
-          url: url.toString(),
-        };
-      })
+      [...content.matchAll(/\[([^\]]+)\]\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)/igm)].map(matches => ({
+        title: matches[1],
+        url: toApiCall(new URL(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`)),
+      }))
     ).then(allseries => searchResults = allseries.filter(s => s.title.toLowerCase().indexOf(searchSmall) !== -1)).then(results => {
       ok = results.length ? Search.RESULTS : Search.ERROR;
       error = `No series matched input \`${search}\``;
