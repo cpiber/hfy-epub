@@ -41,7 +41,7 @@
 
 <form class="form" on:submit|stopPropagation="{() => goNext(search)}">
   <input bind:value="{search}" class="search" placeholder="Search..." />
-  <input type="submit" value="Go" class="submit" disabled={!search.trim().length} />
+  <input type="submit" value="Go" class="submit" disabled={!search.trim().length} name="search" />
 </form>
 {#if !search.trim().length}
   <p class="small error">Please enter a search string</p>

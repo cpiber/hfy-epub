@@ -79,6 +79,9 @@ module.exports = (_ /* env */, argv) => ({
     new HtmlWebpackPlugin({
      title: 'r/HFY epub',
     }),
+    new webpack.DefinePlugin({
+      VERSION: JSON.stringify(require("./package.json").version)
+    }),
     argv.mode === 'production' && new MiniCssExtractPlugin(),
   ].filter(Boolean),
 });

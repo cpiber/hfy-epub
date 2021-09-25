@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title><%= htmlWebpackPlugin.options.title %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="<%- htmlWebpackPlugin.options.title %>" />
+    <meta name="description" content="<%- require('../package.json').description %>" />
   </head>
   <body>
     <noscript><h1>Please enable JavaScript for this App to work</h1></noscript>

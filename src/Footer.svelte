@@ -1,7 +1,10 @@
+<script lang="ts">
+  let showPrivacy = false;
+</script>
+
 <style lang="postcss">
   :global(footer) {
     margin-top: 3rem;
-    font-size: 0.7rem;
 
     > :last-child {
       margin-bottom: 0;
@@ -10,5 +13,15 @@
 </style>
 
 <footer>
-  Made by <a href="https://github.com/cpiber" target="_blank">@cpiber</a>. Source Code: <a href="https://github.com/cpiber/hfy-epub" target="_blank">cpiber/hfy-epub</a>
+  <!-- svelte-ignore missing-declaration -->
+  <p class="small">Made by <a href="https://github.com/cpiber" target="_blank">@cpiber</a>. Source Code: <a href="https://github.com/cpiber/hfy-epub" target="_blank">cpiber/hfy-epub</a>. Version {VERSION}. <a href="#?" on:click|preventDefault="{() => showPrivacy = !showPrivacy}">Privacy</a>.</p>
+
+  {#if showPrivacy}
+    <p class="small">
+      This website (<a href="https://cpiber.github.io/hfy-epub" target="_blank">https://cpiber.github.io/hfy-epub</a>) does not, and will not, collect any data from its users.
+      Any actions taken on this page are purely in the user's browser; there is no server-side component.
+      No data is ever sent away.
+      For collecting the chapter data, this site contacts <code>https://api.reddit.com</code> only. The book is generated in the browser.
+    </p>
+  {/if}
 </footer>
