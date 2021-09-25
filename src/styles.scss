@@ -28,7 +28,9 @@ body {
 }
 
 button, input[type="submit"] {
-  cursor: pointer;
+  &:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 a, a[href^="#"], a[href^="#"]:visited {

@@ -14,7 +14,11 @@
 
   let search: string;
   let series: string;
+  let wasSearch = false;
   const goNext = () => stage = Math.min(stage + 1, Stage.RESULT);
+
+  let backToSearch: () => void;
+  $: backToSearch = wasSearch ? () => stage = Stage.SEARCH : undefined;
 </script>
 
 <style lang="postcss">
@@ -49,9 +53,9 @@
     {#if stage === Stage.INPUT}
       <Input goNext={s => (search = s.trim(), goNext())} {search} />
     {:else if stage === Stage.SEARCH}
-      <Search goNext={s => (series = s, goNext())} {search} />
+      <Search goNext={(s, w) => (series = s, wasSearch = w, goNext())} {search} />
     {:else if stage === Stage.RESULT}
-      <Result {series} />
+      <Result {series} {backToSearch} />
     {:else}
       {search}
       {series}

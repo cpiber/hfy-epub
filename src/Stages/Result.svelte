@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let backToSearch: () => void;
   export let series: string;
 
   import download from 'downloadjs';
@@ -168,4 +169,8 @@
 {:else if stage === Result.ERROR}
   <p class="error">Sorry, there was an error{error ? ': ' : ''}{error}</p>
   <button on:click="{fetchData}">Retry</button>
+{/if}
+
+{#if backToSearch && stage !== Result.LOADING && stage !== Result.FETCHING}
+  <a href="#?" on:click|preventDefault="{backToSearch}" class="small">Back to Search</a>
 {/if}

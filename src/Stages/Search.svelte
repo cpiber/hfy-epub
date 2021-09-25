@@ -1,6 +1,6 @@
 <script lang="ts">
   export let search: string;
-  export let goNext: (series: string) => void;
+  export let goNext: (series: string, search: boolean) => void;
 
   import { apiToRegular,toApiCall } from '../util';
 
@@ -20,7 +20,7 @@
     if (!search.match(/^https?:\/\/(?:[^.]+\.)?reddit\.com\/r\/hfy\/wiki\/series\//i))
       throw new Error();
     series = toApiCall(new URL(search));
-    goNext(series);
+    goNext(series, false);
   } catch {
     const searchSmall = search.toLowerCase();
     fetch(`https://api.reddit.com/r/hfy/wiki/series.json`).then(res => res.json()).then(json => json.data.content_md as string).then(content =>
@@ -52,13 +52,13 @@
 {:else if ok === Search.ERROR}
   <p class="error">Sorry, can't process that{error ? ': ' : ''}{error}</p>
 {:else if ok === Search.OK}
-  <p class="valid">That's a valid series url, <a href="#?" on:click|preventDefault="{() => goNext(series)}">go on ahead</a></p>
+  <p class="valid">That's a valid series url, <a href="#?" on:click|preventDefault="{() => goNext(series, false)}">go on ahead</a></p>
 {:else if ok === Search.RESULTS}
   <p>The search for '{search}' returned these results:</p>
   <ul>
     {#each searchResults as result}
       <li>
-        <a href="{apiToRegular(result.url)}" on:click|preventDefault="{() => goNext(result.url)}">{result.title}</a>
+        <a href="{apiToRegular(result.url)}" on:click|preventDefault="{() => goNext(result.url, true)}">{result.title}</a>
         {#if result.author}
           [<i>{result.author}</i>]
         {/if}
