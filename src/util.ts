@@ -9,6 +9,8 @@ export const toApiCall = (url: URL) => {
   return url.toString();
 }
 
+export const apiToRegular = (url: string) => url.slice(0, -5).replace('https://api', 'https://www');
+
 // https://stackoverflow.com/a/34064434/
 export const decode = (() => {
   const parser = new DOMParser();

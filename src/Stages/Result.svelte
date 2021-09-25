@@ -2,7 +2,7 @@
   export let series: string;
 
   import download from 'downloadjs';
-  import { decode,toApiCall } from '../util';
+  import { apiToRegular,decode,toApiCall } from '../util';
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
 
@@ -31,6 +31,8 @@
     try {
       const res = await fetch(series);
       const json = await res.json();
+      if (!res.ok) throw json.message;
+
       const content = json.data.content_md as string;
       const d = ({
         author: content.match(/\[\*\*([^*\]]+)\*\*\]/)[1],
@@ -132,7 +134,7 @@
 
   <div class="series-card">
     <h3>Title</h3>
-    <p>{data.title}</p>
+    <p><a href="{apiToRegular(series)}" target="_blank">{data.title}</a></p>
     <h3>Author</h3>
     <p>{data.author}</p>
     <h3>Chapters</h3>

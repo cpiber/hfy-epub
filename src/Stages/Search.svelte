@@ -2,7 +2,7 @@
   export let search: string;
   export let goNext: (series: string) => void;
 
-  import { toApiCall } from '../util';
+  import { apiToRegular,toApiCall } from '../util';
 
   let series: string;
 
@@ -14,26 +14,19 @@
   };
   let ok = Search.LOADING;
   let error = '';
-  let searchResults: { title: string, url: string }[] = [];
+  let searchResults: { title: string, author?: string, url: string }[] = [];
 
   try {
     if (!search.match(/^https?:\/\/(?:[^.]+\.)?reddit\.com\/r\/hfy\/wiki\/series\//i))
       throw new Error();
     series = toApiCall(new URL(search));
-
-    fetch(series).then(res => {
-      if (res.ok) goNext(series);
-      ok = res.ok ? Search.OK : Search.ERROR;
-      return res.ok ? {} as any : res.json();
-    }).then(json => error = json.message).catch(reason => {
-      ok = Search.ERROR;
-      error = `${reason.message || reason}`;
-    });
+    goNext(series);
   } catch {
     const searchSmall = search.toLowerCase();
     fetch(`https://api.reddit.com/r/hfy/wiki/series.json`).then(res => res.json()).then(json => json.data.content_md as string).then(content =>
-      [...content.matchAll(/\[([^\]]+)\]\s*\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)/igm)].map(matches => ({
+      [...content.matchAll(/\[([^\]]+)\]\s*\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)\s*(?:\[\*([^\]]+)\*\])?/igm)].map(matches => ({
         title: matches[1],
+        author: matches[3],
         url: toApiCall(new URL(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`)),
       }))
     ).then(allseries => searchResults = allseries.filter(s => s.title.toLowerCase().indexOf(searchSmall) !== -1)).then(results => {
@@ -64,7 +57,12 @@
   <p>The search for '{search}' returned these results:</p>
   <ul>
     {#each searchResults as result}
-      <li><a href="#?" on:click|preventDefault="{() => goNext(result.url)}">{result.title}</a></li>
+      <li>
+        <a href="{apiToRegular(result.url)}" on:click|preventDefault="{() => goNext(result.url)}">{result.title}</a>
+        {#if result.author}
+          [<i>{result.author}</i>]
+        {/if}
+      </li>
     {/each}
   </ul>
   <p class="small">Please select one.</p>
