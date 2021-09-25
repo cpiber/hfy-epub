@@ -35,7 +35,7 @@
       const d = ({
         author: content.match(/\[\*\*([^*\]]+)\*\*\]/)[1],
         title: content.match(/##\s*\*\*(.+)\*\*/)[1],
-        chapters: [...content.matchAll(/\[([^\]]+)\]\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/comments\/[^)]+)\)/igm)].map(matches => ({
+        chapters: [...content.matchAll(/\[([^\]]+)\]\s*\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/comments\/[^)]+)\)/igm)].map(matches => ({
           title: matches[1],
           url: toApiCall(new URL(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`)),
         }))

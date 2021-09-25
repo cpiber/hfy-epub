@@ -1,4 +1,8 @@
 {
+  "name": "hfy-epub",
+  "version": "0.1.0",
+  "description": "EPUB-generator for r/HFY",
+  "private": true,
   "scripts": {
     "watch": "webpack --watch --mode=development",
     "start": "webpack serve --open --mode=development",
@@ -36,5 +40,20 @@
     "epub-gen-memory": "^1.0.3",
     "path-browserify": "^1.0.1",
     "svelte": "^3.42.6"
+  },
+  "keywords": [
+    "epub",
+    "reddit",
+    "hfy"
+  ],
+  "homepage": "https://github.com/cpiber/hfy-epub#readme",
+  "bugs": {
+    "url" : "https://github.com/cpiber/hfy-epub/issues",
+    "email" : "cp.piber@gmail.com"
+  },
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cpiber/hfy-epub.git"
   }
 }

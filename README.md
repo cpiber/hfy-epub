@@ -1,24 +1,19 @@
-# New Project
+# r/HFY epub
 
-> ✨ Bootstrapped with Create Snowpack App (CSA).
+This is an EPUB-generator for the popular subreddit [r/HFY](https://reddit.com/r/HFY).
 
-## Available Scripts
+---
 
-### npm start
+Planned features:
+- Support other subreddits
+- Faster chapter download
+- Maybe bot (reddit, discord?)
 
-Runs the app in the development mode.
-Open http://localhost:8080 to view it in the browser.
 
-The page will reload if you make edits.
-You will also see any lint errors in the console.
+## How it works
 
-### npm run build
+Everything is right in your browser.
 
-Builds a static copy of your site to the `build/` folder.
-Your app is ready to be deployed!
+This web app fetches all the data from reddit directly in your browser and converts it to an epub there using [epub-gen-memory](https://github.com/cpiber/epub-gen-memory).
 
-**For the best production performance:** Add a build bundler plugin like [@snowpack/plugin-webpack](https://github.com/snowpackjs/snowpack/tree/main/plugins/plugin-webpack) or [snowpack-plugin-rollup-bundle](https://github.com/ParamagicDev/snowpack-plugin-rollup-bundle) to your `snowpack.config.mjs` config file.
-
-### Q: What about Eject?
-
-No eject needed! Snowpack guarantees zero lock-in, and CSA strives for the same.
+None of your data is saved anywhere.

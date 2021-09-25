@@ -22,6 +22,7 @@
     series = toApiCall(new URL(search));
 
     fetch(series).then(res => {
+      if (res.ok) goNext(series);
       ok = res.ok ? Search.OK : Search.ERROR;
       return res.ok ? {} as any : res.json();
     }).then(json => error = json.message).catch(reason => {
@@ -31,7 +32,7 @@
   } catch {
     const searchSmall = search.toLowerCase();
     fetch(`https://api.reddit.com/r/hfy/wiki/series.json`).then(res => res.json()).then(json => json.data.content_md as string).then(content =>
-      [...content.matchAll(/\[([^\]]+)\]\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)/igm)].map(matches => ({
+      [...content.matchAll(/\[([^\]]+)\]\s*\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)/igm)].map(matches => ({
         title: matches[1],
         url: toApiCall(new URL(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`)),
       }))
