@@ -56,16 +56,17 @@
 
   const fetchChapters = async () => {
     stage = Result.FETCHING;
+    finishedChapters = new Array(data.chapters.length);
 
     try {
       // bunch up in 100s
       for (let i = 0; i < data.chapters.length; i += 100) {
-        await Promise.all(data.chapters.slice(i, i + 100).map(chapter =>
+        await Promise.all(data.chapters.slice(i, i + 100).map((chapter, index) =>
           retryFetch(chapter.url)
             .then(res => res.json())
             .then(json => {
               const { selftext_html: html, title, url } = json[0].data.children[0].data;
-              finishedChapters.push({ title, content: decode(html), url });
+              finishedChapters.splice(index + i, 1, { title, content: decode(html), url });
               finishedChapters = finishedChapters;
             })
         ));
@@ -155,7 +156,9 @@
 
   <div class="chapters">
     {#each finishedChapters as chapter}
-      <p class="valid small">{chapter.title}</p>
+      {#if chapter}
+        <p class="valid small">{chapter.title}</p>
+      {/if}
     {/each}
   </div>
 {:else if stage === Result.GENERATING}
