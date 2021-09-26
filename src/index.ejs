@@ -5,6 +5,19 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="<%- require('../package.json').description %>" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="<%- require('../public/apple-touch-icon.png') %>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<%- require('../public/favicon-32x32.png') %>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%- require('../public/favicon-16x16.png') %>">
+    <link rel="manifest" href="<%- require('../public/site.webmanifest') %>">
+    <link rel="shortcut icon" href="<%- require('../public/favicon.ico') %>">
+    <meta name="msapplication-TileColor" content="#393d41">
+    <meta name="msapplication-config" content="<%- require('../public/browserconfig.xml') %>">
+    <meta name="theme-color" content="#393d41">
+    <% require('../public/android-chrome-192x192.png') %>
+    <% require('../public/android-chrome-384x384.png') %>
+    <% require('../public/mstile-150x150.png') %>
+
   </head>
   <body>
     <noscript><h1>Please enable JavaScript for this App to work</h1></noscript>

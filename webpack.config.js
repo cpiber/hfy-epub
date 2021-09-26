@@ -57,7 +57,7 @@ module.exports = (_ /* env */, argv) => ({
             loader: 'css-loader',
             options: {
               url: false, // necessary if you use url('/path/to/some/asset.png|jpg|gif')
-              sourceMap: true,
+              sourceMap: argv.mode !== 'production',
             }
           }
         ]
@@ -67,8 +67,11 @@ module.exports = (_ /* env */, argv) => ({
         loader: "ts-loader",
       },
       {
-        test: /epub-gen\/templates/,
-        type: 'asset/source',
+        test: /public/,
+        type: 'asset/resource',
+        generator: {
+          filename: '[name][ext]',
+        }
       }
     ].filter(Boolean),
   },
