@@ -1,6 +1,4 @@
-import { isSeriesPage as isHFYSeriesPage } from './hfy';
-
-export { getSeriesPageData as getHFYSeriesPageData } from './hfy';
+import { getSeriesPageData as getHFYSeriesPageData, isSeriesPage as isHFYSeriesPage } from './hfy';
 
 export enum Source {
   HFY_SERIES,
@@ -12,8 +10,13 @@ export const getSourceType = (search: string): Source => {
     new URL(search);
     if (isHFYSeriesPage(search))
       return Source.HFY_SERIES;
-    throw new Error('Not any known url');
-  } catch {
-    return Source.SEARCH;
+  } catch {}
+  return Source.SEARCH;
+};
+
+export const getDataFromSource = (source: Source, json: any): Bookdata | undefined => {
+  switch (source) {
+    case Source.HFY_SERIES:
+      return getHFYSeriesPageData(json);
   }
-}
+};

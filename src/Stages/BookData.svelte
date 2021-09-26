@@ -7,7 +7,7 @@
   import ErrorMessage from '../ErrorMessage.svelte';
   import { retryFetch } from '../fetch';
   import Loading from '../Loading.svelte';
-  import { getHFYSeriesPageData,Source } from '../sources';
+  import { getDataFromSource } from '../sources';
   import { apiToRegular } from '../util';
 
   let showChapters = false;
@@ -17,9 +17,7 @@
     const json = await res.json();
     if (!res.ok) throw json.message;
 
-    const data: Bookdata =
-      series.type === Source.HFY_SERIES ? getHFYSeriesPageData(json)
-      : undefined;
+    const data = getDataFromSource(series.type, json);
 
     if (!data || !data.chapters || !data.chapters.length)
       throw new Error('No chapters found');
@@ -71,6 +69,7 @@
     }
   }
 </style>
+
 
 {#await fetchPromise}
   <Loading>Please wait, fetching data...</Loading>

@@ -24,6 +24,7 @@
   @include valid;
 </style>
 
+
 {#await promise}
   <Loading>Please wait, generating ebook...</Loading>
 {:then book}

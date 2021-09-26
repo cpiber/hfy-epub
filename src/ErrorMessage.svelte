@@ -8,6 +8,7 @@
   @include error;
 </style>
 
+
 <p class="error">Sorry, can't process that{error ? ': ' : ''}{error.message || error}</p>
 
 <button on:click="{retry}">Retry</button>
