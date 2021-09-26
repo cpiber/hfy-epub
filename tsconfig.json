@@ -8,6 +8,7 @@
     "removeComments": false,
     "preserveConstEnums": true,
     "strictBindCallApply": true,
+    "downlevelIteration": true,
     "sourceMap": true,
     "typeRoots": [
       "src/types",

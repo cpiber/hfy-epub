@@ -80,7 +80,8 @@ module.exports = (_ /* env */, argv) => ({
      title: 'r/HFY epub',
     }),
     new webpack.DefinePlugin({
-      VERSION: JSON.stringify(require("./package.json").version)
+      VERSION: JSON.stringify(require("./package.json").version),
+      DEV: JSON.stringify(argv.mode !== 'production'),
     }),
     argv.mode === 'production' && new MiniCssExtractPlugin(),
   ].filter(Boolean),

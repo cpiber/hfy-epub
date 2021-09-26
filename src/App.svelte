@@ -1,24 +1,46 @@
 <script lang="ts">
   import Footer from './Footer.svelte';
   import Header from './Header.svelte';
+  import { getSourceType,Source } from './sources';
+  import BookData from './Stages/BookData.svelte';
+  import Chapters from './Stages/Chapters.svelte';
   import Input from './Stages/Input.svelte';
   import Result from './Stages/Result.svelte';
   import Search from './Stages/Search.svelte';
+  import { toApiCall } from './util';
 
   enum Stage {
     INPUT,
     SEARCH,
+    BOOK_DATA,
+    CHAPTERS,
     RESULT,
   };
   let stage = Stage.INPUT;
 
   let search: string;
-  let series: string;
+  let series: Series;
   let wasSearch = false;
-  const goNext = () => stage = Math.min(stage + 1, Stage.RESULT);
+  let bookData: Bookdata;
+  let finishedData: FinishedBookdata;
+
+  const handleInput = (s: string) => {
+    const input = getSourceType(s);
+    search = s;
+    wasSearch = input === Source.SEARCH;
+    switch(input) {
+      case Source.SEARCH:
+        return stage = Stage.SEARCH;
+      default:
+        series = { url: toApiCall(new URL(s)), type: input };
+        return stage = Stage.BOOK_DATA;
+    }
+  };
 
   let backToSearch: () => void;
   $: backToSearch = wasSearch ? () => stage = Stage.SEARCH : undefined;
+
+  $: if (DEV) console.log({ stage, search, series, wasSearch, bookData });
 </script>
 
 <style lang="postcss">
@@ -51,18 +73,19 @@
 
   <main class="App-main">
     {#if stage === Stage.INPUT}
-      <Input goNext={s => (search = s.trim(), goNext())} {search} />
+      <Input goNext={handleInput} {search} />
     {:else if stage === Stage.SEARCH}
-      <Search goNext={(s, w) => (series = s, wasSearch = w, goNext())} {search} />
+      <Search goNext={s => (series = s, stage = Stage.BOOK_DATA)} {search} />
+    {:else if stage === Stage.BOOK_DATA}
+      <BookData goNext={d => (bookData = d, stage = Stage.CHAPTERS)} {series} {backToSearch} />
+    {:else if stage === Stage.CHAPTERS}
+      <Chapters goNext={d => (finishedData = d, stage = Stage.RESULT)} data={bookData} />
     {:else if stage === Stage.RESULT}
-      <Result {series} {backToSearch} />
-    {:else}
-      {search}
-      {series}
+      <Result data={finishedData} {backToSearch} />
     {/if}
 
     {#if stage !== Stage.INPUT}
-      <a href="#?" on:click|preventDefault="{() => stage = 0}" class="homelink">Go back home</a>
+      <a href="#?" on:click|preventDefault="{() => stage = Stage.INPUT}" class="homelink">Go back home</a>
     {/if}
   </main>
 

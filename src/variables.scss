@@ -1,10 +1,17 @@
 $mobile_width: 600px;
+$medium_width: 950px;
 
 $error: #e32636;
 $ok: #34b334;
 
 @mixin mobile {
   @media screen and (max-width: $mobile_width) {
+    @content;
+  }
+}
+
+@mixin medium {
+  @media screen and (max-width: $medium_width) {
     @content;
   }
 }
