@@ -19,8 +19,8 @@
           .then(res => res.json())
           .then((json: reddit.post) => {
             const { selftext_html: html, title, url } = json[0].data.children[0].data;
-            finishedChapters[index + i] = { title, content: decode(html), url };
-            finishedChapters = finishedChapters;
+            finishedChapters[index + i] = { title: decode(title), content: decode(html), url };
+            finishedChapters = finishedChapters; // tell svelte to update
           })
       ));
     }
