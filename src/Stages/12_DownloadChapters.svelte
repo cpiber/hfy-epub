@@ -5,23 +5,23 @@
   import ErrorMessage from '../ErrorMessage.svelte';
   import { retryFetch } from '../fetch';
   import Loading from '../Loading.svelte';
-  import { decode } from '../util';
+  import { getPostContent } from '../sources';
 
-  let finishedChapters: Required<Chapter>[];
+  let finishedChapters: FinishedBookdata['chapters'];
 
   const fetchChapters = async () => {
     finishedChapters = new Array(data.chapters.length);
 
     // bunch up in 100s
     for (let i = 0; i < data.chapters.length; i += 100) {
-      await Promise.all(data.chapters.slice(i, i + 100).map((chapter, index) =>
-        retryFetch(chapter.url)
+      await Promise.all(data.chapters.slice(i, i + 100).map((chapter, index) => chapter.needsFetching !== false
+        ? retryFetch(chapter.url)
           .then(res => res.json())
           .then((json: reddit.post) => {
-            const { selftext_html: html, title, url } = json[0].data.children[0].data;
-            finishedChapters[index + i] = { title: decode(title), content: decode(html), url };
+            finishedChapters[index + i] = getPostContent(json);
             finishedChapters = finishedChapters; // tell svelte to update
           })
+        : (finishedChapters[index + i] = { ...chapter, content: chapter.content }, undefined)
       ));
     }
 

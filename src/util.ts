@@ -6,6 +6,7 @@ export const toApiCall = (url: URL) => {
   else if (!url.pathname.endsWith('.json'))
     url.pathname += '.json';
   url.protocol = 'https';
+  url.search = '';
   return url.toString();
 }
 

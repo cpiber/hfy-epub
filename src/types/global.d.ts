@@ -11,10 +11,11 @@ interface Bookdata {
   title: string,
   chapters: Chapter[],
 }
-type FinishedBookdata = Bookdata & { chapters: Required<Chapter>[] };
+type FinishedBookdata = Bookdata & { chapters: Required<Omit<Chapter, 'needsFetching'>>[] };
 
 interface Chapter {
   title: string,
   content?: string,
   url: string,
+  needsFetching?: boolean,
 }

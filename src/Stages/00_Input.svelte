@@ -14,7 +14,7 @@
     }
   }
 
-  .form {
+  .form p {
     display: flex;
     gap: 6px;
   }
@@ -32,17 +32,29 @@
   .error {
     color: $error;
   }
+
+  .spaceabove {
+    margin-top: 2em;
+  }
 </style>
 
 
 <h2 class="heading">Please enter your search terms below:</h2>
 
-<p>For now, we only support <a href="https://reddit.com/r/HFY" target="_blank">r/HFY</a>: series titles and urls to wiki pages</p>
-
 <form class="form" on:submit|stopPropagation="{() => goNext(search)}">
-  <input bind:value="{search}" class="search" placeholder="Search..." />
-  <input type="submit" value="Go" class="submit" disabled={!search.trim().length} name="search" />
+  <p>
+    <input bind:value="{search}" class="search" placeholder="Search..." />
+    <input type="submit" value="Go" class="submit" disabled={!search.trim().length} name="search" />
+  </p>
 </form>
 {#if !search.trim().length}
   <p class="small error">Please enter a search string</p>
 {/if}
+
+
+<p class="spaceabove">You can:</p>
+<ul>
+  <li>Search for a series title on the <a href="https://reddit.com/r/HFY" target="_blank">r/HFY</a> wiki</li>
+  <li>Enter a series link to the <a href="https://reddit.com/r/HFY" target="_blank">r/HFY</a> wiki</li>
+  <li>Enter a link to any reddit post</li>
+</ul>

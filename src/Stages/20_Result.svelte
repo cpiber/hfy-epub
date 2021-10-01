@@ -13,8 +13,7 @@
     return await epub({
       title: data.title,
       author: data.author,
-      verbose: DEV,
-    }, data.chapters);
+    }, data.chapters, DEV);
   };
   let promise = generate();
 </script>

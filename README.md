@@ -6,8 +6,12 @@ This is an EPUB-generator for the popular subreddit [r/HFY](https://reddit.com/r
 
 Planned features:
 - Support other subreddits
-- Faster chapter download
+- Edit book
 - Maybe bot (reddit, discord?)
+
+Completed features:
+- Faster chapter download
+- Build book from "Next" links
 
 
 ## How it works

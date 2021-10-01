@@ -1,28 +1,20 @@
 <script lang="ts">
   export let series: Series;
+  export let bookData: Bookdata = undefined;
+  export let newChapters: number = undefined;
   export let goNext: (data: Bookdata) => void;
   export let backToSearch: () => void;
+  export let findMore: (data: Bookdata) => void;
   
   import BackToSearch from '../BackToSearch.svelte';
   import ErrorMessage from '../ErrorMessage.svelte';
-  import { retryFetch } from '../fetch';
   import Loading from '../Loading.svelte';
-  import { getDataFromSource } from '../sources';
+  import { fetchBookData } from '../sources';
   import { apiToRegular } from '../util';
 
   let showChapters = false;
   
-  const fetchData = async () => {
-    const res = await retryFetch(series.url);
-    const json = await res.json();
-    if (!res.ok) throw json.message;
-
-    const data = getDataFromSource(series.type, json);
-
-    if (!data || !data.chapters || !data.chapters.length)
-      throw new Error('No chapters found');
-    return data;
-  };
+  const fetchData = () => bookData ? Promise.resolve(bookData) : fetchBookData(series);
   let fetchPromise = fetchData();
 </script>
 
@@ -51,10 +43,15 @@
     > :global(*) {
       margin: 0;
     }
+
+    .spacer {
+      display: inline-block;
+      width: 1.5em;
+    }
   }
 
   .chapter-list {
-    margin: 1em 18px 2em;
+    margin: 2em 18px 1em;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 2px 10px;
@@ -65,7 +62,7 @@
 
     @include mobile {
       grid-template-columns: 1fr;
-      margin: 1em 8px 2em;
+      margin: 2em 8px 1em;
     }
   }
 </style>
@@ -82,8 +79,23 @@
     <h3>Author</h3>
     <p>{data.author}</p>
     <h3>Chapters</h3>
-    <p>Found {data.chapters.length} <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">show</a></p>
+    <p>Found {data.chapters.length}
+      <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">show</a><span class="spacer" />
+      <button on:click="{() => findMore(data)}">Find more</button>
+      {#if typeof newChapters === "number"}
+        Found {newChapters} new
+      {/if}
+    </p>
   </div>
+
+  <button on:click="{() => goNext(data)}">
+    {#if data.chapters.find(c => c.needsFetching !== false)} <!-- if at least one needs to still be downloaded -->
+      Fetch chapters and generate EPUB
+    {:else}
+      Generate EPUB
+    {/if}
+  </button>
+  <BackToSearch {backToSearch} />
 
   {#if showChapters}
     <div class="chapter-list">
@@ -92,9 +104,6 @@
       {/each}
     </div>
   {/if}
-
-  <button on:click="{() => goNext(data)}">Fetch chapters and generate EPUB</button>
-  <BackToSearch {backToSearch} />
 {:catch error}
   <ErrorMessage {error} retry={() => fetchPromise = fetchData()} />
   <BackToSearch {backToSearch} />

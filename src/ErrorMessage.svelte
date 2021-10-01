@@ -1,6 +1,8 @@
 <script lang="ts">
   export let error: any;
   export let retry: () => void;
+
+  if (DEV) console.error(error);
 </script>
 
 <style lang="postcss">
