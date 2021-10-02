@@ -9,22 +9,24 @@
   import { toApiCall } from '../util';
 
   let newchapters: { from: string, url: string }[] = [];
+  let chapters: Bookdata['chapters'];
 
   const fetchMore = async () => {
+    chapters = bookData.chapters.map(c => ({ ...c })); // deep copy
+
     while (true) {
-      let cur = bookData.chapters.slice(-1)[0];
+      let cur = chapters[chapters.length - 1];
       if (cur.needsFetching !== false) {
         const res = await retryFetch(cur.url);
         const json = await res.json();
         if (!res.ok) throw json.message;
-        bookData.chapters.splice(-1, 1, cur = getPostContent(json));
+        chapters.splice(-1, 1, cur = getPostContent(json));
       }
 
       const next = findNextLink(cur.content);
       if (!next) break;
       const n = toApiCall(new URL(next));
-      console.log(n, bookData.chapters);
-      if (bookData.chapters.find(c => c.url === n)) break; // no duplicates
+      if (chapters.find(c => c.url === n)) break; // no duplicates
 
       newchapters.push({ from: cur.title, url: next });
       newchapters = newchapters; // tell svelte to update
@@ -32,9 +34,9 @@
       const res = await retryFetch(n);
       const json = await res.json();
       if (!res.ok) throw json.message;
-      bookData.chapters.push(getPostContent(json));
+      chapters.push(getPostContent(json));
     }
-    return bookData;
+    return { ...bookData, chapters };
   };
   let fetchPromise = fetchMore();
 </script>

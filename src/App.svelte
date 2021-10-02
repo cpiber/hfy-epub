@@ -46,7 +46,7 @@
   let backToSearch: () => void;
   $: backToSearch = wasSearch ? () => stage = Stage.SEARCH : undefined;
 
-  $: if (DEV) console.log({ stage, search, series, wasSearch, bookData });
+  $: if (DEV) console.log({ stage, search, series, wasSearch, bookData, finishedData, newChapters });
 </script>
 
 <style lang="postcss">
