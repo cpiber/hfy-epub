@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let series: Series;
-  export let bookData: Bookdata = undefined;
+  export let series: Immutable<Series>;
+  export let bookData: Immutable<Bookdata> = undefined;
   export let newChapters: number = undefined;
   export let goNext: (data: Bookdata) => void;
   export let backToSearch: () => void;
@@ -14,7 +14,9 @@
 
   let showChapters = false;
   
-  const fetchData = () => bookData ? Promise.resolve(bookData) : fetchBookData(series);
+  const fetchData = (): Promise<Bookdata> => bookData
+    ? Promise.resolve({ ...bookData, chapters: bookData.chapters.map(c => ({ ...c })) })
+    : fetchBookData(series);
   let fetchPromise = fetchData();
 </script>
 

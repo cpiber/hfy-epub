@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let data: Bookdata;
+  export let data: Immutable<Bookdata>;
   export let goNext: (data: FinishedBookdata) => void;
 
   import ErrorMessage from '../ErrorMessage.svelte';

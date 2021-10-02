@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let data: FinishedBookdata;
+  export let data: Immutable<FinishedBookdata>;
   export let backToSearch: () => void;
 
   import download from 'downloadjs';
