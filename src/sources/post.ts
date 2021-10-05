@@ -8,7 +8,7 @@ export const getPostContent = (json: reddit.post) =>
   ({
     title: decode(json[0].data.children[0].data.title),
     content: decode(json[0].data.children[0].data.selftext_html),
-    url: toApiCall(new URL(json[0].data.children[0].data.url)),
+    url: toApiCall(json[0].data.children[0].data.url),
     needsFetching: false,
   });
 export const getPostData = (json: reddit.post) =>

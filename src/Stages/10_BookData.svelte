@@ -42,8 +42,12 @@
       }
     }
 
-    > :global(*) {
+    > :global(*), .no-margin {
       margin: 0;
+    }
+
+    :global(button) {
+      font-size: 1em;
     }
 
     .spacer {
@@ -53,7 +57,8 @@
   }
 
   .chapter-list {
-    margin: 2em 18px 1em;
+    /* margin: 2em 18px 1em; */
+    margin-top: 1em;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 2px 10px;
@@ -64,7 +69,7 @@
 
     @include mobile {
       grid-template-columns: 1fr;
-      margin: 2em 8px 1em;
+      /* margin: 2em 8px 1em; */
     }
   }
 </style>
@@ -81,13 +86,23 @@
     <h3>Author</h3>
     <p>{data.author}</p>
     <h3>Chapters</h3>
-    <p>Found {data.chapters.length}
-      <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">show</a><span class="spacer" />
-      <button on:click="{() => findMore(data)}">Find more</button>
-      {#if typeof newChapters === "number"}
-        Found {newChapters} new
+    <div>
+      <p class="no-margin">Found {data.chapters.length}
+        <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">show</a><span class="spacer" />
+        <button on:click="{() => findMore(data)}">Find more</button>
+        {#if typeof newChapters === "number"}
+          Found {newChapters} new
+        {/if}
+      </p>
+
+      {#if showChapters}
+        <div class="chapter-list">
+          {#each data.chapters as chapter}
+            <a href="{apiToRegular(chapter.url)}" target="_blank" class="small">{chapter.title}</a>
+          {/each}
+        </div>
       {/if}
-    </p>
+    </div>
   </div>
 
   <button on:click="{() => goNext(data)}">
@@ -98,14 +113,6 @@
     {/if}
   </button>
   <BackToSearch {backToSearch} />
-
-  {#if showChapters}
-    <div class="chapter-list">
-      {#each data.chapters as chapter}
-        <a href="{apiToRegular(chapter.url)}" target="_blank" class="small">{chapter.title}</a>
-      {/each}
-    </div>
-  {/if}
 {:catch error}
   <ErrorMessage {error} retry={() => fetchPromise = fetchData()} />
   <BackToSearch {backToSearch} />

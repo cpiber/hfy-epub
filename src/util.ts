@@ -1,5 +1,6 @@
 
-export const toApiCall = (url: URL) => {
+export const toApiCall = (url: URL | string) => {
+  if (!(url instanceof URL)) url = new URL(url);
   url.hostname = 'api.reddit.com';
   if (url.pathname.endsWith('/'))
     url.pathname = `${url.pathname.slice(0, url.pathname.length - 1)}.json`;
