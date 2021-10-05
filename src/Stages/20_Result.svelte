@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let data: Immutable<FinishedBookdata>;
+  export let data: Immutable<Bookdata>;
   export let backToSearch: () => void;
 
   import download from 'downloadjs';
@@ -13,7 +13,7 @@
     return await epub({
       title: data.title,
       author: data.author,
-    }, data.chapters, DEV);
+    }, data.chapters.map(c => ({ ...c, content: c.content })), DEV);
   };
   let promise = generate();
 </script>

@@ -1,13 +1,13 @@
 <script lang="ts">
   export let data: Immutable<Bookdata>;
-  export let goNext: (data: FinishedBookdata) => void;
+  export let goNext: (data: Bookdata) => void;
 
   import ErrorMessage from '../ErrorMessage.svelte';
   import { retryFetch } from '../fetch';
   import Loading from '../Loading.svelte';
   import { getPostContent } from '../sources';
 
-  let finishedChapters: FinishedBookdata['chapters'];
+  let finishedChapters: Bookdata['chapters'];
 
   const fetchChapters = async () => {
     finishedChapters = new Array(data.chapters.length);
@@ -21,7 +21,7 @@
             finishedChapters[index + i] = getPostContent(json);
             finishedChapters = finishedChapters; // tell svelte to update
           })
-        : (finishedChapters[index + i] = { ...chapter, content: chapter.content }, undefined)
+        : (finishedChapters[index + i] = { ...chapter }, undefined)
       ));
     }
 

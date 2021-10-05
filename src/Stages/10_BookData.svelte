@@ -5,6 +5,7 @@
   export let goNext: (data: Bookdata) => void;
   export let backToSearch: () => void;
   export let findMore: (data: Bookdata) => void;
+  export let downloadAll: (data: Bookdata) => void;
   
   import BackToSearch from '../BackToSearch.svelte';
   import ErrorMessage from '../ErrorMessage.svelte';
@@ -105,13 +106,12 @@
     </div>
   </div>
 
-  <button on:click="{() => goNext(data)}">
-    {#if data.chapters.find(c => c.needsFetching !== false)} <!-- if at least one needs to still be downloaded -->
-      Fetch chapters and generate EPUB
-    {:else}
-      Generate EPUB
-    {/if}
-  </button>
+  {#if data.chapters.find(c => c.needsFetching !== false)} <!-- if at least one needs to still be downloaded -->
+    <button on:click="{() => downloadAll(data)}">Fetch chapters</button>
+  {:else}
+    <button on:click="{() => goNext(data)}">Generate EPUB</button>
+  {/if}
+  
   <BackToSearch {backToSearch} />
 {:catch error}
   <ErrorMessage {error} retry={() => fetchPromise = fetchData()} />

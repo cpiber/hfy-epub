@@ -26,13 +26,11 @@
   let series: Series;
   let wasSearch = false;
   let bookData: Bookdata;
-  let finishedData: FinishedBookdata;
   let newChapters: number;
 
   const handleInput = (s: string) => {
     const input = getSourceType(s);
     search = s;
-    newChapters = undefined;
     wasSearch = input === Source.SEARCH;
     if (input !== Source.SEARCH) series = { url: toApiCall(new URL(s)), type: input };
     switch(input) {
@@ -42,11 +40,16 @@
         return stage = Stage.BOOK_DATA;
     }
   };
+  const resetData = () => {
+    bookData = undefined;
+    newChapters = undefined;
+  };
 
   let backToSearch: () => void;
   $: backToSearch = wasSearch ? () => stage = Stage.SEARCH : undefined;
 
-  $: if (DEV) console.log({ stage, search, series, wasSearch, bookData, finishedData, newChapters });
+  $: if (DEV) console.log({ stage: Stage[stage], search, series, wasSearch, bookData, newChapters });
+  $: if (stage === Stage.INPUT || stage === Stage.SEARCH) resetData();
 </script>
 
 <style lang="postcss">
@@ -83,18 +86,18 @@
     {:else if stage === Stage.SEARCH}
       <Search goNext={s => (series = s, stage = Stage.BOOK_DATA)} {search} />
     {:else if stage === Stage.BOOK_DATA}
-      <BookData goNext={d => (bookData = d, stage = Stage.DOWNLOAD_CHAPTERS)} {series} {bookData} {newChapters} {backToSearch}
-          findMore={d => (bookData = d, stage = Stage.FIND_CHAPTERS)} />
+      <BookData goNext={d => (bookData = d, stage = Stage.RESULT)} {series} {bookData} {newChapters} {backToSearch}
+          findMore={d => (bookData = d, stage = Stage.FIND_CHAPTERS)} downloadAll={d => (bookData = d, stage = Stage.DOWNLOAD_CHAPTERS)} />
     {:else if stage === Stage.FIND_CHAPTERS}
       <FindChapters goNext={(d, n) => (bookData = d, newChapters = n, stage = Stage.BOOK_DATA)} {bookData} />
     {:else if stage === Stage.DOWNLOAD_CHAPTERS}
-      <DownloadChapters goNext={d => (finishedData = d, stage = Stage.RESULT)} data={bookData} />
+      <DownloadChapters goNext={d => (bookData = d, newChapters = undefined, stage = Stage.BOOK_DATA)} data={bookData} />
     {:else if stage === Stage.RESULT}
-      <Result data={finishedData} {backToSearch} />
+      <Result data={bookData} {backToSearch} />
     {/if}
 
     {#if stage !== Stage.INPUT}
-      <a href="#?" on:click|preventDefault="{() => (stage = Stage.INPUT, bookData = undefined, finishedData = undefined)}" class="homelink">Go back home</a>
+      <a href="#?" on:click|preventDefault="{() => stage = Stage.INPUT}" class="homelink">Go back home</a>
     {/if}
   </main>
 
