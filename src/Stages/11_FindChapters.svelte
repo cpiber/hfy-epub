@@ -25,7 +25,7 @@
 
       const next = findNextLink(cur.content);
       if (!next) break;
-      const n = toApiCall(new URL(next));
+      const n = toApiCall(next);
       if (chapters.find(c => c.url === n)) break; // no duplicates
 
       newchapters.push({ from: cur.title, url: next });

@@ -32,7 +32,7 @@
     const input = getSourceType(s);
     search = s;
     wasSearch = input === Source.SEARCH;
-    if (input !== Source.SEARCH) series = { url: toApiCall(new URL(s)), type: input };
+    if (input !== Source.SEARCH) series = { url: toApiCall(s), type: input };
     switch(input) {
       case Source.SEARCH:
         return stage = Stage.SEARCH;
