@@ -5,8 +5,9 @@
   import Input from './Stages/00_Input.svelte';
   import Search from './Stages/01_Search.svelte';
   import BookData from './Stages/10_BookData.svelte';
-  import FindChapters from './Stages/11_FindChapters.svelte';
-  import DownloadChapters from './Stages/12_DownloadChapters.svelte';
+  import EditBook from './Stages/11_EditBook.svelte';
+  import FindChapters from './Stages/12_FindChapters.svelte';
+  import DownloadChapters from './Stages/13_DownloadChapters.svelte';
   import Result from './Stages/20_Result.svelte';
   import { toApiCall } from './util';
 
@@ -15,6 +16,7 @@
     SEARCH,
 
     BOOK_DATA,
+    EDIT_DATA,
     FIND_CHAPTERS,
     DOWNLOAD_CHAPTERS,
     
@@ -70,7 +72,7 @@
   }
 
   .homelink {
-    display: block;
+    display: inline-block;
     font-size: 0.8em;
     margin-top: 2em;
   }
@@ -87,7 +89,12 @@
       <Search goNext={s => (series = s, stage = Stage.BOOK_DATA)} {search} />
     {:else if stage === Stage.BOOK_DATA}
       <BookData goNext={d => (bookData = d, stage = Stage.RESULT)} {series} {bookData} {newChapters} {backToSearch}
-          findMore={d => (bookData = d, stage = Stage.FIND_CHAPTERS)} downloadAll={d => (bookData = d, stage = Stage.DOWNLOAD_CHAPTERS)} />
+          edit={d => (bookData = d, stage = Stage.EDIT_DATA)}
+          findMore={d => (bookData = d, stage = Stage.FIND_CHAPTERS)}
+          downloadAll={d => (bookData = d, stage = Stage.DOWNLOAD_CHAPTERS)}
+      />
+    {:else if stage === Stage.EDIT_DATA}
+      <EditBook goNext={d => (bookData = d, newChapters = undefined, stage = Stage.BOOK_DATA)} {bookData} />
     {:else if stage === Stage.FIND_CHAPTERS}
       <FindChapters goNext={(d, n) => (bookData = d, newChapters = n, stage = Stage.BOOK_DATA)} {bookData} />
     {:else if stage === Stage.DOWNLOAD_CHAPTERS}
@@ -97,6 +104,7 @@
     {/if}
 
     {#if stage !== Stage.INPUT}
+      <div />
       <a href="#?" on:click|preventDefault="{() => stage = Stage.INPUT}" class="homelink">Go back home</a>
     {/if}
   </main>

@@ -2,7 +2,7 @@
   export let data: Immutable<Bookdata>;
   export let goNext: (data: Bookdata) => void;
 
-  import ErrorMessage from '../ErrorMessage.svelte';
+  import ErrorMessage from '../Components/ErrorMessage.svelte';
   import { retryFetch } from '../fetch';
   import Loading from '../Loading.svelte';
   import { getPostContent } from '../sources';

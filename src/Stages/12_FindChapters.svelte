@@ -2,7 +2,7 @@
   export let bookData: Immutable<Bookdata>;
   export let goNext: (data: Bookdata, len: number) => void;
   
-  import ErrorMessage from '../ErrorMessage.svelte';
+  import ErrorMessage from '../Components/ErrorMessage.svelte';
   import { retryFetch } from '../fetch';
   import Loading from '../Loading.svelte';
   import { findNextLink,getPostContent } from '../sources';

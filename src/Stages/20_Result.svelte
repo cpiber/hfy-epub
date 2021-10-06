@@ -3,8 +3,8 @@
   export let backToSearch: () => void;
 
   import download from 'downloadjs';
-  import BackToSearch from '../BackToSearch.svelte';
-  import ErrorMessage from '../ErrorMessage.svelte';
+  import BackToSearch from '../Components/BackToSearch.svelte';
+  import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Loading.svelte';
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 

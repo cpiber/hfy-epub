@@ -2,7 +2,7 @@
   export let search: string;
   export let goNext: (series: Series) => void;
 
-  import ErrorMessage from '../ErrorMessage.svelte';
+  import ErrorMessage from '../Components/ErrorMessage.svelte';
   import { retryFetch } from '../fetch';
   import Loading from '../Loading.svelte';
   import { Source } from '../sources';

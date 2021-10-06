@@ -6,7 +6,7 @@
 </script>
 
 <style lang="postcss">
-  @import './loading';
+  @import '../loading';
   @include error;
 </style>
 

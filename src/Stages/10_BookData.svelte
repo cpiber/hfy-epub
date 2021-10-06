@@ -4,11 +4,13 @@
   export let newChapters: number = undefined;
   export let goNext: (data: Bookdata) => void;
   export let backToSearch: () => void;
+  export let edit: (data: Bookdata) => void;
   export let findMore: (data: Bookdata) => void;
   export let downloadAll: (data: Bookdata) => void;
   
-  import BackToSearch from '../BackToSearch.svelte';
-  import ErrorMessage from '../ErrorMessage.svelte';
+  import BackToSearch from '../Components/BackToSearch.svelte';
+  import ErrorMessage from '../Components/ErrorMessage.svelte';
+  import SeriesCard from '../Components/SeriesCard.svelte';
   import Loading from '../Loading.svelte';
   import { fetchBookData } from '../sources';
   import { apiToRegular } from '../util';
@@ -24,42 +26,21 @@
 <style lang="postcss">
   @import '../variables';
 
-  .series-card {
+  .list {
     margin: 1em 0;
-    padding: 10px 18px;
-    border: 1px dashed lightgray;
-    border-radius: 8px;
-    display: grid;
-    grid-template-columns: 100px auto;
-    gap: 10px;
-    align-items: baseline;
+  }
 
-    @include mobile {
-      grid-template-columns: 100%;
-      padding: 6px 8px;
+  .spacer {
+    display: inline-block;
+    width: 1.5em;
+  }
 
-      > :global(p):not(:last-child) {
-        margin-bottom: 1em;
-      }
-    }
-
-    > :global(*), .no-margin {
-      margin: 0;
-    }
-
-    :global(button) {
-      font-size: 1em;
-    }
-
-    .spacer {
-      display: inline-block;
-      width: 1.5em;
-    }
+  .no-margin {
+    margin: 0;
   }
 
   .chapter-list {
-    /* margin: 2em 18px 1em; */
-    margin-top: 1em;
+    margin-top: .5em;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 2px 10px;
@@ -70,7 +51,6 @@
 
     @include mobile {
       grid-template-columns: 1fr;
-      /* margin: 2em 8px 1em; */
     }
   }
 </style>
@@ -81,13 +61,8 @@
 {:then data}
   Got the following series:
 
-  <div class="series-card">
-    <h3>Title</h3>
-    <p><a href="{apiToRegular(series.url)}" target="_blank">{data.title}</a></p>
-    <h3>Author</h3>
-    <p>{data.author}</p>
-    <h3>Chapters</h3>
-    <div>
+  <div class="list">
+    <SeriesCard title={data.title} author={data.author} url={series.url}>
       <p class="no-margin">Found {data.chapters.length}
         <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">show</a><span class="spacer" />
         <button on:click="{() => findMore(data)}">Find more</button>
@@ -103,14 +78,15 @@
           {/each}
         </div>
       {/if}
-    </div>
+    </SeriesCard>
   </div>
 
   {#if data.chapters.find(c => c.needsFetching !== false)} <!-- if at least one needs to still be downloaded -->
-    <button on:click="{() => downloadAll(data)}">Fetch chapters</button>
+    <button on:click="{() => downloadAll(data)}">Fetch chapter contents</button>
   {:else}
     <button on:click="{() => goNext(data)}">Generate EPUB</button>
   {/if}
+  <button on:click="{() => edit(data)}">Edit book</button>
   
   <BackToSearch {backToSearch} />
 {:catch error}

@@ -8,6 +8,7 @@ export const toApiCall = (url: URL | string) => {
     url.pathname += '.json';
   url.protocol = 'https';
   url.search = '';
+  url.hash = '';
   return url.toString();
 }
 
