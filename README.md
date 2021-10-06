@@ -17,7 +17,7 @@ Completed features:
 
 ## How it works
 
-Everything is right in your browser.
+Everything is right in your browser, data is gathered using the reddit API.
 
 This web app fetches all the data from reddit directly in your browser and converts it to an epub there using [epub-gen-memory](https://github.com/cpiber/epub-gen-memory).
 

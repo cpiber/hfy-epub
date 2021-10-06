@@ -9,7 +9,7 @@ module.exports = (_ /* env */, argv) => ({
   mode: argv.mode,
   entry: './src/index.js',
   output: {
-    filename: 'main.js',
+    filename:  argv.mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
   devtool: argv.mode === 'production' ? false : 'source-map',
