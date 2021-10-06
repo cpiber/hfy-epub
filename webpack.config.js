@@ -9,7 +9,7 @@ module.exports = (_ /* env */, argv) => ({
   mode: argv.mode,
   entry: './src/index.js',
   output: {
-    filename:  argv.mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
+    filename: argv.mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
   devtool: argv.mode === 'production' ? false : 'source-map',
@@ -86,6 +86,6 @@ module.exports = (_ /* env */, argv) => ({
       VERSION: JSON.stringify(require("./package.json").version),
       DEV: JSON.stringify(argv.mode !== 'production'),
     }),
-    argv.mode === 'production' && new MiniCssExtractPlugin(),
+    argv.mode === 'production' && new MiniCssExtractPlugin({ filename: argv.mode === 'production' ? '[name]-[chunkhash].css' : '[name].css' }),
   ].filter(Boolean),
 });

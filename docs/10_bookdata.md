@@ -6,7 +6,7 @@
 
 This page is mostly a summary page, but it is also a hub to access further functionality.
 
-In the middle of the view you will see a card displaying title, author and number of chapters. If you want to see more information on the chapters, clicking "show" will display the titles and links of the chapters below.
+In the middle of the view you will see a card displaying title, author and number of chapters. If you want to see more information on the chapters, clicking "show" will display the titles and links of the chapters below. The title of the book is linked to the source of the book, i.e. the wiki page or post where data was initially extracted from.
 
 The button "Find more" can be used to include more chapters in the book: If you click this, the app will download the latest chapter in the list and see if it can find a "Next chapter" button[^1]. This is repeated until no more new chapters can be found.
 
