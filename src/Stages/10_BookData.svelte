@@ -64,7 +64,8 @@
   <div class="list">
     <SeriesCard title={data.title} author={data.author} url={series.url}>
       <p class="no-margin">Found {data.chapters.length}
-        <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">show</a><span class="spacer" />
+        <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">{#if !showChapters}show{:else}hide{/if}</a>
+        <span class="spacer" />
         <button on:click="{() => findMore(data)}">Find more</button>
         {#if typeof newChapters === "number"}
           Found {newChapters} new
