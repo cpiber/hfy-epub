@@ -6,7 +6,8 @@ This is an EPUB-generator for the popular subreddit [r/HFY](https://reddit.com/r
 
 Planned features:
 - Support other subreddits
-- Edit book
+- Edit book chapters
+- Companion browser extension for non-reddit content
 - Maybe bot (reddit, discord?)
 
 Completed features:
@@ -20,4 +21,4 @@ Everything is right in your browser.
 
 This web app fetches all the data from reddit directly in your browser and converts it to an epub there using [epub-gen-memory](https://github.com/cpiber/epub-gen-memory).
 
-None of your data is saved anywhere.
+None of the data is saved anywhere on the internet. In the future, parts of the data will be saved locally in your browser to allow navigation and reloads without data loss.

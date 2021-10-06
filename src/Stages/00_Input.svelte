@@ -39,7 +39,7 @@
 </style>
 
 
-<h2 class="heading">Please enter your search terms below: <a class="small" href="https://github.com/cpiber/hfy-epub/tree/master/doc/index.md" target="_blank">Help</a></h2>
+<h2 class="heading">Please enter your search terms below: <a class="small" href="https://github.com/cpiber/hfy-epub/tree/master/docs/index.md" target="_blank">Help</a></h2>
 
 <form class="form" on:submit|stopPropagation="{() => goNext(search)}">
   <p>
