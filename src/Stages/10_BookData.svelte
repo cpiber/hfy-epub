@@ -10,8 +10,8 @@
   
   import BackToSearch from '../Components/BackToSearch.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
+  import Loading from '../Components/Loading.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
-  import Loading from '../Loading.svelte';
   import { fetchBookData } from '../sources';
   import { apiToRegular } from '../util';
 

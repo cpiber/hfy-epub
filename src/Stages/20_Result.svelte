@@ -5,7 +5,7 @@
   import download from 'downloadjs';
   import BackToSearch from '../Components/BackToSearch.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
-  import Loading from '../Loading.svelte';
+  import Loading from '../Components/Loading.svelte';
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
   const generate = async () => {

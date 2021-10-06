@@ -1,5 +1,5 @@
 <style lang="postcss">
-  @import './loading';
+  @import '../loading';
   @include loading;
 </style>
 

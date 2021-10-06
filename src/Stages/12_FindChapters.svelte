@@ -3,8 +3,8 @@
   export let goNext: (data: Bookdata, len: number) => void;
   
   import ErrorMessage from '../Components/ErrorMessage.svelte';
+  import Loading from '../Components/Loading.svelte';
   import { retryFetch } from '../fetch';
-  import Loading from '../Loading.svelte';
   import { findNextLink,getPostContent } from '../sources';
   import { toApiCall } from '../util';
 

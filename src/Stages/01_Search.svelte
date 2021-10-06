@@ -3,8 +3,8 @@
   export let goNext: (series: Series) => void;
 
   import ErrorMessage from '../Components/ErrorMessage.svelte';
+  import Loading from '../Components/Loading.svelte';
   import { retryFetch } from '../fetch';
-  import Loading from '../Loading.svelte';
   import { Source } from '../sources';
   import { apiToRegular,toApiCall } from '../util';
 

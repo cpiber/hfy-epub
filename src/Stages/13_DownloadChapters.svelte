@@ -3,8 +3,8 @@
   export let goNext: (data: Bookdata) => void;
 
   import ErrorMessage from '../Components/ErrorMessage.svelte';
+  import Loading from '../Components/Loading.svelte';
   import { retryFetch } from '../fetch';
-  import Loading from '../Loading.svelte';
   import { getPostContent } from '../sources';
 
   let finishedChapters: Bookdata['chapters'];
