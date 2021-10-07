@@ -6,6 +6,7 @@
   import BackToSearch from '../Components/BackToSearch.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
+  import { apiToRegular } from '../util';
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
   const generate = async () => {
@@ -13,7 +14,7 @@
     return await epub({
       title: data.title,
       author: data.author,
-    }, data.chapters.map(c => ({ ...c, content: c.content })), DEV);
+    }, data.chapters.map(c => ({ ...c, content: c.content, url: apiToRegular(c.url) })), DEV);
   };
   let promise = generate();
 </script>
