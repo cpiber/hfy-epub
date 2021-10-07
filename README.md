@@ -7,6 +7,7 @@ This is an EPUB-generator for the popular subreddit [r/HFY](https://reddit.com/r
 Planned features:
 - Support other subreddits
 - Edit book chapters
+- Title page, cover
 - Companion browser extension for non-reddit content
 - Maybe bot (reddit, discord?)
 

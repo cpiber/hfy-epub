@@ -6,7 +6,7 @@ specifiers:
   autoprefixer: ^10.3.5
   css-loader: ^6.3.0
   downloadjs: ^1.4.7
-  epub-gen-memory: ^1.0.7
+  epub-gen-memory: ^1.0.8
   gh-pages: ^3.2.3
   html-webpack-plugin: ^5.3.2
   mini-css-extract-plugin: ^2.3.0
@@ -29,7 +29,7 @@ specifiers:
 
 dependencies:
   downloadjs: 1.4.7
-  epub-gen-memory: 1.0.7
+  epub-gen-memory: 1.0.8
   path-browserify: 1.0.1
   svelte: 3.42.6
 
@@ -1680,8 +1680,8 @@ packages:
     hasBin: true
     dev: true
 
-  /epub-gen-memory/1.0.7:
-    resolution: {integrity: sha512-kVkULcAQJ7cTYlN1JuMKLvJMXGDtNsLrQUpJABgEmCc/sqhanxkO9xIO+5puh/NB80m7O5rjwLEQasx80eFwzQ==}
+  /epub-gen-memory/1.0.8:
+    resolution: {integrity: sha512-nAcKNKmhGUGDNLJvbZTS0LqSopctLETyWR6oREYWWI0KH3QN/w5MGRw0zrQ1BYMHtWU5tvRVc9X+vpZJ420KTA==}
     engines: {node: '>=10.0.0'}
     dependencies:
       abort-controller: 3.0.0
@@ -1695,7 +1695,7 @@ packages:
       jszip: 3.7.1
       mime: 2.5.2
       node-fetch: 2.6.4
-      ow: 0.27.0
+      ow: 0.28.1
       uslug: 1.0.4
     dev: false
 
@@ -3480,15 +3480,15 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /ow/0.27.0:
-    resolution: {integrity: sha512-SGnrGUbhn4VaUGdU0EJLMwZWSupPmF46hnTRII7aCLCrqixTAC5eKo8kI4/XXf1eaaI8YEVT+3FeGNJI9himAQ==}
+  /ow/0.28.1:
+    resolution: {integrity: sha512-1EZTywPZeUKac9gD7q8np3Aj+V54kvfIcjNEVNDSbG2Ys5xA5foW2HquvMMqgyWGLqIFMlc0Iq/HmyMHqN48sA==}
     engines: {node: '>=12'}
     dependencies:
       '@sindresorhus/is': 4.2.0
       callsites: 3.1.0
       dot-prop: 6.0.1
       lodash.isequal: 4.5.0
-      type-fest: 1.4.0
+      type-fest: 2.3.4
       vali-date: 1.0.0
     dev: false
 
@@ -5215,9 +5215,9 @@ packages:
     resolution: {integrity: sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=}
     dev: true
 
-  /type-fest/1.4.0:
-    resolution: {integrity: sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==}
-    engines: {node: '>=10'}
+  /type-fest/2.3.4:
+    resolution: {integrity: sha512-2UdQc7cx8F4Ky81Xj7NYQKPhZVtDFbtorrkairIW66rW7xQj5msAhioXa04HqEdP4MD4K2G6QAF7Zyiw/Hju1Q==}
+    engines: {node: '>=12.20'}
     dev: false
 
   /type-is/1.6.18:

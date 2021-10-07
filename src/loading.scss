@@ -34,6 +34,17 @@
   }
 }
 
+@mixin warning {
+  .warning {
+    color: $warning;
+
+    &::before {
+      content: '\26a0';
+      margin-right: 0.5em;
+    }
+  }
+}
+
 @mixin valid {
   .valid {
     color: $ok;
