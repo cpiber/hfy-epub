@@ -4,9 +4,10 @@
     
   import ChapterEdit from '../Components/ChapterEdit.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
+  import { copyData } from '../util';
 
-  const odata = { ...bookData, chapters: bookData.chapters.map(c => ({ ...c })) };
-  const data = { ...bookData, chapters: bookData.chapters.map(c => ({ ...c })) };
+  const odata = copyData(bookData);
+  const data = copyData(bookData);
 </script>
 
 

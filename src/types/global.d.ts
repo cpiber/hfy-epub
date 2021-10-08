@@ -13,8 +13,18 @@ interface Bookdata {
 }
 
 interface Chapter {
+  /**
+   * HTML string (as-is)
+   * 
+   * Needs to be unescaped once more, because it's escaped by EJS (and Svelte)
+   */
   title: string,
-  content?: string,
+  /**
+   * HTML string (Decoded when fetching)
+   * 
+   * Raw HTML chapter content
+   */
+  content?: string, // already decoded
   url: string,
   needsFetching?: boolean,
 }

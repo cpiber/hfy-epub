@@ -13,12 +13,12 @@
   import Loading from '../Components/Loading.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { fetchBookData } from '../sources';
-  import { apiToRegular } from '../util';
+  import { apiToRegular,copyData,decode } from '../util';
 
   let showChapters = false;
   
   const fetchData = (): Promise<Bookdata> => bookData
-    ? Promise.resolve({ ...bookData, chapters: bookData.chapters.map(c => ({ ...c })) })
+    ? Promise.resolve(copyData(bookData))
     : fetchBookData(series);
   let fetchPromise = fetchData();
 </script>
@@ -75,7 +75,7 @@
       {#if showChapters}
         <div class="chapter-list">
           {#each data.chapters as chapter}
-            <a href="{apiToRegular(chapter.url)}" target="_blank" class="small">{chapter.title}</a>
+            <a href="{apiToRegular(chapter.url)}" target="_blank" class="small">{decode(chapter.title)}</a>
           {/each}
         </div>
       {/if}

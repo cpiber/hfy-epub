@@ -12,7 +12,7 @@
   let open = false;
   const toggle = () => open = !open;
   const keydown = (e: KeyboardEvent) => {
-    if (e.key === "Enter" || e.keyCode === 13) e.preventDefault();
+    if (e.key === "Enter" || e.keyCode === 13) e.preventDefault(); // prevent newlines
   }
 
   let [inner, outer]: HTMLElement[] = [];

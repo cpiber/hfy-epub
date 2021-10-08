@@ -19,3 +19,5 @@ export const decode = (() => {
   const parser = new DOMParser();
   return (text: string) => parser.parseFromString(text, 'text/html').documentElement.textContent;
 })();
+
+export const copyData = (bookData: Immutable<Bookdata>): Bookdata => ({ ...bookData, chapters: bookData.chapters.map(c => ({ ...c })) });

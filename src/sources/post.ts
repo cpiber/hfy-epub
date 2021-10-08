@@ -6,7 +6,7 @@ export const isPost = (search: string) => !!search.match(postMatch);
 
 export const getPostContent = (json: reddit.post) =>
   ({
-    title: decode(json[0].data.children[0].data.title),
+    title: (json[0].data.children[0].data.title),
     content: decode(json[0].data.children[0].data.selftext_html),
     url: toApiCall(json[0].data.children[0].data.url),
     needsFetching: false,
