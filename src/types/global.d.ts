@@ -14,7 +14,7 @@ interface Bookdata {
 
 interface Chapter {
   title: string,
-  content: string,
+  content?: string,
   url: string,
   needsFetching?: boolean,
 }

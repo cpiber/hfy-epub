@@ -7,6 +7,7 @@
   import { decode } from '../util';
 
   needsFetching = needsFetching ?? true;
+  content = content ?? '';
 
   let open = false;
   const toggle = () => open = !open;
