@@ -12,5 +12,6 @@ export const getSeriesPageData = ({ data: { content_md } }: reddit.wikipage) =>
     chapters: [...content_md.matchAll(commentLinkMD)].map(matches => ({
       title: matches[1],
       url: toApiCall(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`),
+      content: '',
     }))
   });

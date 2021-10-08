@@ -55,7 +55,7 @@
   <button on:click="{() => download(book, `${data.author} - ${data.title}.epub`, 'application/epub+zip')}">Download</button>
   <BackToSearch {backToSearch} />
 
-  {#if logs.length}
+  {#if logs.find(([type]) => type === 'warn')}
     <div class="logs">
       {#each logs as [type, msg]}
         {#if type === 'warn'}

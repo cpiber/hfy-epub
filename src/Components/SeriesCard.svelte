@@ -42,12 +42,12 @@
       margin: 0;
     }
 
-    :global(button), :global(input) {
+    :global(button), :global(input:not([type="checkbox"])) {
       font-size: 1em;
       min-width: 60px;
     }
 
-    :global(input) {
+    :global(input:not([type="checkbox"])) {
       width: 100%;
       box-sizing: border-box;
     }
