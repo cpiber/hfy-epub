@@ -10,7 +10,11 @@
   needsFetching = needsFetching ?? true;
   content = content ?? '';
 
+  let title_: HTMLElement;
   let open = false;
+  $: title = title.replace(/<[^>]*>/g, '');
+  $: title_?.scrollTo({ left: 0 }), open;
+
   const toggle = () => open = !open;
   const keydown = (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.keyCode === 13) e.preventDefault(); // prevent newlines
@@ -80,21 +84,18 @@
 
     .title {
       position: relative;
+      border-bottom: 1px solid rgba(0,0,0,0);
+      transition: border $len ease-in-out;
+      scrollbar-width: none;
 
-      &::after {
-        content: '';
-        opacity: 0;
-        transition: opacity $len ease-in-out;
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 1px;
-        background-color: currentColor;
+      .open & {
+        border-bottom: 1px solid currentColor;
+        overflow: auto;
+        text-overflow: unset;
       }
 
-      .open &::after {
-        opacity: 1;
+      &::-webkit-scrollbar {
+        display: none;
       }
     }
     .content {
@@ -161,7 +162,7 @@
 
 <div class="chapter" class:open>
   <div class="preview" on:click="{() => open = true}">
-    <span class="title" contenteditable bind:innerHTML="{title}" on:keydown="{keydown}"></span>
+    <span class="title" contenteditable bind:innerHTML="{title}" on:keydown="{keydown}" bind:this="{title_}"></span>
     <span class="content">{decode(content || '')}</span>
     <span class="toggle" on:click|stopPropagation="{toggle}"><Up /></span>
   </div>

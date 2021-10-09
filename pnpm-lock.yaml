@@ -6,7 +6,7 @@ specifiers:
   autoprefixer: ^10.3.5
   css-loader: ^6.3.0
   downloadjs: ^1.4.7
-  epub-gen-memory: file:../epub-gen-memory/epub-gen-memory-1.0.9.tgz
+  epub-gen-memory: ^1.0.9
   gh-pages: ^3.2.3
   html-webpack-plugin: ^5.3.2
   mini-css-extract-plugin: ^2.3.0
@@ -29,7 +29,7 @@ specifiers:
 
 dependencies:
   downloadjs: 1.4.7
-  epub-gen-memory: file:../epub-gen-memory/epub-gen-memory-1.0.9.tgz
+  epub-gen-memory: 1.0.9
   path-browserify: 1.0.1
   svelte: 3.42.6
 
@@ -1679,6 +1679,25 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
     dev: true
+
+  /epub-gen-memory/1.0.9:
+    resolution: {integrity: sha512-fn43FluOSf8ZAbl5z6/oDGfvcuVrECecb41S7HYbqGI2FIeMu5yRDsQ/ocanPwRxvO4vd8OUaqRFsLiT+hnxUw==}
+    engines: {node: '>=10.0.0'}
+    dependencies:
+      abort-controller: 3.0.0
+      css-select: 4.1.3
+      diacritics: 1.3.0
+      dom-serializer: 1.3.2
+      domhandler: 4.2.2
+      domutils: 2.8.0
+      ejs: 3.1.6
+      htmlparser2: 7.1.2
+      jszip: 3.7.1
+      mime: 2.5.2
+      node-fetch: 2.6.4
+      ow: 0.28.1
+      uslug: 1.0.4
+    dev: false
 
   /err-code/2.0.3:
     resolution: {integrity: sha512-2bmlRpNKBxT/CRmPOlyISQpNj+qSeYvcym/uT0Jx2bMOlKLtSy1ZmLuVxSEKKyor/N5yhvp/ZiG1oE3DEYMSFA==}
@@ -5616,24 +5635,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  file:../epub-gen-memory/epub-gen-memory-1.0.9.tgz:
-    resolution: {integrity: sha512-fn43FluOSf8ZAbl5z6/oDGfvcuVrECecb41S7HYbqGI2FIeMu5yRDsQ/ocanPwRxvO4vd8OUaqRFsLiT+hnxUw==, tarball: file:../epub-gen-memory/epub-gen-memory-1.0.9.tgz}
-    name: epub-gen-memory
-    version: 1.0.9
-    engines: {node: '>=10.0.0'}
-    dependencies:
-      abort-controller: 3.0.0
-      css-select: 4.1.3
-      diacritics: 1.3.0
-      dom-serializer: 1.3.2
-      domhandler: 4.2.2
-      domutils: 2.8.0
-      ejs: 3.1.6
-      htmlparser2: 7.1.2
-      jszip: 3.7.1
-      mime: 2.5.2
-      node-fetch: 2.6.4
-      ow: 0.28.1
-      uslug: 1.0.4
-    dev: false
