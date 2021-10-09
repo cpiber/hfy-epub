@@ -17,9 +17,10 @@
     return await epub({
       title: decode(data.title),
       author: decode(data.author),
-      verbose: (type, msg) => {
+      ignoreFailedDownloads: true,
+      verbose: (type, msg, ...more) => {
         logs.push([type, msg]);
-        if (DEV) (type === 'warn' ? console.warn : console.log)(msg);
+        if (DEV) (type === 'warn' ? console.warn : console.log)(msg, ...more);
         logs = logs; // tell svelte to update
       },
     }, data.chapters.map(c => ({ title: decode(c.title), content: c.content, url: apiToRegular(c.url) })));

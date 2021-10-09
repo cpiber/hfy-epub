@@ -1,6 +1,6 @@
 {
   "name": "hfy-epub",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "EPUB-generator for r/HFY",
   "private": true,
   "scripts": {
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "downloadjs": "^1.4.7",
-    "epub-gen-memory": "^1.0.8",
+    "epub-gen-memory": "^1.0.9",
     "path-browserify": "^1.0.1",
     "svelte": "^3.42.6"
   },

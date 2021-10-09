@@ -4,6 +4,7 @@
   export let needsFetching: boolean;
 
   import { onDestroy,onMount } from 'svelte';
+  import Up from '../icons/up-arrow.svg';
   import { decode } from '../util';
 
   needsFetching = needsFetching ?? true;
@@ -30,6 +31,7 @@
   @import '../variables';
   $len: 0.2s;
   $lr: 6px;
+  $tgl: 28px;
 
   .chapter {
     border: 1px dotted lightgray;
@@ -63,14 +65,14 @@
 
   .preview {
     display: grid;
-    grid-template-columns: 1fr 2fr 30px;
+    grid-template-columns: 1fr 2fr $tgl;
     gap: 5px;
     align-items: center;
     overflow: hidden;
     transition: grid-template-columns $len ease-in-out;
 
     .open & {
-      grid-template-columns: 1fr 0fr 30px;
+      grid-template-columns: 1fr 0fr $tgl;
     }
     :not(.open) &, .toggle {
       cursor: pointer;
@@ -99,7 +101,14 @@
 
     }
     .toggle {
-      text-align: center;
+      display: flex;
+      align-items: center;
+      transform: rotate(-180deg);
+      transition: transform $len ease-in-out;
+
+      .open & {
+        transform: rotate(0deg);
+      }
     }
 
     .title, .content {
@@ -113,7 +122,7 @@
 
     @include medium {
       &, .open & {
-        grid-template-columns: 1fr 30px;
+        grid-template-columns: 1fr $tgl;
       }
 
       .content {
@@ -154,7 +163,7 @@
   <div class="preview" on:click="{() => open = true}">
     <span class="title" contenteditable bind:innerHTML="{title}" on:keydown="{keydown}"></span>
     <span class="content">{decode(content || '')}</span>
-    <span class="toggle" on:click|stopPropagation="{toggle}">T</span>
+    <span class="toggle" on:click|stopPropagation="{toggle}"><Up /></span>
   </div>
   <div class="edit" bind:this="{outer}"><div class="edit-inner" bind:this="{inner}">
     <textarea bind:value="{content}" disabled={needsFetching}></textarea>

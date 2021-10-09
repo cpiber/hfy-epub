@@ -27,7 +27,7 @@ module.exports = (_ /* env */, argv) => ({
   module: {
     rules: [
       {
-        test: /\.(html|svelte)$/,
+        test: /\.(html|svelte|svg)$/,
         use: {
           loader: 'svelte-loader',
           options: {
@@ -72,7 +72,7 @@ module.exports = (_ /* env */, argv) => ({
         generator: {
           filename: '[name][ext]',
         }
-      }
+      },
     ].filter(Boolean),
   },
   devServer: {
