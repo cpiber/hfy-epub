@@ -4,9 +4,8 @@
   export let author: string;
   export let url = '';
   export let onSubmit: () => void = undefined;
-  export let onCancel: () => void = undefined;
 
-  import { apiToRegular } from '../util';
+  import { apiToRegular,decode } from '../util';
 </script>
 
 <style lang="postcss">
@@ -21,20 +20,12 @@
     gap: 10px;
     align-items: baseline;
 
-    .save {
-      grid-column: 1 / span 2; /* don't be restricted to heading column */
-    }
-
     @include mobile {
       grid-template-columns: 100%;
       padding: 6px 8px;
 
       > :global(p):not(:last-child) {
         margin-bottom: 1em;
-      }
-
-      .save {
-        grid-column: 1;
       }
     }
 
@@ -47,9 +38,13 @@
       min-width: 60px;
     }
 
-    :global(input:not([type="checkbox"])) {
+    :global(input:not([type="checkbox"])), .edit {
+      display: block;
       width: 100%;
       box-sizing: border-box;
+    }
+    .edit {
+      border-bottom: 1px solid currentColor;
     }
   }
 </style>
@@ -59,30 +54,23 @@
   <h3>Title</h3>
   <p>
     {#if !edit}
-      <a href="{apiToRegular(url)}" target="_blank">{title}</a>
+      <a href="{apiToRegular(url)}" target="_blank">{decode(title)}</a>
     {:else}
-      <input type="text" bind:value="{title}" placeholder="Title" />
+      <span class="edit" bind:innerHTML="{title}" contenteditable></span>
     {/if}
   </p>
   <h3>Author</h3>
   <p>
     {#if !edit}
-      {author}
+      {decode(author)}
     {:else}
-      <input type="text" bind:value="{author}" placeholder="Author" />
+      <span class="edit" bind:innerHTML="{author}" contenteditable></span>
     {/if}
   </p>
   {#if $$slots.default}
     <h3>Chapters</h3>
     <div>
       <slot></slot>
-    </div>
-  {/if}
-
-  {#if edit && onSubmit}
-    <div class="save">
-      <button type="submit" on:click="{onSubmit}">Save</button>
-      {#if onCancel}<a href="#?" class="small" on:click|preventDefault="{onCancel}">Cancel</a>{/if}
     </div>
   {/if}
 </form>

@@ -7,7 +7,17 @@ interface Series {
 }
 
 interface Bookdata {
+  /**
+   * HTML string (as-is)
+   * 
+   * Needs to be unescaped once more, because it's escaped by EJS (and Svelte)
+   */
   author: string,
+  /**
+   * HTML string (as-is)
+   * 
+   * Needs to be unescaped once more, because it's escaped by EJS (and Svelte)
+   */
   title: string,
   chapters: Chapter[],
 }

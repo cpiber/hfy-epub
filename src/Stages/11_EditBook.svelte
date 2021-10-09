@@ -10,9 +10,22 @@
   const data = copyData(bookData);
 </script>
 
+<style lang="postcss">
+  .list {
+    margin: 1em 0;
+  }
+</style>
 
-<SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)} onCancel={() => goNext(odata)}>
-  {#each data.chapters as chapter}
-    <ChapterEdit bind:title={chapter.title} bind:content={chapter.content} bind:needsFetching={chapter.needsFetching} />
-  {/each}
-</SeriesCard>
+
+You are editing:
+
+<div class="list">
+  <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
+    {#each data.chapters as chapter}
+      <ChapterEdit bind:title={chapter.title} bind:content={chapter.content} bind:needsFetching={chapter.needsFetching} />
+    {/each}
+  </SeriesCard>
+</div>
+
+<button type="submit" on:click="{() => goNext(data)}">Save</button>
+<a href="#?" class="small" on:click|preventDefault="{() => goNext(odata)}">Cancel</a>

@@ -143,6 +143,9 @@
       min-height: 100px;
       height: 250px;
     }
+    :global(label) {
+      cursor: pointer;
+    }
   }
 </style>
 

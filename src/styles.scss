@@ -20,6 +20,7 @@ body {
   max-width: 1100px;
   margin: 12px auto;
   padding: 0 8px;
+  overflow: scroll;
 
   @include mobile {
     padding: 0 2px;

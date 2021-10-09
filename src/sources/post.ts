@@ -14,6 +14,6 @@ export const getPostContent = (json: reddit.post) =>
 export const getPostData = (json: reddit.post) =>
   ({
     author: json[0].data.children[0].data.author,
-    title: decode(json[0].data.children[0].data.title),
+    title: (json[0].data.children[0].data.title),
     chapters: [getPostContent(json)],
   });

@@ -15,8 +15,8 @@
     logs = [];
     const { default: epub } = await epubPromise;
     return await epub({
-      title: data.title,
-      author: data.author,
+      title: decode(data.title),
+      author: decode(data.author),
       verbose: (type, msg) => {
         logs.push([type, msg]);
         if (DEV) (type === 'warn' ? console.warn : console.log)(msg);
@@ -52,7 +52,7 @@
   </div>
 {:then book}
   <h3 class="valid">Your ebook is ready!</h3>
-  <button on:click="{() => download(book, `${data.author} - ${data.title}.epub`, 'application/epub+zip')}">Download</button>
+  <button on:click="{() => download(book, `${decode(data.author)} - ${decode(data.title)}.epub`, 'application/epub+zip')}">Download</button>
   <BackToSearch {backToSearch} />
 
   {#if logs.find(([type]) => type === 'warn')}
