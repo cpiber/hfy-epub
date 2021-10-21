@@ -17,7 +17,7 @@
     while (true) {
       let cur = chapters[chapters.length - 1];
       if (cur.needsFetching !== false) {
-        const res = await retryFetch(cur.url);
+        const res = await retryFetch(cur.apiUrl);
         const json = await res.json();
         if (!res.ok) throw json.message;
         chapters.splice(-1, 1, cur = getPostContent(json));
@@ -26,7 +26,7 @@
       const next = findNextLink(cur.content);
       if (!next) break;
       const n = toApiCall(next);
-      if (chapters.find(c => c.url === n)) break; // no duplicates
+      if (chapters.find(c => c.apiUrl === n)) break; // no duplicates
 
       newchapters.push({ from: cur.title, url: next });
       newchapters = newchapters; // tell svelte to update

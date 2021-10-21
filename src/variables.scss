@@ -1,9 +1,16 @@
+$tinymb_width: 400px;
 $mobile_width: 600px;
 $medium_width: 950px;
 
 $error: #e32636;
 $warning: #f2b400;
 $ok: #34b334;
+
+@mixin tiny {
+  @media screen and (max-width: $tinymb_width) {
+    @content;
+  }
+}
 
 @mixin mobile {
   @media screen and (max-width: $mobile_width) {

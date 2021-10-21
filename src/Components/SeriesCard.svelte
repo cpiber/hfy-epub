@@ -29,6 +29,10 @@
       }
     }
 
+    @include tiny {
+      margin: 0 -5px;
+    }
+
     > * {
       margin: 0;
     }

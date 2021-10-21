@@ -38,7 +38,6 @@
   const conf = {
     plugins: 'advcode',
     toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | code',
-    setup: (e: any) => (window as any).ed = e,
   };
 </script>
 
@@ -179,13 +178,8 @@
 
   .field {
     display: grid;
-    grid-template-columns: 60px 1fr;
+    grid-template-columns: min-content 1fr;
     gap: 4px;
-    transition: grid-template-columns $len ease-in-out;
-
-    .chapter:not(.open) & {
-      grid-template-columns: 0px 1fr;
-    }
 
     @include medium {
       margin-top: 0.4em;
@@ -200,8 +194,6 @@
     }
 
     span {
-      /* margin-top: $tb;
-      margin-bottom: $tb; */
       margin: $tb 1px;
     }
 
@@ -209,6 +201,12 @@
       overflow: hidden;
       transition: opacity $len ease-in-out;
       opacity: 1;
+      width: 60px;
+      transition: width $len ease-in-out;
+
+      .chapter:not(.open) & {
+        width: 0;
+      }
 
       &::after {
         content: ':';
@@ -230,6 +228,7 @@
 
   .url {
     border-bottom: 1px solid currentColor;
+    word-break: break-word;
   }
 </style>
 
