@@ -13,7 +13,7 @@
   import Loading from '../Components/Loading.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { fetchBookData } from '../sources';
-  import { apiToRegular,copyData,decode } from '../util';
+  import { copyData,decode } from '../util';
 
   let showChapters = false;
   
@@ -75,7 +75,7 @@
       {#if showChapters}
         <div class="chapter-list">
           {#each data.chapters as chapter (chapter.id)}
-            <a href="{apiToRegular(chapter.apiUrl)}" target="_blank" class="small">{decode(chapter.title)}</a>
+            <a href="{chapter.displayUrl}" target="_blank" class="small">{decode(chapter.title)}</a>
           {/each}
         </div>
       {/if}

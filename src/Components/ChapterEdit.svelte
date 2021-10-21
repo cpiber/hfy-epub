@@ -5,6 +5,7 @@
   export let url: string = undefined;
   export let canFetch = false;
 
+  import Editor from '@tinymce/tinymce-svelte';
   import { onDestroy,onMount } from 'svelte';
   import Up from '../icons/up-arrow.svg';
   import { decode } from '../util';
@@ -14,10 +15,12 @@
 
   let title_: HTMLElement;
   let open = false;
+  let wasInit = false;
   $: title = title.replace(/<[^>]*>/g, '');
   $: title_?.scrollTo({ left: 0 }), open;
 
-  const toggle = () => open = !open;
+  const toggle = () => (open = !open, wasInit = true);
+  const setOpen = () => (open = true, wasInit = true);
   const keydown = (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.keyCode === 13) e.preventDefault(); // prevent newlines
   }
@@ -31,6 +34,12 @@
   onDestroy(() => {
     observer.disconnect();
   });
+
+  const conf = {
+    plugins: 'advcode',
+    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | code',
+    setup: (e: any) => (window as any).ed = e,
+  };
 </script>
 
 <style lang="postcss">
@@ -154,16 +163,16 @@
       margin: 0 $lr;
     }
 
-    :global(input:not([type="checkbox"])), :global(textarea), :global(label) {
+    input:not([type="checkbox"]), /* textarea, */ label {
       display: block;
       width: 100%;
       box-sizing: border-box;
     }
     :global(textarea) {
       min-height: 100px;
-      height: 250px;
+      height: 350px;
     }
-    :global(label) {
+    label {
       cursor: pointer;
     }
   }
@@ -226,7 +235,7 @@
 
 
 <div class="chapter" class:open>
-  <div class="preview" on:click="{() => open = true}">
+  <div class="preview" on:click="{setOpen}">
     <div class="field">
       <span class="label">Title</span>
       <span class="title" aria-label="Title" contenteditable bind:innerHTML="{title}" on:keydown="{keydown}" bind:this="{title_}"></span>
@@ -241,7 +250,11 @@
         <span class="url" aria-label="URL" contenteditable bind:innerHTML="{url}" on:keydown="{keydown}"></span>
       </div>
     {/if}
-    <textarea bind:value="{content}" disabled={needsFetching}></textarea>
+    {#if wasInit}
+      <!-- Allow lateinit to avoid freezing UI -->
+      <!-- svelte-ignore missing-declaration -->
+      <Editor bind:value={content} disabled={needsFetching} apiKey={TINY_API_KEY} {conf} />
+    {/if}
     {#if canFetch}
       <label>
         <input type="checkbox" bind:checked="{needsFetching}" /> Fetch contents

@@ -8,10 +8,6 @@
 
   .heading {
     margin-bottom: 0;
-
-    & + :global(p) {
-      margin-top: 0.5em;
-    }
   }
 
   .form p {

@@ -3,6 +3,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const svelte = require('./svelte.config');
+require('dotenv').config();
 
 /** @type {import('webpack').Configuration} */
 module.exports = (_ /* env */, argv) => ({
@@ -85,6 +86,7 @@ module.exports = (_ /* env */, argv) => ({
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(require("./package.json").version),
       DEV: JSON.stringify(argv.mode !== 'production'),
+      TINY_API_KEY: JSON.stringify(process.env.TINY_API_KEY),
     }),
     argv.mode === 'production' && new MiniCssExtractPlugin({ filename: argv.mode === 'production' ? '[name]-[chunkhash].css' : '[name].css' }),
   ].filter(Boolean),

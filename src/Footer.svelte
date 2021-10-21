@@ -3,7 +3,7 @@
 </script>
 
 <style lang="postcss">
-  :global(footer) {
+  footer {
     margin-top: 3rem;
 
     > :last-child {

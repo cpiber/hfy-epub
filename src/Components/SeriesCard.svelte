@@ -24,21 +24,16 @@
       grid-template-columns: 100%;
       padding: 6px 8px;
 
-      > :global(p):not(:last-child) {
+      > p:not(:last-child) {
         margin-bottom: 1em;
       }
     }
 
-    > :global(*) {
+    > * {
       margin: 0;
     }
 
-    :global(button), :global(input:not([type="checkbox"])) {
-      font-size: 1em;
-      min-width: 60px;
-    }
-
-    :global(input:not([type="checkbox"])), .edit {
+    .edit {
       display: block;
       width: 100%;
       box-sizing: border-box;

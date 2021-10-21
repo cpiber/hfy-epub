@@ -36,7 +36,7 @@
   .logs {
     margin: 1em 0;
 
-    :global(p) {
+    p {
       margin: 0;
     }
   }

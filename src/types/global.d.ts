@@ -1,5 +1,6 @@
 declare const VERSION: string;
 declare const DEV: boolean;
+declare const TINY_API_KEY: string;
 
 interface Series {
   url: string,

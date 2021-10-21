@@ -1,5 +1,5 @@
 <style lang="postcss">
-  :global(header) {
+  header {
     margin-bottom: 2.5rem;
 
     > :first-child {
