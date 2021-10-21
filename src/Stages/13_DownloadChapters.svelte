@@ -15,7 +15,7 @@
     // bunch up in 100s
     for (let i = 0; i < data.chapters.length; i += 100) {
       await Promise.all(data.chapters.slice(i, i + 100).map((chapter, index) => chapter.needsFetching !== false
-        ? retryFetch(chapter.url)
+        ? retryFetch(chapter.apiUrl)
           .then(res => res.json())
           .then((json: reddit.post) => {
             finishedChapters[index + i] = getPostContent(json);

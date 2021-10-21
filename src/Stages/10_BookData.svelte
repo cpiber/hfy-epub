@@ -74,8 +74,8 @@
 
       {#if showChapters}
         <div class="chapter-list">
-          {#each data.chapters as chapter}
-            <a href="{apiToRegular(chapter.url)}" target="_blank" class="small">{decode(chapter.title)}</a>
+          {#each data.chapters as chapter (chapter.id)}
+            <a href="{apiToRegular(chapter.apiUrl)}" target="_blank" class="small">{decode(chapter.title)}</a>
           {/each}
         </div>
       {/if}

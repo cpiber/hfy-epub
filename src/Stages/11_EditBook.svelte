@@ -21,8 +21,14 @@ You are editing:
 
 <div class="list">
   <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
-    {#each data.chapters as chapter}
-      <ChapterEdit bind:title={chapter.title} bind:content={chapter.content} bind:needsFetching={chapter.needsFetching} />
+    {#each data.chapters as chapter (chapter.id)}
+      <ChapterEdit
+        bind:title={chapter.title}
+        bind:content={chapter.content}
+        bind:needsFetching={chapter.needsFetching}
+        bind:url={chapter.displayUrl}
+        canFetch={!!chapter.apiUrl}
+      />
     {/each}
   </SeriesCard>
 </div>

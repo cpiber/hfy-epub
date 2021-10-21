@@ -36,6 +36,7 @@ declare namespace reddit {
       selftext: string,
       title: string,
       selftext_html: string,
+      id: string,
       author: string,
       url: string,
     }

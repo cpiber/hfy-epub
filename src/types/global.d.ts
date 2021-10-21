@@ -23,6 +23,7 @@ interface Bookdata {
 }
 
 interface Chapter {
+  id: string,
   /**
    * HTML string (as-is)
    * 
@@ -35,7 +36,8 @@ interface Chapter {
    * Raw HTML chapter content
    */
   content?: string, // already decoded
-  url: string,
+  apiUrl: string,
+  displayUrl?: string,
   needsFetching?: boolean,
 }
 

@@ -6,7 +6,7 @@
   import BackToSearch from '../Components/BackToSearch.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
-  import { apiToRegular,decode } from '../util';
+  import { decode } from '../util';
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
   let logs: ['log' | 'warn', any][] = [];
@@ -23,7 +23,7 @@
         if (DEV) (type === 'warn' ? console.warn : console.log)(msg, ...more);
         logs = logs; // tell svelte to update
       },
-    }, data.chapters.map(c => ({ title: decode(c.title), content: c.content, url: apiToRegular(c.url) })));
+    }, data.chapters.map(c => ({ title: decode(c.title), content: c.content, url: c.displayUrl })));
   };
   let promise = generate();
 </script>

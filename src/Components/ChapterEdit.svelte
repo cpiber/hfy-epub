@@ -2,6 +2,8 @@
   export let title: string;
   export let content: string;
   export let needsFetching: boolean;
+  export let url: string = undefined;
+  export let canFetch = false;
 
   import { onDestroy,onMount } from 'svelte';
   import Up from '../icons/up-arrow.svg';
@@ -34,7 +36,8 @@
 <style lang="postcss">
   @import '../variables';
   $len: 0.2s;
-  $lr: 6px;
+  $lr: 0.5em;
+  $tb: 0.4em;
   $tgl: 28px;
 
   .chapter {
@@ -117,8 +120,12 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .title, .content, .toggle {
-      margin: 4px $lr;
+    .field, .content, .toggle {
+      margin: $tb $lr;
+    }
+    .field {
+      margin-top: 0;
+      margin-bottom: 0;
     }
 
     @include medium {
@@ -133,11 +140,14 @@
   }
 
   .edit {
-    position: relative;
     height: 200px;
     overflow: hidden;
     transition: height $len ease-in-out, margin $len ease-in-out;
-    margin: 4px $lr;
+    margin: 0 $lr $tb;
+
+    &-inner {
+      overflow: hidden; /* Margins are weird, without this, the height doesn't include child outer margins */
+    }
 
     :not(.open) & {
       height: 0 !important; /* We're setting height in JS, easier than clearing */
@@ -157,19 +167,85 @@
       cursor: pointer;
     }
   }
+
+  .field {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 4px;
+    transition: grid-template-columns $len ease-in-out;
+
+    .chapter:not(.open) & {
+      grid-template-columns: 0px 1fr;
+    }
+
+    @include medium {
+      margin-top: 0.4em;
+
+      &, .chapter:not(.open) & {
+        grid-template-columns: 1fr;
+      }
+
+      .chapter:not(.open) & .label {
+        opacity: 0;
+      }
+    }
+
+    span {
+      /* margin-top: $tb;
+      margin-bottom: $tb; */
+      margin: $tb 1px;
+    }
+
+    .label {
+      overflow: hidden;
+      transition: opacity $len ease-in-out;
+      opacity: 1;
+
+      &::after {
+        content: ':';
+      }
+
+      @include medium {
+        position: absolute;
+        margin-top: -0.5em;
+        padding-left: 3px;
+        font-size: 0.8em;
+        opacity: 0.8;
+
+        &::after {
+          content: '';
+        }
+      }
+    }
+  }
+
+  .url {
+    border-bottom: 1px solid currentColor;
+  }
 </style>
 
 
 <div class="chapter" class:open>
   <div class="preview" on:click="{() => open = true}">
-    <span class="title" contenteditable bind:innerHTML="{title}" on:keydown="{keydown}" bind:this="{title_}"></span>
+    <div class="field">
+      <span class="label">Title</span>
+      <span class="title" aria-label="Title" contenteditable bind:innerHTML="{title}" on:keydown="{keydown}" bind:this="{title_}"></span>
+    </div>
     <span class="content">{decode(content || '')}</span>
     <span class="toggle" on:click|stopPropagation="{toggle}"><Up /></span>
   </div>
   <div class="edit" bind:this="{outer}"><div class="edit-inner" bind:this="{inner}">
+    {#if url !== undefined}
+      <div class="field">
+        <span class="label">URL</span>
+        <span class="url" aria-label="URL" contenteditable bind:innerHTML="{url}" on:keydown="{keydown}"></span>
+      </div>
+    {/if}
     <textarea bind:value="{content}" disabled={needsFetching}></textarea>
-    <label>
-      <input type="checkbox" bind:checked="{needsFetching}" /> Fetch contents
-    </label>
+    {#if canFetch}
+      <label>
+        <input type="checkbox" bind:checked="{needsFetching}" /> Fetch contents
+      </label>
+    {/if}
   </div></div>
 </div>
