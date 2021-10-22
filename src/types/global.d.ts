@@ -54,3 +54,14 @@ type ImmutableArray<T> = ReadonlyArray<Immutable<T>>;
 type ImmutableMap<K, V> = ReadonlyMap<Immutable<K>, Immutable<V>>;
 type ImmutableSet<T> = ReadonlySet<Immutable<T>>;
 type ImmutableObject<T> = { readonly [K in keyof T]: Immutable<T[K]> };
+
+declare type DndEvent<T extends Record<string, any>> = {
+  items: T[],
+  info: import("svelte-dnd-action").DndEventInfo
+};
+declare namespace svelte.JSX {
+    interface HTMLAttributes<T> {
+        onconsider?: (event: CustomEvent<DndEvent> & {target: EventTarget & T}) => void;
+        onfinalize?: (event: CustomEvent<DndEvent> & {target: EventTarget & T}) => void;
+    }
+}

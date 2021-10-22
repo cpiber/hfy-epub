@@ -2,6 +2,8 @@
   export let bookData: Immutable<Bookdata>;
   export let goNext: (data: Bookdata) => void;
     
+  import { dndzone,SOURCES,TRIGGERS } from "svelte-dnd-action";
+  import { flip } from "svelte/animate";
   import ChapterEdit from '../Components/ChapterEdit.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { copyData } from '../util';
@@ -11,7 +13,13 @@
 
   let page = 0;
   const pageSize = 50;
-  const maxPage = Math.ceil(odata.chapters.length / pageSize - 1);
+  const flipDurationMs = 200;
+
+  let maxPage: number;
+  $: maxPage = Math.ceil(data.chapters.length / pageSize - 1);
+
+  let chapterSlice: Bookdata['chapters'];
+  $: chapterSlice = data.chapters.slice(page * pageSize, (page + 1) * pageSize);
 
   const range = (min: number, max: number) => {
     const arr = new Array(max - min + 1);
@@ -30,6 +38,38 @@
       page = pg;
     }
   };
+
+  let dragDisabled = true;
+  const acceptItems = (e: CustomEvent<DndEvent<Chapter>>) => {
+    data.chapters.splice(page * pageSize, pageSize, ...e.detail.items);
+    data.chapters = data.chapters;
+  };
+  const handleConsider = (e: CustomEvent<DndEvent<Chapter>>) => {
+    const { info: { source, trigger } } = e.detail;
+    acceptItems(e);
+    // Ensure dragging is stopped on drag finish via keyboard
+		if (source === SOURCES.KEYBOARD && trigger === TRIGGERS.DRAG_STOPPED) {
+			dragDisabled = true;
+		}
+  };
+  const handleFinalize = (e: CustomEvent<DndEvent<Chapter>>) => {
+    const { info: { source } } = e.detail;
+    acceptItems(e);
+    // Ensure dragging is stopped on drag finish via pointer (mouse, touch)
+		if (source === SOURCES.POINTER) {
+			dragDisabled = true;
+		}
+  };
+  const startDrag = (e: Event) => {
+    console.log(e instanceof KeyboardEvent, e);
+    if (!(e instanceof KeyboardEvent))
+      e.preventDefault();
+    dragDisabled = false;
+  };
+  const stopDrag = (e: Event) => {
+    e.preventDefault();
+    dragDisabled = true;
+  }
 </script>
 
 <style lang="postcss">
@@ -67,25 +107,28 @@ You are editing:
 
 <div class="list">
   <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
-    <div class="chapters">
-      {#each data.chapters.slice(page * pageSize, (page + 1) * pageSize) as chapter (chapter.id)}
-        <ChapterEdit
-          bind:title={chapter.title}
-          bind:content={chapter.content}
-          bind:needsFetching={chapter.needsFetching}
-          bind:url={chapter.displayUrl}
-          canFetch={!!chapter.apiUrl}
-        />
+    <div class="chapters" use:dndzone={{ items: chapterSlice, dragDisabled, flipDurationMs }} on:consider={handleConsider} on:finalize={handleFinalize}>
+      {#each chapterSlice as chapter (chapter.id)}
+        <div animate:flip="{{ duration: flipDurationMs }}" on:mouseup="{stopDrag}" on:touchend="{stopDrag}">
+          <ChapterEdit
+            bind:title={chapter.title}
+            bind:content={chapter.content}
+            bind:needsFetching={chapter.needsFetching}
+            bind:url={chapter.displayUrl}
+            canFetch={!!chapter.apiUrl}
+            {startDrag}
+          />
+        </div>
       {/each}
     </div>
     <nav>
-      <a href="#?" role="navigation" on:click|preventDefault="{() => page--}" disabled={page <= 0}>Previous</a>
+      <a class="small" href="#?" role="navigation" on:click|preventDefault="{() => page--}" disabled={page <= 0}>Previous</a>
       ::
       {#each range(Math.max(0, page - 3), Math.min(maxPage, page + 3)) as pg}
-        <a href="#?" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
+        <a class="small" href="#?" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
       {/each}
       ::
-      <a href="#?" role="navigation" on:click|preventDefault="{() => page++}" disabled={page >= maxPage}>Next</a>
+      <a class="small" href="#?" role="navigation" on:click|preventDefault="{() => page++}" disabled={page >= maxPage}>Next</a>
     </nav>
   </SeriesCard>
 </div>

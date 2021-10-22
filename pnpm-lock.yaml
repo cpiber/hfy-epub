@@ -21,6 +21,7 @@ specifiers:
   rimraf: ^3.0.2
   snowpack: ^3.3.7
   svelte: ^3.42.6
+  svelte-dnd-action: ^0.9.11
   svelte-hmr: ^0.14.7
   svelte-loader: ^3.1.2
   svelte-preprocess: ^4.9.5
@@ -37,6 +38,7 @@ dependencies:
   nanoid: 3.1.30
   path-browserify: 1.0.1
   svelte: 3.42.6
+  svelte-dnd-action: 0.9.11
 
 devDependencies:
   '@tsconfig/svelte': 2.0.1
@@ -5031,6 +5033,10 @@ packages:
   /svelte-dev-helper/1.1.9:
     resolution: {integrity: sha1-fRh9tcbNu9ZNdaMvkbiZi94yc8M=}
     dev: true
+
+  /svelte-dnd-action/0.9.11:
+    resolution: {integrity: sha512-hkuBs8rT0yVD0Xq9p9GxeHN1zYD8r7oZO872VQHg7DJe3cAYwus4WXpx3DNYZiTcLcIOmDw3BVNdKvAl/B6VPg==}
+    dev: false
 
   /svelte-hmr/0.14.7_svelte@3.42.6:
     resolution: {integrity: sha512-pDrzgcWSoMaK6AJkBWkmgIsecW0GChxYZSZieIYfCP0v2oPyx2CYU/zm7TBIcjLVUPP714WxmViE9Thht4etog==}

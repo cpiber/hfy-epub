@@ -4,9 +4,10 @@
   export let needsFetching: boolean;
   export let url: string = undefined;
   export let canFetch = false;
+  export let startDrag: (e: Event) => void;
 
   import Editor from '@tinymce/tinymce-svelte';
-  import { onDestroy,onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
   import Up from '../icons/up-arrow.svg';
   import { decode } from '../util';
 
@@ -18,21 +19,28 @@
   let wasInit = false;
   $: title = title.replace(/<[^>]*>/g, '');
   $: title_?.scrollTo({ left: 0 }), open;
+  $: if (open) wasInit = true;
 
-  const toggle = () => (open = !open, wasInit = true);
-  const setOpen = () => (open = true, wasInit = true);
-  const keydown = (e: KeyboardEvent) => {
+  const toggle = () => open = !open;
+  const setOpen = () => open = true;
+  const keydownDisableEnter = (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.keyCode === 13) e.preventDefault(); // prevent newlines
+  };
+  const dragIfNotOpen = (e: Event) => {
+    if (!open) startDrag(e);
+  };
+  const dragKeyboardIfNotOpen = (e: KeyboardEvent) => {
+    if ((e.key === "Enter" || e.key === " ") && !open) startDrag(e);
   }
 
   let [inner, outer]: HTMLElement[] = [];
   let observer: ResizeObserver;
-  onMount(() => {
+  $: if (wasInit && !observer) {
     observer = new ResizeObserver(() => outer.style.height = `${inner.scrollHeight}px`);
     observer.observe(inner);
-  });
+  }
   onDestroy(() => {
-    observer.disconnect();
+    if (observer) observer.disconnect();
   });
 
   const conf = {
@@ -69,10 +77,10 @@
     &.open {
       border-radius: $radius;
 
-      &:not(:first-child) {
+      :global(:not(:first-child)) > & {
         margin-top: 1em;
       }
-      &:not(:last-child) {
+      :global(:not(:last-child)) > & {
         margin-bottom: 1em;
       }
     }
@@ -233,11 +241,14 @@
 </style>
 
 
-<div class="chapter" class:open>
+<div class="chapter" class:open on:mousedown="{dragIfNotOpen}" on:touchstart="{dragIfNotOpen}" on:keydown="{dragKeyboardIfNotOpen}" tabindex="0">
   <div class="preview" on:click="{setOpen}">
     <div class="field">
       <span class="label">Title</span>
-      <span class="title" aria-label="Title" contenteditable bind:innerHTML="{title}" on:keydown="{keydown}" bind:this="{title_}"></span>
+      <span class="title" aria-label="Title" contenteditable bind:innerHTML="{title}"
+        on:keydown="{keydownDisableEnter}" bind:this="{title_}"
+        style="{open ? '' : 'pointer-events: none'}"
+      ></span>
     </div>
     <span class="content">{decode(content || '')}</span>
     <span class="toggle" on:click|stopPropagation="{toggle}"><Up /></span>
@@ -246,7 +257,7 @@
     {#if url !== undefined}
       <div class="field">
         <span class="label">URL</span>
-        <span class="url" aria-label="URL" contenteditable bind:innerHTML="{url}" on:keydown="{keydown}"></span>
+        <span class="url" aria-label="URL" contenteditable bind:innerHTML="{url}" on:keydown="{keydownDisableEnter}"></span>
       </div>
     {/if}
     {#if wasInit}

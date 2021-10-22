@@ -43,7 +43,8 @@
     "epub-gen-memory": "^1.0.9",
     "nanoid": "^3.1.30",
     "path-browserify": "^1.0.1",
-    "svelte": "^3.42.6"
+    "svelte": "^3.42.6",
+    "svelte-dnd-action": "^0.9.11"
   },
   "keywords": [
     "epub",

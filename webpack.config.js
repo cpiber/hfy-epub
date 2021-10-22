@@ -88,6 +88,8 @@ module.exports = (_ /* env */, argv) => ({
       DEV: JSON.stringify(argv.mode !== 'production'),
       TINY_API_KEY: JSON.stringify(process.env.TINY_API_KEY),
     }),
-    argv.mode === 'production' && new MiniCssExtractPlugin({ filename: argv.mode === 'production' ? '[name]-[chunkhash].css' : '[name].css' }),
+    argv.mode === 'production' && new MiniCssExtractPlugin({
+      filename: argv.mode === 'production' ? '[name]-[chunkhash].css' : '[name].css',
+    }),
   ].filter(Boolean),
 });
