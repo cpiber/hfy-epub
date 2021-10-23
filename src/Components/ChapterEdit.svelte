@@ -11,6 +11,7 @@
 
   import Editor from '@tinymce/tinymce-svelte';
   import { onDestroy } from 'svelte';
+  import { config } from '../configstore';
   import Triangle from '../icons/triangle.svg';
   import Up from '../icons/up-arrow.svg';
   import { decode } from '../util';
@@ -174,7 +175,7 @@
       margin: 0 $lr;
     }
 
-    input:not([type="checkbox"]), /* textarea, */ label {
+    input:not([type="checkbox"]), textarea, label {
       display: block;
       width: 100%;
       box-sizing: border-box;
@@ -308,10 +309,14 @@
         <span class="url" aria-label="URL" contenteditable bind:innerHTML="{url}" on:keydown="{keydownDisableEnter}"></span>
       </div>
     {/if}
-    {#if wasInit}
-      <!-- Allow lateinit to avoid freezing UI -->
-      <!-- svelte-ignore missing-declaration -->
-      <Editor bind:value={content} disabled={needsFetching} apiKey={TINY_API_KEY} {conf} />
+    {#if $config.useTiny}
+      {#if wasInit}
+        <!-- Allow lateinit to avoid freezing UI -->
+        <!-- svelte-ignore missing-declaration -->
+        <Editor bind:value={content} disabled={needsFetching} apiKey={TINY_API_KEY} {conf} />
+      {/if}
+    {:else}
+      <textarea bind:value="{content}" disabled={needsFetching}></textarea>
     {/if}
     {#if canFetch}
       <label>

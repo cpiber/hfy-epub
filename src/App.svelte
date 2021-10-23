@@ -1,4 +1,5 @@
-<script lang="ts">
+<script lang="ts" context="module">
+  import { config,loadConfig } from './configstore';
   import Footer from './Footer.svelte';
   import Header from './Header.svelte';
   import { getSourceType,Source } from './sources';
@@ -11,6 +12,10 @@
   import Result from './Stages/20_Result.svelte';
   import { toApiCall } from './util';
 
+  loadConfig();
+</script>
+
+<script lang="ts">
   enum Stage {
     INPUT,
     SEARCH,
@@ -52,6 +57,8 @@
 
   $: if (DEV) console.log({ stage: Stage[stage], search, series, wasSearch, bookData, newChapters });
   $: if (stage === Stage.INPUT || stage === Stage.SEARCH) resetData();
+
+  $: localStorage.setItem('config', JSON.stringify($config));
 </script>
 
 <style lang="postcss">

@@ -66,20 +66,17 @@
     const { info: { source, trigger } } = e.detail;
     acceptItems(e);
     // Ensure dragging is stopped on drag finish via keyboard
-		if (source === SOURCES.KEYBOARD && trigger === TRIGGERS.DRAG_STOPPED) {
+		if (source === SOURCES.KEYBOARD && trigger === TRIGGERS.DRAG_STOPPED)
 			dragDisabled = true;
-		}
   };
   const handleFinalize = (e: CustomEvent<DndEvent<Chapter>>) => {
     const { info: { source } } = e.detail;
     acceptItems(e);
     // Ensure dragging is stopped on drag finish via pointer (mouse, touch)
-		if (source === SOURCES.POINTER) {
+		if (source === SOURCES.POINTER)
 			dragDisabled = true;
-		}
   };
   const startDrag = (e: Event) => {
-    console.log(e instanceof KeyboardEvent, e);
     if (!(e instanceof KeyboardEvent))
       e.preventDefault();
     dragDisabled = false;

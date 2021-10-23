@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { config } from './configstore';
+
   let showPrivacy = false;
 </script>
 
@@ -9,6 +11,10 @@
     > :last-child {
       margin-bottom: 0;
     }
+  }
+
+  input {
+    height: 0.9em;
   }
 </style>
 
@@ -30,4 +36,8 @@
       For collecting the chapter data, this site contacts <code>https://api.reddit.com</code> only. The book is generated in the browser.
     </p>
   {/if}
+
+  <label class="small">
+    <input type="checkbox" bind:checked="{$config.useTiny}" aria-label="use TinyMCE editor" /> Use TinyMCE chapter editor
+  </label>
 </footer>
