@@ -45,7 +45,7 @@
 
 
 {#await promise}
-  <Loading>Please wait, generating ebook...</Loading>
+  <Loading>Please wait, generating e-book...</Loading>
 
   <div class="logs">
     {#each logs as [type, msg]}
@@ -53,7 +53,7 @@
     {/each}
   </div>
 {:then book}
-  <h3 class="valid">Your ebook is ready!</h3>
+  <h3 class="valid">Your e-book is ready!</h3>
   <button on:click="{() => download(book, `${decode(data.author)} - ${decode(data.title)}.epub`, 'application/epub+zip')}">Download</button>
   <button on:click="{backToBook}">Back to book</button>
   <BackToSearch {backToSearch} />
@@ -69,5 +69,6 @@
   {/if}
 {:catch error}
   <ErrorMessage {error} retry={() => promise = generate()} />
+  <button on:click="{backToBook}">Back to book</button>
   <BackToSearch {backToSearch} />
 {/await}

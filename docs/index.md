@@ -8,6 +8,7 @@ The app is separated into stages, which is reflected in this documentation.
 1. [Search](01_search.md)
 1. [Book Data](10_bookdata.md)
 1. [Edit Book](11_editbook.md)
+1. [Result](20_result.md)
 
 A link "Go back home" will be visible on all pages except [Input](00_input.md) and take you back to that.
 
