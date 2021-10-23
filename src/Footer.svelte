@@ -25,7 +25,7 @@
     Source Code: <a href="https://github.com/cpiber/hfy-epub" target="_blank">cpiber/hfy-epub</a>.
     <!-- svelte-ignore missing-declaration -->
     Version {VERSION}.
-    <a href="#?" on:click|preventDefault="{() => showPrivacy = !showPrivacy}">Privacy</a>.
+    <a href="#privacy" on:click|preventDefault="{() => showPrivacy = !showPrivacy}">Privacy</a>.
   </p>
 
   {#if showPrivacy}

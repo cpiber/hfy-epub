@@ -140,16 +140,16 @@ You are editing:
       {/each}
     </div>
     <nav>
-      <a class="small" href="#?" role="navigation" on:click|preventDefault="{() => page--}" disabled={page <= 0}>Previous</a>
+      <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{() => page--}" disabled={page <= 0}>Previous</a>
       ::
       {#each range(Math.max(0, page - 3), Math.min(maxPage, page + 3)) as pg}
-        <a class="small" href="#?" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
+        <a class="small" href="{`#page ${pg + 1}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
       {/each}
       ::
-      <a class="small" href="#?" role="navigation" on:click|preventDefault="{() => page++}" disabled={page >= maxPage}>Next</a>
+      <a class="small" href="#next" role="navigation" on:click|preventDefault="{() => page++}" disabled={page >= maxPage}>Next</a>
     </nav>
   </SeriesCard>
 </div>
 
 <button type="submit" on:click="{() => goNext(data)}">Save</button>
-<a href="#?" class="small" on:click|preventDefault="{() => goNext(odata)}">Cancel</a>
+<a href="#cancel" class="small" on:click|preventDefault="{() => goNext(odata)}">Cancel</a>

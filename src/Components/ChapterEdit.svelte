@@ -324,9 +324,9 @@
       </label>
     {/if}
     <div class="controls">
-      <a href="#?" class="small up" on:click|preventDefault="{moveUp}" class:control-disabled={!moveUp}><Triangle /> move up</a>
-      <a href="#?" class="small down" on:click|preventDefault="{moveDown}" class:control-disabled={!moveDown}><Triangle /> move down</a>
-      <a href="#?" class="small remove" on:click|preventDefault="{remove}">remove</a>
+      <a href="#up" class="small up" on:click|preventDefault="{moveUp}" class:control-disabled={!moveUp}><Triangle /> move up</a>
+      <a href="#dowm" class="small down" on:click|preventDefault="{moveDown}" class:control-disabled={!moveDown}><Triangle /> move down</a>
+      <a href="#remove" class="small remove" on:click|preventDefault="{remove}">remove</a>
     </div>
   </div></div>
 </div>

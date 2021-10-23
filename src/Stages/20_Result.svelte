@@ -1,6 +1,7 @@
 <script lang="ts">
   export let data: Immutable<Bookdata>;
   export let backToSearch: () => void;
+  export let backToBook: () => void;
 
   import download from 'downloadjs';
   import BackToSearch from '../Components/BackToSearch.svelte';
@@ -54,6 +55,7 @@
 {:then book}
   <h3 class="valid">Your ebook is ready!</h3>
   <button on:click="{() => download(book, `${decode(data.author)} - ${decode(data.title)}.epub`, 'application/epub+zip')}">Download</button>
+  <button on:click="{backToBook}">Back to book</button>
   <BackToSearch {backToSearch} />
 
   {#if logs.find(([type]) => type === 'warn')}

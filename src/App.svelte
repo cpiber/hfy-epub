@@ -107,12 +107,12 @@
     {:else if stage === Stage.DOWNLOAD_CHAPTERS}
       <DownloadChapters goNext={d => (bookData = d, newChapters = undefined, stage = Stage.BOOK_DATA)} data={bookData} />
     {:else if stage === Stage.RESULT}
-      <Result data={bookData} {backToSearch} />
+      <Result data={bookData} {backToSearch} backToBook={() => stage = Stage.BOOK_DATA} />
     {/if}
 
     {#if stage !== Stage.INPUT}
       <div />
-      <a href="#?" on:click|preventDefault="{() => stage = Stage.INPUT}" class="homelink">Go back home</a>
+      <a href="#home" on:click|preventDefault="{() => stage = Stage.INPUT}" class="homelink">Go back home</a>
     {/if}
   </main>
 

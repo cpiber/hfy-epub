@@ -4,5 +4,5 @@
 
 
 {#if backToSearch}
-  <a href="#?" on:click|preventDefault="{backToSearch}" class="small">Back to Search</a>
+  <a href="#search" on:click|preventDefault="{backToSearch}" class="small">Back to Search</a>
 {/if}
