@@ -5,9 +5,13 @@
   export let url: string = undefined;
   export let canFetch = false;
   export let startDrag: (e: Event) => void;
+  export let moveUp: () => void = undefined;
+  export let moveDown: () => void = undefined;
+  export let remove: () => void;
 
   import Editor from '@tinymce/tinymce-svelte';
   import { onDestroy } from 'svelte';
+  import Triangle from '../icons/triangle.svg';
   import Up from '../icons/up-arrow.svg';
   import { decode } from '../util';
 
@@ -62,15 +66,15 @@
     transition: margin $len ease-in-out;
     $radius: 2px;
     
-    &:first-child {
+    :global(:first-child) > & {
       border-top-left-radius: $radius;
       border-top-right-radius: $radius;
     }
-    &:last-child {
+    :global(:last-child) > & {
       border-bottom-left-radius: $radius;
       border-bottom-right-radius: $radius;
     }
-    &:not(:first-child) {
+    :global(:not(:first-child)) > & {
       margin-top: -1px;
     }
 
@@ -156,7 +160,7 @@
   }
 
   .edit {
-    height: 200px;
+    height: 470px;
     overflow: hidden;
     transition: height $len ease-in-out, margin $len ease-in-out;
     margin: 0 $lr $tb;
@@ -238,6 +242,50 @@
     border-bottom: 1px solid currentColor;
     word-break: break-word;
   }
+
+  %button {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    padding: 2px 5px;
+    background-color: lightgray;
+    border: 1px dotted gray;
+    border-radius: 4px;
+    text-decoration: none;
+
+    &:hover {
+      border: 1px solid gray;
+    }
+  }
+  .controls {
+    margin-top: 20px;
+
+    :global(svg) {
+      height: 0.8em;
+    }
+  }
+  .control-disabled {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  .up {
+    @extend %button;
+  }
+  .down {
+    @extend %button;
+
+    :global(svg) {
+      transform: rotate(180deg);
+      margin: auto 0;
+    }
+  }
+  .remove {
+    color: $error;
+
+    &:hover {
+      color: color-mod($error lightness(-20%));
+    }
+  }
 </style>
 
 
@@ -270,5 +318,10 @@
         <input type="checkbox" bind:checked="{needsFetching}" /> Fetch contents
       </label>
     {/if}
+    <div class="controls">
+      <a href="#?" class="small up" on:click|preventDefault="{moveUp}" class:control-disabled={!moveUp}><Triangle /> move up</a>
+      <a href="#?" class="small down" on:click|preventDefault="{moveDown}" class:control-disabled={!moveDown}><Triangle /> move down</a>
+      <a href="#?" class="small remove" on:click|preventDefault="{remove}">remove</a>
+    </div>
   </div></div>
 </div>

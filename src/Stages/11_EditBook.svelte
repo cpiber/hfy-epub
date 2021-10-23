@@ -21,6 +21,24 @@
   let chapterSlice: Bookdata['chapters'];
   $: chapterSlice = data.chapters.slice(page * pageSize, (page + 1) * pageSize);
 
+  const moveUp = (i: number) => {
+    const j = i + pageSize * page;
+    if (j < 1) return;
+    data.chapters.splice(j - 1, 2, data.chapters[j], data.chapters[j - 1]);
+    data.chapters = data.chapters;
+  };
+  const moveDown = (i: number) => {
+    const j = i + pageSize * page;
+    if (j >= data.chapters.length) return;
+    data.chapters.splice(j, 2, data.chapters[j + 1], data.chapters[j]);
+    data.chapters = data.chapters;
+  };
+  const remove = (i: number) => {
+    const j = i + pageSize * page;
+    data.chapters.splice(j, 1);
+    data.chapters = data.chapters;
+  };
+
   const range = (min: number, max: number) => {
     const arr = new Array(max - min + 1);
     for (let i = min; i <= max; i++)
@@ -108,7 +126,7 @@ You are editing:
 <div class="list">
   <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
     <div class="chapters" use:dndzone={{ items: chapterSlice, dragDisabled, flipDurationMs }} on:consider={handleConsider} on:finalize={handleFinalize}>
-      {#each chapterSlice as chapter (chapter.id)}
+      {#each chapterSlice as chapter, i (chapter.id)}
         <div animate:flip="{{ duration: flipDurationMs }}" on:mouseup="{stopDrag}" on:touchend="{stopDrag}">
           <ChapterEdit
             bind:title={chapter.title}
@@ -117,6 +135,9 @@ You are editing:
             bind:url={chapter.displayUrl}
             canFetch={!!chapter.apiUrl}
             {startDrag}
+            moveUp={(page > 0 || i > 0) && moveUp.bind(null, i)}
+            moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, i)}
+            remove={remove.bind(null, i)}
           />
         </div>
       {/each}

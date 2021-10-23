@@ -4,7 +4,6 @@ specifiers:
   '@tinymce/tinymce-svelte': ^0.1.1
   '@tsconfig/svelte': ^2.0.1
   '@types/downloadjs': ^1.4.2
-  autoprefixer: ^10.3.5
   css-loader: ^6.3.0
   dotenv: ^10.0.0
   downloadjs: ^1.4.7
@@ -15,8 +14,8 @@ specifiers:
   nanoid: ^3.1.30
   path-browserify: ^1.0.1
   postcss: ^8.3.8
+  postcss-color-mod-function: ^3.0.3
   postcss-import: ^14.0.2
-  postcss-preset-env: ^6.7.0
   precss: ^4.0.0
   rimraf: ^3.0.2
   snowpack: ^3.3.7
@@ -43,15 +42,14 @@ dependencies:
 devDependencies:
   '@tsconfig/svelte': 2.0.1
   '@types/downloadjs': 1.4.2
-  autoprefixer: 10.3.5_postcss@8.3.8
   css-loader: 6.3.0_webpack@5.53.0
   dotenv: 10.0.0
   gh-pages: 3.2.3
   html-webpack-plugin: 5.3.2_webpack@5.53.0
   mini-css-extract-plugin: 2.3.0_webpack@5.53.0
   postcss: 8.3.8
+  postcss-color-mod-function: 3.0.3
   postcss-import: 14.0.2_postcss@8.3.8
-  postcss-preset-env: 6.7.0
   precss: 4.0.0
   rimraf: 3.0.2
   snowpack: 3.8.8
@@ -797,22 +795,6 @@ packages:
     resolution: {integrity: sha1-x57Zf380y48robyXkLzDZkdLS3k=}
     dev: true
 
-  /autoprefixer/10.3.5_postcss@8.3.8:
-    resolution: {integrity: sha512-2H5kQSsyoOMdIehTzIt/sC9ZDIgWqlkG/dbevm9B9xQZ1TDPBHpNUDW5ENqqQQzuaBWEo75JkV0LJe+o5Lnr5g==}
-    engines: {node: ^10 || ^12 || >=14}
-    hasBin: true
-    peerDependencies:
-      postcss: ^8.1.0
-    dependencies:
-      browserslist: 4.17.1
-      caniuse-lite: 1.0.30001260
-      fraction.js: 4.1.1
-      nanocolors: 0.1.12
-      normalize-range: 0.1.2
-      postcss: 8.3.8
-      postcss-value-parser: 4.1.0
-    dev: true
-
   /autoprefixer/9.8.6:
     resolution: {integrity: sha512-XrvP4VVHdRBCdX1S3WXVD8+RyG9qeb1D5Sn1DeLiG2xfSpzellk5k54xbUERJ3M5DggQxes39UGOTP8CFrEGbg==}
     hasBin: true
@@ -934,18 +916,6 @@ packages:
       node-releases: 1.1.75
     dev: true
 
-  /browserslist/4.17.1:
-    resolution: {integrity: sha512-aLD0ZMDSnF4lUt4ZDNgqi5BUn9BZ7YdQdI/cYlILrhdSSZJLU9aNZoD5/NBmM4SK34APB2e83MOsRt1EnkuyaQ==}
-    engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
-    hasBin: true
-    dependencies:
-      caniuse-lite: 1.0.30001260
-      electron-to-chromium: 1.3.850
-      escalade: 3.1.1
-      nanocolors: 0.1.12
-      node-releases: 1.1.76
-    dev: true
-
   /buffer-crc32/0.2.13:
     resolution: {integrity: sha1-DTM+PwDqxQqhRUq9MO+MKl2ackI=}
     dev: true
@@ -1051,12 +1021,6 @@ packages:
 
   /caniuse-lite/1.0.30001258:
     resolution: {integrity: sha512-RBByOG6xWXUp0CR2/WU2amXz3stjKpSl5J1xU49F1n2OxD//uBZO4wCKUiG+QMGf7CHGfDDcqoKriomoGVxTeA==}
-    dev: true
-
-  /caniuse-lite/1.0.30001260:
-    resolution: {integrity: sha512-Fhjc/k8725ItmrvW5QomzxLeojewxvqiYCKeFcfFEhut28IVLdpHU19dneOmltZQIE5HNbawj1HYD+1f2bM1Dg==}
-    dependencies:
-      nanocolors: 0.1.12
     dev: true
 
   /caseless/0.12.0:
@@ -1640,10 +1604,6 @@ packages:
     resolution: {integrity: sha512-OWEwAbzaVd1Lk9MohVw8LxMXFlnYd9oYTYxfX8KS++kLLjDfbovLOcEEXwRhG612dqGQ6+44SZvim0GXuBRiKg==}
     dev: true
 
-  /electron-to-chromium/1.3.850:
-    resolution: {integrity: sha512-ZzkDcdzePeF4dhoGZQT77V2CyJOpwfTZEOg4h0x6R/jQhGt/rIRpbRyVreWLtD7B/WsVxo91URm2WxMKR9JQZA==}
-    dev: true
-
   /email-addresses/3.1.0:
     resolution: {integrity: sha512-k0/r7GrWVL32kZlGwfPNgB2Y/mMXVTq/decgLczm/j34whdaspNrZO8CnXPf1laaHxI6ptUlsnAxN+UAPw+fzg==}
     dev: true
@@ -2036,10 +1996,6 @@ packages:
   /forwarded/0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
-    dev: true
-
-  /fraction.js/4.1.1:
-    resolution: {integrity: sha512-MHOhvvxHTfRFpF1geTK9czMIZ6xclsEor2wkIGYYq+PxcQqT7vStJqjhe6S1TenZrMZzo+wlqOufBDVepUEgPg==}
     dev: true
 
   /fresh/0.5.2:
@@ -3249,10 +3205,6 @@ packages:
       thunky: 1.1.0
     dev: true
 
-  /nanocolors/0.1.12:
-    resolution: {integrity: sha512-2nMHqg1x5PU+unxX7PGY7AuYxl2qDx7PSrTRjizr8sxdd3l/3hBuWWaki62qmtYm2U5i4Z5E7GbjlyDFhs9/EQ==}
-    dev: true
-
   /nanocolors/0.2.3:
     resolution: {integrity: sha512-RxGTOApG8prHMA08UBMOT6qYzcBBW2EMBv7SRBqoXg/Dqp6G3yT7kLy1tpFuYLO+5h7eajmdiIHJA8oewN58XQ==}
     dev: true
@@ -3321,10 +3273,6 @@ packages:
 
   /node-releases/1.1.75:
     resolution: {integrity: sha512-Qe5OUajvqrqDSy6wrWFmMwfJ0jVgwiw4T3KqmbTcZ62qW0gQkheXYhcFM1+lOVcGUoRxcEcfyvFMAnDgaF1VWw==}
-    dev: true
-
-  /node-releases/1.1.76:
-    resolution: {integrity: sha512-9/IECtNr8dXNmPWmFXepT0/7o5eolGesHUa3mtr0KlgnCvnZxwh2qensKL42JJY2vQKC3nIBXetFAqR+PW1CmA==}
     dev: true
 
   /nopt/5.0.0:
