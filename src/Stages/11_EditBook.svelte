@@ -40,7 +40,7 @@
   };
 
   const range = (min: number, max: number) => {
-    const arr = new Array(max - min + 1);
+    const arr = new Array<number>(max - min + 1);
     for (let i = min; i <= max; i++)
       arr[i - min] = i;
     return arr;
@@ -84,7 +84,14 @@
   const stopDrag = (e: Event) => {
     e.preventDefault();
     dragDisabled = true;
-  }
+  };
+
+  let pageConf: { pre: number | null, pages: number[], post: number | null } = { pre: null, pages: [], post: null };
+  $: {
+    pageConf.pages = range(Math.max(0, page - 3), Math.min(maxPage, page + 3));
+    pageConf.pre = pageConf.pages[0] !== 0 ? 1 : null;
+    pageConf.post = pageConf.pages[pageConf.pages.length - 1] !== maxPage ? maxPage + 1 : null;
+  };
 </script>
 
 <style lang="postcss">
@@ -142,9 +149,17 @@ You are editing:
     <nav>
       <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{() => page--}" disabled={page <= 0}>Previous</a>
       ::
-      {#each range(Math.max(0, page - 3), Math.min(maxPage, page + 3)) as pg}
+      {#if pageConf.pre !== null}
+        <a class="small" href="{`#page ${pageConf.pre}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.pre - 1)}">{pageConf.pre}</a>
+        .
+      {/if}
+      {#each pageConf.pages as pg}
         <a class="small" href="{`#page ${pg + 1}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
       {/each}
+      {#if pageConf.post !== null}
+        .
+        <a class="small" href="{`#page ${pageConf.post}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.post - 1)}">{pageConf.post}</a>
+      {/if}
       ::
       <a class="small" href="#next" role="navigation" on:click|preventDefault="{() => page++}" disabled={page >= maxPage}>Next</a>
     </nav>
