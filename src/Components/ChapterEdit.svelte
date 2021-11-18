@@ -49,7 +49,7 @@
   });
 
   const conf = {
-    plugins: 'advcode',
+    plugins: 'code',
     toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | code',
   };
 </script>
@@ -290,7 +290,7 @@
 </style>
 
 
-<div class="chapter" class:open on:mousedown="{dragIfNotOpen}" on:touchstart="{dragIfNotOpen}" on:keydown="{dragKeyboardIfNotOpen}" tabindex="0">
+<div class="chapter" class:open on:mousedown="{dragIfNotOpen}" on:keydown="{dragKeyboardIfNotOpen}" tabindex="0">
   <div class="preview" on:click="{setOpen}">
     <div class="field">
       <span class="label">Title</span>

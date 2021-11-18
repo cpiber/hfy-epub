@@ -124,7 +124,7 @@ You are editing:
   <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
     <div class="chapters" use:dndzone={{ items: chapterSlice, dragDisabled, flipDurationMs }} on:consider={handleConsider} on:finalize={handleFinalize}>
       {#each chapterSlice as chapter, i (chapter.id)}
-        <div animate:flip="{{ duration: flipDurationMs }}" on:mouseup="{stopDrag}" on:touchend="{stopDrag}">
+        <div animate:flip="{{ duration: flipDurationMs }}" on:mouseup="{stopDrag}">
           <ChapterEdit
             bind:title={chapter.title}
             bind:content={chapter.content}
