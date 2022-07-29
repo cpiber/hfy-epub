@@ -1,5 +1,6 @@
 <script lang="ts">
   import { config } from './configstore';
+  import { redditApiBase } from './util';
 
   let showPrivacy = false;
 </script>
@@ -33,7 +34,7 @@
       This website (<a href="https://cpiber.github.io/hfy-epub" target="_blank">https://cpiber.github.io/hfy-epub</a>) does not, and will not, collect any data from its users.
       Any actions taken on this page are purely in the user's browser; there is no server-side component.
       No data is ever sent away.
-      For collecting the chapter data, this site contacts <code>https://api.reddit.com</code> only. The book is generated in the browser.
+      For collecting the chapter data, this site contacts <code>{redditApiBase}</code> only. The book is generated in the browser.
     </p>
   {/if}
 

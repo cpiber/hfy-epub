@@ -6,18 +6,18 @@
   import Loading from '../Components/Loading.svelte';
   import { retryFetch } from '../fetch';
   import { Source } from '../sources';
-  import { apiToRegular,toApiCall } from '../util';
+  import { apiToRegular,redditApiBase,toApiCall } from '../util';
 
   const searchSmall = search.toLowerCase();
 
-  const fetchSearch = () => retryFetch(`https://api.reddit.com/r/hfy/wiki/series.json`)
+  const fetchSearch = () => retryFetch(`https://${redditApiBase}/r/hfy/wiki/series.json`)
     .then(res => res.json())
     .then((json: reddit.wikipage) => json.data.content_md)
     .then(content =>
       [...content.matchAll(/\[([^\]]+)\]\s*\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)\s*(?:\[\*([^\]]+)\*\])?/igm)].map(matches => ({
         title: matches[1],
         author: matches[3],
-        url: toApiCall(matches[2].startsWith('http') ? matches[2] : `https://api.reddit.com${matches[2]}`),
+        url: toApiCall(matches[2].startsWith('http') ? matches[2] : `https://${redditApiBase}${matches[2]}`),
       }))
     ).then(allseries => allseries.filter(s => s.title.toLowerCase().indexOf(searchSmall) !== -1)).then(results => {
       if (!results.length)
