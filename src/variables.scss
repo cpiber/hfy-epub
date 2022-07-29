@@ -23,3 +23,12 @@ $ok: #34b334;
     @content;
   }
 }
+
+@mixin hover {
+
+  &:hover,
+  &:active,
+  &:focus {
+    @content;
+  }
+}

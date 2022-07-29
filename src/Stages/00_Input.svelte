@@ -1,14 +1,32 @@
 <script lang="ts">
-  export let search = '';
+  export let search: string = undefined;
   export let goNext: (search: string) => void;
+
+  import { getAllSeries } from '../sources/hfy';
+  import { apiToRegular } from '../util';
+
+  let series: ReturnType<typeof getAllSeries>;
+  let open = false;
+
+  let formRef: HTMLElement;
+  const onBlur = (e: FocusEvent) => open = formRef.contains(e.relatedTarget as HTMLElement);
+  const searchSeries = async (series: ReturnType<typeof getAllSeries>, search: string) => {
+    if (!series) return [];
+    const all = await series;
+    const searchSmall = search.toLowerCase();
+    const filtered = all.filter(s => s.title.toLowerCase().indexOf(searchSmall) !== -1);
+    if (!filtered.length) open = false;
+    return filtered;
+  }
+  const update = () => {
+    series = series || getAllSeries().finally(update);
+    open = false;
+    series.then(() => open = !!series && !!search);
+  }
 </script>
 
 <style lang="postcss">
   @import '../variables';
-
-  .heading {
-    margin-bottom: 0;
-  }
 
   .form p {
     display: flex;
@@ -32,25 +50,83 @@
   .spaceabove {
     margin-top: 2em;
   }
+
+  form {
+    position: relative;
+  }
+
+  .search-results {
+    position: absolute;
+    left: 0; right: 0;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 4px 8px;
+    margin-top: -0.5em;
+    z-index: 1;
+    max-height: 15em;
+    overflow: auto;
+    
+    .result {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border-bottom: 1px dotted transparent;
+
+      @include hover {
+        border-bottom-color: gray;
+      }
+    }
+  }
+
+  .overlay {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      background-color: white;
+      opacity: 0;
+      left: 0; right: 0; top: 0; bottom: 0;
+      transition: opacity 0.02s ease-in-out;
+    }
+
+    &.open::after {
+      opacity: 0.6;
+    }
+  }
 </style>
 
-
-<h2 class="heading">Please enter your search terms below: <a class="small" href="https://github.com/cpiber/hfy-epub/tree/master/docs/index.md" target="_blank">Help</a></h2>
-
-<form class="form" on:submit|stopPropagation="{() => goNext(search)}">
+<form class="form" on:submit|stopPropagation="{() => goNext(search || '')}" bind:this="{formRef}">
   <p>
-    <input bind:value="{search}" class="search" placeholder="Search or URL..." />
-    <input type="submit" value="Go" class="submit" disabled={!search.trim().length} name="search" />
+    Search:
+    <input
+        bind:value="{search}" on:keyup="{update}" on:blur="{onBlur}" on:click="{update}"
+        class="search" placeholder="Search or URL..."
+    />
+    <input type="submit" value="Go" class="submit" disabled={search === undefined || !search.trim().length} name="search" />
   </p>
+
+  {#if open}
+    {#await searchSeries(series, search) then all}
+      <div class="search-results">
+        {#each all as series}
+          <a class="result" href="{apiToRegular(series.url)}" on:click|preventDefault="{() => goNext(series.url)}">{series.title}</a>
+        {/each}
+      </div>
+    {/await}
+  {/if}
 </form>
-{#if !search.trim().length}
+{#if search !== undefined && !search.trim().length}
   <p class="small error">Please enter a search string</p>
 {/if}
 
 
-<p class="spaceabove">You can:</p>
-<ul>
-  <li>Search for a series title on the <a href="https://reddit.com/r/HFY/wiki/series" target="_blank">r/HFY wiki</a></li>
-  <li>Enter a series link to the <a href="https://reddit.com/r/HFY" target="_blank">r/HFY</a> wiki</li>
-  <li>Enter a link to any reddit post</li>
-</ul>
+<div class="overlay" class:open={open}>
+  <p class="spaceabove">You can: <a class="small" href="https://github.com/cpiber/hfy-epub/tree/master/docs/index.md" target="_blank">Help</a></p>
+  <ul>
+    <li>Search for a series title on the <a href="https://reddit.com/r/HFY/wiki/series" target="_blank">r/HFY wiki</a></li>
+    <li>Enter a series link to the <a href="https://reddit.com/r/HFY" target="_blank">r/HFY</a> wiki</li>
+    <li>Enter a link to any reddit post</li>
+  </ul>
+</div>

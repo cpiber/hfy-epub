@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
-import { decode, toApiCall } from '../util';
+import { retryFetch } from '../fetch';
+import { decode, redditApiBase, toApiCall } from '../util';
 import { commentLink } from './re';
 
 const seriesPageMatch = /^https?:\/\/(?:[^.]+\.)?reddit\.com\/r\/hfy\/wiki\/series\//i;
@@ -23,4 +24,19 @@ export const getSeriesPageData = ({ data: { content_md, content_html } }: reddit
       });
     })
   });
+};
+
+export const getAllSeries = async (search?: string) => {
+  const res = await retryFetch(`https://${redditApiBase}/r/hfy/wiki/series.json`);
+  const json = await res.json();
+  const content = json.data.content_md;
+  const all = [...content.matchAll(/\[([^\]]+)\]\s*\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)\s*(?:\[\*([^\]]+)\*\])?/igm)].map(matches => ({
+    title: matches[1],
+    author: matches[3],
+    url: toApiCall(matches[2].startsWith('http') ? matches[2] : `https://${redditApiBase}${matches[2]}`),
+  }));
+
+  if (!search) return all;
+  const searchSmall = search.toLowerCase();
+  return all.filter(s => s.title.toLowerCase().indexOf(searchSmall) !== -1);
 };

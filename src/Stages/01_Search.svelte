@@ -4,22 +4,11 @@
 
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
-  import { retryFetch } from '../fetch';
   import { Source } from '../sources';
-  import { apiToRegular,redditApiBase,toApiCall } from '../util';
+  import { getAllSeries } from '../sources/hfy';
+  import { apiToRegular } from '../util';
 
-  const searchSmall = search.toLowerCase();
-
-  const fetchSearch = () => retryFetch(`https://${redditApiBase}/r/hfy/wiki/series.json`)
-    .then(res => res.json())
-    .then((json: reddit.wikipage) => json.data.content_md)
-    .then(content =>
-      [...content.matchAll(/\[([^\]]+)\]\s*\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)\s*(?:\[\*([^\]]+)\*\])?/igm)].map(matches => ({
-        title: matches[1],
-        author: matches[3],
-        url: toApiCall(matches[2].startsWith('http') ? matches[2] : `https://${redditApiBase}${matches[2]}`),
-      }))
-    ).then(allseries => allseries.filter(s => s.title.toLowerCase().indexOf(searchSmall) !== -1)).then(results => {
+  const fetchSearch = () => getAllSeries(search).then(results => {
       if (!results.length)
         throw new Error(`No series matched input \`${search}\``);
       return results;

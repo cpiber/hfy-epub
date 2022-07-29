@@ -19,7 +19,7 @@ export const getSourceType = (search: string): Source => {
     if (isPost(search))
       return Source.POST;
     // fallthrough: urls that don't fit are interpreted as searches
-  } catch {}
+  } catch { }
   return Source.SEARCH;
 };
 
@@ -43,7 +43,7 @@ export const findNextLink = (html: string) => {
     return !t.startsWith('first') && !t.startsWith('prev') && !t.startsWith('index');
   });
   if (post) return post[1];
-}
+};
 
 export const fetchBookData = async (series: Series) => {
   const res = await retryFetch(series.url);
