@@ -4,49 +4,21 @@
   export let needsFetching: boolean;
   export let url: string = undefined;
   export let canFetch = false;
-  export let startDrag: (e: Event) => void;
-  export let moveUp: () => void = undefined;
-  export let moveDown: () => void = undefined;
-  export let remove: () => void;
+  export let close: () => void;
 
   import Editor from '@tinymce/tinymce-svelte';
-  import { onDestroy } from 'svelte';
   import { config } from '../configstore';
-  import Triangle from '../icons/triangle.svg';
-  import Up from '../icons/up-arrow.svg';
-  import { decode } from '../util';
+  import BackArrow from '../icons/back-arrow.svg';
+  import Column from './Column.svelte';
 
   needsFetching = needsFetching ?? true;
   content = content ?? '';
 
-  let title_: HTMLElement;
-  let open = false;
-  let wasInit = false;
   $: title = title.replace(/<[^>]*>/g, '');
-  $: title_?.scrollTo({ left: 0 }), open;
-  $: if (open) wasInit = true;
 
-  const toggle = () => open = !open;
-  const setOpen = () => open = true;
   const keydownDisableEnter = (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.keyCode === 13) e.preventDefault(); // prevent newlines
   };
-  const dragIfNotOpen = (e: Event) => {
-    if (!open) startDrag(e);
-  };
-  const dragKeyboardIfNotOpen = (e: KeyboardEvent) => {
-    if ((e.key === "Enter" || e.key === " ") && !open) startDrag(e);
-  }
-
-  let [inner, outer]: HTMLElement[] = [];
-  let observer: ResizeObserver;
-  $: if (wasInit && !observer) {
-    observer = new ResizeObserver(() => outer.style.height = `${inner.scrollHeight}px`);
-    observer.observe(inner);
-  }
-  onDestroy(() => {
-    if (observer) observer.disconnect();
-  });
 
   const conf = {
     plugins: 'code',
@@ -62,9 +34,6 @@
   $tgl: 28px;
 
   .chapter {
-    border: 1px dotted lightgray;
-    margin: 0;
-    transition: margin $len ease-in-out;
     $radius: 2px;
     
     :global(:first-child) > & {
@@ -79,102 +48,16 @@
       margin-top: -1px;
     }
 
-    &.open {
-      border-radius: $radius;
+    border-radius: $radius;
 
-      :global(:not(:first-child)) > & {
-        margin-top: 1em;
-      }
-      :global(:not(:last-child)) > & {
-        margin-bottom: 1em;
-      }
+    :global(:not(:first-child)) > & {
+      margin-top: 1em;
+    }
+    :global(:not(:last-child)) > & {
+      margin-bottom: 1em;
     }
   }
-
-  .preview {
-    display: grid;
-    grid-template-columns: 1fr 2fr $tgl;
-    gap: 5px;
-    align-items: center;
-    overflow: hidden;
-    transition: grid-template-columns $len ease-in-out;
-
-    .open & {
-      grid-template-columns: 1fr 0fr $tgl;
-    }
-    :not(.open) &, .toggle {
-      cursor: pointer;
-    }
-
-    .title {
-      position: relative;
-      border-bottom: 1px solid rgba(0,0,0,0);
-      transition: border $len ease-in-out;
-      scrollbar-width: none;
-
-      .open & {
-        border-bottom: 1px solid currentColor;
-        overflow: auto;
-        text-overflow: unset;
-      }
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-    }
-    .content {
-
-    }
-    .toggle {
-      display: flex;
-      align-items: center;
-      transform: rotate(-180deg);
-      transition: transform $len ease-in-out;
-
-      .open & {
-        transform: rotate(0deg);
-      }
-    }
-
-    .title, .content {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .field, .content, .toggle {
-      margin: $tb $lr;
-    }
-    .field {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-
-    @include medium {
-      &, .open & {
-        grid-template-columns: 1fr $tgl;
-      }
-
-      .content {
-        display: none;
-      }
-    }
-  }
-
   .edit {
-    height: 470px;
-    overflow: hidden;
-    transition: height $len ease-in-out, margin $len ease-in-out;
-    margin: 0 $lr $tb;
-
-    &-inner {
-      overflow: hidden; /* Margins are weird, without this, the height doesn't include child outer margins */
-    }
-
-    :not(.open) & {
-      height: 0 !important; /* We're setting height in JS, easier than clearing */
-      margin: 0 $lr;
-    }
-
     input:not([type="checkbox"]), textarea, label {
       display: block;
       width: 100%;
@@ -200,10 +83,6 @@
       &, .chapter:not(.open) & {
         grid-template-columns: 1fr;
       }
-
-      .chapter:not(.open) & .label {
-        opacity: 0;
-      }
     }
 
     span {
@@ -216,10 +95,6 @@
       opacity: 1;
       width: 60px;
       transition: width $len ease-in-out;
-
-      .chapter:not(.open) & {
-        width: 0;
-      }
 
       &::after {
         content: ':';
@@ -237,72 +112,40 @@
         }
       }
     }
+
+    :not(.label) {
+      border-bottom: 1px solid currentColor;
+    }
+  }
+
+  .back {
+    :global svg {
+      height: 0.65em;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+
+      @include hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   .url {
-    border-bottom: 1px solid currentColor;
     word-break: break-word;
-  }
-
-  %button {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 2px;
-    padding: 2px 5px;
-    background-color: lightgray;
-    border: 1px dotted gray;
-    border-radius: 4px;
-    text-decoration: none;
-
-    &:hover {
-      border: 1px solid gray;
-    }
-  }
-  .controls {
-    margin-top: 20px;
-
-    :global(svg) {
-      height: 0.8em;
-    }
-  }
-  .control-disabled {
-    opacity: 0.7;
-    pointer-events: none;
-  }
-  .up {
-    @extend %button;
-  }
-  .down {
-    @extend %button;
-
-    :global(svg) {
-      transform: rotate(180deg);
-      margin: auto 0;
-    }
-  }
-  .remove {
-    color: $error;
-
-    &:hover {
-      color: color-mod($error lightness(-20%));
-    }
   }
 </style>
 
 
-<div class="chapter" class:open on:mousedown="{dragIfNotOpen}" on:keydown="{dragKeyboardIfNotOpen}" tabindex="0">
-  <div class="preview" on:click="{setOpen}">
+<Column onSubmit={close}>
+  <h3 class="back"><a href="#home" on:click|preventDefault="{close}" class="homelink"><BackArrow /> back</a></h3>
+  <div class="chapter edit">
     <div class="field">
       <span class="label">Title</span>
-      <span class="title" aria-label="Title" contenteditable bind:innerHTML="{title}"
-        on:keydown="{keydownDisableEnter}" bind:this="{title_}"
-        style="{open ? '' : 'pointer-events: none'}"
-      ></span>
+      <span class="title" aria-label="Title" contenteditable bind:innerHTML="{title}" on:keydown="{keydownDisableEnter}"></span>
     </div>
-    <span class="content">{decode(content || '')}</span>
-    <span class="toggle" on:click|stopPropagation="{toggle}"><Up /></span>
-  </div>
-  <div class="edit" bind:this="{outer}"><div class="edit-inner" bind:this="{inner}">
     {#if url !== undefined}
       <div class="field">
         <span class="label">URL</span>
@@ -310,11 +153,8 @@
       </div>
     {/if}
     {#if $config.useTiny}
-      {#if wasInit}
-        <!-- Allow lateinit to avoid freezing UI -->
-        <!-- svelte-ignore missing-declaration -->
-        <Editor bind:value={content} disabled={needsFetching} apiKey={TINY_API_KEY} {conf} />
-      {/if}
+      <!-- svelte-ignore missing-declaration -->
+      <Editor bind:value={content} disabled={needsFetching} apiKey={TINY_API_KEY} {conf} />
     {:else}
       <textarea bind:value="{content}" disabled={needsFetching}></textarea>
     {/if}
@@ -323,10 +163,5 @@
         <input type="checkbox" bind:checked="{needsFetching}" /> Fetch contents
       </label>
     {/if}
-    <div class="controls">
-      <a href="#up" class="small up" on:click|preventDefault="{moveUp}" class:control-disabled={!moveUp}><Triangle /> move up</a>
-      <a href="#dowm" class="small down" on:click|preventDefault="{moveDown}" class:control-disabled={!moveDown}><Triangle /> move down</a>
-      <a href="#remove" class="small remove" on:click|preventDefault="{remove}">remove</a>
-    </div>
-  </div></div>
-</div>
+  </div>
+</Column>

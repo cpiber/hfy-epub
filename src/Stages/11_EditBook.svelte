@@ -2,9 +2,11 @@
   export let bookData: Immutable<Bookdata>;
   export let goNext: (data: Bookdata) => void;
     
-  import { dndzone,SOURCES,TRIGGERS } from "svelte-dnd-action";
+  import { dndzone } from "svelte-dnd-action";
   import { flip } from "svelte/animate";
+  import { fly } from 'svelte/transition';
   import ChapterEdit from '../Components/ChapterEdit.svelte';
+  import ChapterSelect from '../Components/ChapterSelect.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { copyData } from '../util';
 
@@ -20,6 +22,10 @@
 
   let chapterSlice: Bookdata['chapters'];
   $: chapterSlice = data.chapters.slice(page * pageSize, (page + 1) * pageSize);
+
+  let selectedChapterIndex: number = -1;
+  let selectedChapter: Bookdata['chapters'][number] = undefined;
+  $: selectedChapter = selectedChapterIndex >= 0 ? chapterSlice[selectedChapterIndex] : undefined;
 
   const moveUp = (i: number) => {
     const j = i + pageSize * page;
@@ -57,33 +63,13 @@
     }
   };
 
-  let dragDisabled = true;
   const acceptItems = (e: CustomEvent<DndEvent<Chapter>>) => {
     data.chapters.splice(page * pageSize, pageSize, ...e.detail.items);
     data.chapters = data.chapters;
   };
-  const handleConsider = (e: CustomEvent<DndEvent<Chapter>>) => {
+  const handleConsiderFinalize = (e: CustomEvent<DndEvent<Chapter>>) => {
     const { info: { source, trigger } } = e.detail;
     acceptItems(e);
-    // Ensure dragging is stopped on drag finish via keyboard
-		if (source === SOURCES.KEYBOARD && trigger === TRIGGERS.DRAG_STOPPED)
-			dragDisabled = true;
-  };
-  const handleFinalize = (e: CustomEvent<DndEvent<Chapter>>) => {
-    const { info: { source } } = e.detail;
-    acceptItems(e);
-    // Ensure dragging is stopped on drag finish via pointer (mouse, touch)
-		if (source === SOURCES.POINTER)
-			dragDisabled = true;
-  };
-  const startDrag = (e: Event) => {
-    if (!(e instanceof KeyboardEvent))
-      e.preventDefault();
-    dragDisabled = false;
-  };
-  const stopDrag = (e: Event) => {
-    e.preventDefault();
-    dragDisabled = true;
   };
 
   let pageConf: { pre: number | null, pages: number[], post: number | null } = { pre: null, pages: [], post: null };
@@ -92,11 +78,26 @@
     pageConf.pre = pageConf.pages[0] !== 0 ? 1 : null;
     pageConf.post = pageConf.pages[pageConf.pages.length - 1] !== maxPage ? maxPage + 1 : null;
   };
+
+  let hide = false;
+  let float = true;
 </script>
 
 <style lang="postcss">
   .list {
     margin: 1em 0;
+    position: relative;
+
+    .hide {
+      display: none;
+    }
+
+    .float {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      background-color: white;
+      z-index: 1;
+    }
   }
 
   .chapters {
@@ -128,42 +129,56 @@
 You are editing:
 
 <div class="list">
-  <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
-    <div class="chapters" use:dndzone={{ items: chapterSlice, dragDisabled, flipDurationMs }} on:consider={handleConsider} on:finalize={handleFinalize}>
-      {#each chapterSlice as chapter, i (chapter.id)}
-        <div animate:flip="{{ duration: flipDurationMs }}" on:mouseup="{stopDrag}">
-          <ChapterEdit
-            bind:title={chapter.title}
-            bind:content={chapter.content}
-            bind:needsFetching={chapter.needsFetching}
-            bind:url={chapter.displayUrl}
-            canFetch={!!chapter.apiUrl}
-            {startDrag}
-            moveUp={(page > 0 || i > 0) && moveUp.bind(null, i)}
-            moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, i)}
-            remove={remove.bind(null, i)}
-          />
-        </div>
-      {/each}
+  <div class:hide>
+    <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
+      <div class="chapters" use:dndzone={{ items: chapterSlice, flipDurationMs }} on:consider={handleConsiderFinalize} on:finalize={handleConsiderFinalize}>
+        {#each chapterSlice as chapter, i (chapter.id)}
+          <div animate:flip="{{ duration: flipDurationMs }}">
+            <ChapterSelect
+                title={chapter.title}
+                content={chapter.content}
+                select={() => selectedChapterIndex = i}
+                moveUp={(page > 0 || i > 0) && moveUp.bind(null, i)}
+                moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, i)}
+                remove={remove.bind(null, i)}
+            />
+          </div>
+        {/each}
+      </div>
+      <nav>
+        <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{() => page--}" disabled={page <= 0}>Previous</a>
+        ::
+        {#if pageConf.pre !== null}
+          <a class="small" href="{`#page ${pageConf.pre}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.pre - 1)}">{pageConf.pre}</a>
+          .
+        {/if}
+        {#each pageConf.pages as pg}
+          <a class="small" href="{`#page ${pg + 1}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
+        {/each}
+        {#if pageConf.post !== null}
+          .
+          <a class="small" href="{`#page ${pageConf.post}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.post - 1)}">{pageConf.post}</a>
+        {/if}
+        ::
+        <a class="small" href="#next" role="navigation" on:click|preventDefault="{() => page++}" disabled={page >= maxPage}>Next</a>
+      </nav>
+    </SeriesCard>
+  </div>
+  {#if selectedChapterIndex >= 0}
+    <div transition:fly|local={{ x: 50 }}
+        on:introend="{() => {hide = true; float = false}}"
+        on:outrostart="{() => {float = true}}" on:outroend="{() => {hide = false}}" class:float
+    >
+      <ChapterEdit
+          bind:title={selectedChapter.title}
+          bind:content={selectedChapter.content}
+          bind:needsFetching={selectedChapter.needsFetching}
+          bind:url={selectedChapter.displayUrl}
+          canFetch={!!selectedChapter.apiUrl}
+          close={() => selectedChapterIndex = -1}
+      />
     </div>
-    <nav>
-      <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{() => page--}" disabled={page <= 0}>Previous</a>
-      ::
-      {#if pageConf.pre !== null}
-        <a class="small" href="{`#page ${pageConf.pre}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.pre - 1)}">{pageConf.pre}</a>
-        .
-      {/if}
-      {#each pageConf.pages as pg}
-        <a class="small" href="{`#page ${pg + 1}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
-      {/each}
-      {#if pageConf.post !== null}
-        .
-        <a class="small" href="{`#page ${pageConf.post}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.post - 1)}">{pageConf.post}</a>
-      {/if}
-      ::
-      <a class="small" href="#next" role="navigation" on:click|preventDefault="{() => page++}" disabled={page >= maxPage}>Next</a>
-    </nav>
-  </SeriesCard>
+  {/if}
 </div>
 
 <button type="submit" on:click="{() => goNext(data)}">Save</button>

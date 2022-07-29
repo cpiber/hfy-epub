@@ -6,50 +6,20 @@
   export let onSubmit: () => void = undefined;
 
   import { apiToRegular,decode } from '../util';
+  import Column from './Column.svelte';
 </script>
 
 <style lang="postcss">
-  @import '../variables';
-
-  .series-card {
-    padding: 10px 18px;
-    border: 1px dashed lightgray;
-    border-radius: 8px;
-    display: grid;
-    grid-template-columns: 150px auto;
-    gap: 10px;
-    align-items: baseline;
-
-    @include mobile {
-      grid-template-columns: 100%;
-      padding: 6px 8px;
-
-      > p:not(:last-child) {
-        margin-bottom: 1em;
-      }
-    }
-
-    @include tiny {
-      margin: 0 -5px;
-    }
-
-    > * {
-      margin: 0;
-    }
-
-    .edit {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .edit {
-      border-bottom: 1px solid currentColor;
-    }
+  .edit {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid currentColor;
   }
 </style>
 
 
-<form class="series-card" on:submit|preventDefault="{onSubmit}">
+<Column onSubmit={onSubmit}>
   <h3>Title</h3>
   <p>
     {#if !edit}
@@ -72,4 +42,4 @@
       <slot></slot>
     </div>
   {/if}
-</form>
+</Column>
