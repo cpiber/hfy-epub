@@ -68,7 +68,7 @@
         <span class="spacer" />
         <button on:click="{() => findMore(data)}">Find more</button>
         {#if typeof newChapters === "number"}
-          Found {newChapters} new
+          <span on:click="{() => newChapters = undefined}">Found {newChapters} new</span>
         {/if}
       </p>
 

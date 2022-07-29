@@ -1,6 +1,11 @@
 @import './variables';
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: normal;
 }
 
@@ -21,19 +26,23 @@ body {
   margin: 12px auto;
   padding: 0 8px;
   overflow: scroll;
+  position: relative;
 
   @include mobile {
     padding: 0 2px;
   }
 }
 
-button, input[type="submit"] {
+button,
+input[type="submit"] {
   &:not(:disabled) {
     cursor: pointer;
   }
 }
 
-a, a[href^="#"], a[href^="#"]:visited {
+a,
+a[href^="#"],
+a[href^="#"]:visited {
   color: #0048ba;
 }
 

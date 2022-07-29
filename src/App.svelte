@@ -2,6 +2,7 @@
   import { config,loadConfig } from './configstore';
   import Footer from './Footer.svelte';
   import Header from './Header.svelte';
+  import BackArrow from './icons/back-arrow.svg';
   import { getSourceType,Source } from './sources';
   import Input from './Stages/00_Input.svelte';
   import Search from './Stages/01_Search.svelte';
@@ -78,15 +79,33 @@
     }
   }
 
-  .homelink {
-    display: inline-block;
-    font-size: 0.8em;
-    margin-top: 2em;
+  .mainnav {
+    position: absolute;
+    top: -0.2em;
+    font-size: 0.8rem;
+
+    :global svg {
+      height: 0.65em;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+
+      @include hover {
+        text-decoration: underline;
+      }
+    }
   }
 </style>
 
 
 <div class="App">
+  {#if stage !== Stage.INPUT}
+    <nav class="mainnav">
+      <a href="#home" on:click|preventDefault="{() => stage = Stage.INPUT}" class="homelink"><BackArrow /> home</a>
+    </nav>
+  {/if}
   <Header />
 
   <main class="App-main">
@@ -108,11 +127,6 @@
       <DownloadChapters goNext={d => (bookData = d, newChapters = undefined, stage = Stage.BOOK_DATA)} data={bookData} />
     {:else if stage === Stage.RESULT}
       <Result data={bookData} {backToSearch} backToBook={() => stage = Stage.BOOK_DATA} />
-    {/if}
-
-    {#if stage !== Stage.INPUT}
-      <div />
-      <a href="#home" on:click|preventDefault="{() => stage = Stage.INPUT}" class="homelink">Go back home</a>
     {/if}
   </main>
 
