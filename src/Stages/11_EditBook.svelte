@@ -83,6 +83,8 @@
 </script>
 
 <style lang="postcss">
+  @import '../variables';
+
   .list {
     margin: 1em 0;
     position: relative;
@@ -100,7 +102,20 @@
   }
 
   .chapters {
+    position: relative;
 
+    @include touch {
+      &::after {
+        content: 'touch scroll area';
+        background-color: red;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 35px;
+      }
+    }
   }
 
   nav {

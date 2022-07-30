@@ -24,6 +24,14 @@ $ok: #34b334;
   }
 }
 
+@mixin touch {
+
+  @media (any-pointer: coarse),
+  (any-hover: none) {
+    @content;
+  }
+}
+
 @mixin hover {
 
   &:hover,
