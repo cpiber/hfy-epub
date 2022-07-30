@@ -3,6 +3,7 @@
   import Footer from './Footer.svelte';
   import Header from './Header.svelte';
   import BackArrow from './icons/back-arrow.svg';
+  import Gear from './icons/gear.svg';
   import * as Stages from './stages';
   import { store } from './stages';
   import Input from './Stages/00_Input.svelte';
@@ -12,6 +13,7 @@
   import FindChapters from './Stages/12_FindChapters.svelte';
   import DownloadChapters from './Stages/13_DownloadChapters.svelte';
   import Result from './Stages/20_Result.svelte';
+  import Settings from './Stages/Settings.svelte';
 
   loadConfig();
 </script>
@@ -22,8 +24,9 @@
   let backToSearch: () => void;
   $: backToSearch = Stages.is(stage.from, Stages.Stage.SEARCH) ? () => Stages.next(stage, Stages.Search) : undefined;
 
-  $: if (DEV) console.table({ from: stage.from, is: stage });
+  $: if (DEV) console.table({ is: stage, from: stage.from });
   $: if (DEV) (window as any)._data = { ...$store, store };
+  $: if (DEV) (window as any)._config = { ...$config, config };
 
   $: localStorage.setItem('config', JSON.stringify($config));
 </script>
@@ -34,8 +37,10 @@
     @import './styles';
   }
 
+  $lr: 18px;
   .App {
-    padding: 14px 18px;
+    position: relative;
+    padding: 14px $lr;
     border: 1px solid gray;
     border-top: none;
     border-bottom: none;
@@ -48,7 +53,9 @@
   .mainnav {
     position: absolute;
     top: -0.2em;
+    left: $lr; right: $lr;
     font-size: 0.8rem;
+    display: flex;
 
     :global svg {
       height: 0.65em;
@@ -62,16 +69,29 @@
         text-decoration: underline;
       }
     }
+
+    .settingslink {
+      margin-left: auto;
+
+      :global svg {
+        height: 1.2em;
+      }
+    }
   }
 </style>
 
 
 <div class="App">
-  {#if !Stages.is(stage, Stages.Stage.INPUT)}
-    <nav class="mainnav">
+  <nav class="mainnav">
+    {#if !Stages.is(stage, Stages.Stage.INPUT) && !Stages.is(stage, Stages.Stage.SETTINGS)}
       <a href="#home" on:click|preventDefault="{() => Stages.next(stage, Stages.Input)}" class="homelink"><BackArrow /> home</a>
-    </nav>
-  {/if}
+    {/if}
+    {#if Stages.is(stage, Stages.Stage.SETTINGS)}
+      <a href="#home" on:click|preventDefault="{() => stage.next()}" class="homelink"><BackArrow /> back</a>
+    {:else}
+      <a href="#settings" on:click|preventDefault="{() => Stages.next(stage, Stages.Settings)}" class="settingslink"><Gear /></a>
+    {/if}
+  </nav>
   <Header />
 
   <main class="App-main">
@@ -89,6 +109,8 @@
       <DownloadChapters {stage} />
     {:else if Stages.is(stage, Stages.Stage.RESULT)}
       <Result {stage} {backToSearch} />
+    {:else if Stages.is(stage, Stages.Stage.SETTINGS)}
+      <Settings />
     {/if}
   </main>
 

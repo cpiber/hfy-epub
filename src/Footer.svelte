@@ -1,5 +1,7 @@
 <script lang="ts">
   import { config } from './configstore';
+  import * as Stages from './stages';
+  import { store } from './stages';
   import { fold,redditApiBase } from './util';
 
   let showPrivacy = false;
@@ -38,7 +40,9 @@
     </p>
   {/if}
 
-  <label class="small">
-    <input type="checkbox" bind:checked="{$config.useTiny}" aria-label="use TinyMCE editor" /> Use TinyMCE chapter editor
-  </label>
+  {#if !Stages.is($store.stage, Stages.Stage.SETTINGS)}
+    <label class="small">
+      <input type="checkbox" bind:checked="{$config.useTiny}" aria-label="use TinyMCE editor" /> Use TinyMCE chapter editor
+    </label>
+  {/if}
 </footer>

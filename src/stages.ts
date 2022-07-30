@@ -12,6 +12,8 @@ export enum Stage {
   DOWNLOAD_CHAPTERS,
 
   RESULT,
+
+  SETTINGS,
 };
 export abstract class StageData {
   stage: Stage;
@@ -73,6 +75,10 @@ export class Result extends StageData {
   constructor(public bookData: Immutable<Bookdata>) { super(); }
   next(): StageData { return next(this, BookData, this.bookData); }
 }
+export class Settings extends StageData {
+  stage: Stage.SETTINGS = Stage.SETTINGS;
+  next(): StageData { return back(this); }
+}
 
 const StageMapping = {
   [Stage.INPUT]: Input,
@@ -82,6 +88,7 @@ const StageMapping = {
   [Stage.FIND_CHAPTERS]: FindChapters,
   [Stage.DOWNLOAD_CHAPTERS]: DownloadChapters,
   [Stage.RESULT]: Result,
+  [Stage.SETTINGS]: Settings,
 } as const;
 export function next<T extends StageDataCtor>(from: StageData, typ: T, ...args: ConstructorParameters<T>) {
   const n = new typ(...args);
@@ -89,6 +96,10 @@ export function next<T extends StageDataCtor>(from: StageData, typ: T, ...args: 
   store.update(s => ({ ...s, stage: n }));
   return n;
 };
+export function back(from: StageData) {
+  store.update(s => ({ ...s, stage: from.from }));
+  return from.from;
+}
 export function is<S extends Stage, T extends (typeof StageMapping)[S]>(stage: StageData, type: S): stage is InstanceType<T> {
   return !!stage && stage.stage === type;
 }

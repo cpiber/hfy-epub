@@ -1,3 +1,4 @@
+import { NextLinkType, type Config } from '../configstore';
 import { retryFetch } from '../fetch';
 import { getSeriesPageData as getHFYSeriesPageData, isSeriesPage as isHFYSeriesPage } from './hfy';
 import { getPostData, isPost } from './post';
@@ -33,7 +34,7 @@ export const getDataFromSource = (source: Source, json: any): Bookdata | undefin
   throw new Error(`Getting data from source type \`${Source[source]}\` not supported, this should never happen`);
 };
 
-export const findNextLink = (html: string) => {
+export const findNextLinkDefault = (html: string) => {
   const next = html.match(/href="([^"]+)"[^>]*>\s*Next/i);
   if (next) return next[1];
   const posts = [...html.matchAll(commentLinkHTML)];
@@ -43,6 +44,19 @@ export const findNextLink = (html: string) => {
     return !t.startsWith('first') && !t.startsWith('prev') && !t.startsWith('index');
   });
   if (post) return post[1];
+};
+export const findNextLinkRegexp = (regex: string, html: string) => {
+  const next = html.match(new RegExp(regex, 'i'));
+  debugger;
+  console.log(regex, next);
+  if (next && next.length > 1) return next[1];
+};
+export const findNextLink = (config: Config, html: string) => {
+  switch (config.nextLink) {
+    case NextLinkType.DEFAULT: return findNextLinkDefault(html);
+    case NextLinkType.REGEXP: return findNextLinkRegexp(config.nextLinkRegex, html);
+    case NextLinkType.FUNCTION: throw new Error('not implemented');
+  }
 };
 
 export const fetchBookData = async (series: Series) => {

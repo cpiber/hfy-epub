@@ -3,6 +3,7 @@
   
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
+  import { config } from '../configstore';
   import { retryFetch } from '../fetch';
   import { findNextLink,getPostContent } from '../sources';
   import type { FindChapters } from '../stages';
@@ -23,7 +24,7 @@
         chapters.splice(-1, 1, cur = getPostContent(json));
       }
 
-      const next = findNextLink(cur.content);
+      const next = findNextLink($config, cur.content);
       if (!next) break;
       const n = toApiCall(next);
       if (chapters.find(c => c.apiUrl === n)) break; // no duplicates

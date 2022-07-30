@@ -15,7 +15,7 @@
   
   const fetchData = (): Promise<Bookdata> => stage.bookData
     ? Promise.resolve(copyData(stage.bookData))
-    : fetchBookData(series);
+    : fetchBookData(series).then(data => stage.bookData = data);
   let fetchPromise = fetchData();
 </script>
 
