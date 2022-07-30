@@ -1,6 +1,6 @@
 <script lang="ts">
   import { config } from './configstore';
-  import { redditApiBase } from './util';
+  import { fold,redditApiBase } from './util';
 
   let showPrivacy = false;
 </script>
@@ -30,7 +30,7 @@
   </p>
 
   {#if showPrivacy}
-    <p class="small">
+    <p class="small" transition:fold>
       This website (<a href="https://cpiber.github.io/hfy-epub" target="_blank">https://cpiber.github.io/hfy-epub</a>) does not, and will not, collect any data from its users.
       Any actions taken on this page are purely in the user's browser; there is no server-side component.
       No data is ever sent away.

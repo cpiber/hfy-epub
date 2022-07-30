@@ -9,7 +9,7 @@
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { fetchBookData } from '../sources';
   import type { BookData } from '../stages';
-  import { copyData,decode } from '../util';
+  import { copyData,decode,fold } from '../util';
 
   let showChapters = false;
   
@@ -69,7 +69,7 @@
       </p>
 
       {#if showChapters}
-        <div class="chapter-list">
+        <div class="chapter-list" transition:fold>
           {#each data.chapters as chapter (chapter.id)}
             <a href="{chapter.displayUrl}" target="_blank" class="small">{decode(chapter.title)}</a>
           {/each}

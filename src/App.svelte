@@ -23,7 +23,7 @@
   $: backToSearch = Stages.is(stage.from, Stages.Stage.SEARCH) ? () => Stages.next(stage, Stages.Search) : undefined;
 
   $: if (DEV) console.table({ from: stage.from, is: stage });
-  $: if (DEV) (window as any)._data = { ...$store };
+  $: if (DEV) (window as any)._data = { ...$store, store };
 
   $: localStorage.setItem('config', JSON.stringify($config));
 </script>

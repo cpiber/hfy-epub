@@ -1,3 +1,6 @@
+import { cubicOut } from 'svelte/easing';
+import type { ScaleParams, TransitionConfig } from 'svelte/transition';
+
 export const redditApiBase = 'www.reddit.com';
 
 export const toApiCall = (url: URL | string) => {
@@ -22,3 +25,22 @@ export const decode = (() => {
 })();
 
 export const copyData = (bookData: Immutable<Bookdata>): Bookdata => ({ ...bookData, chapters: bookData.chapters.map(c => ({ ...c })) });
+
+export function fold(node: Element, {
+  delay = 0,
+  duration = 200,
+  prop = 'height',
+  easing = cubicOut,
+}: ScaleParams & { prop?: keyof CSSStyleDeclaration; } = {}): TransitionConfig {
+  const style = getComputedStyle(node);
+  const curval = style[prop];
+  if (typeof curval !== "string" || !curval.endsWith('px')) throw new Error(`invalid property '${prop}' does not return pixels`);
+  const px = +curval.slice(0, -2);
+
+  return {
+    delay,
+    duration,
+    easing,
+    css: t => `overflow: hidden; ${prop}: ${t * px}px`
+  };
+}
