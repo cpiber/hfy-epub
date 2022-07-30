@@ -7,22 +7,25 @@
   import { retryFetch } from '../fetch';
   import { getPostContent } from '../sources';
 
-  let finishedChapters: Bookdata['chapters'];
+  let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...data.chapters.map(c => ({ ...c, new: false }))];
+  const batchSize = 100;
 
   const fetchChapters = async () => {
-    finishedChapters = new Array(data.chapters.length);
+    let prev = finishedChapters;
+    finishedChapters = new Array(finishedChapters.length);
 
     // bunch up in 100s
-    for (let i = 0; i < data.chapters.length; i += 100) {
-      await Promise.all(data.chapters.slice(i, i + 100).map((chapter, index) => chapter.needsFetching !== false
-        ? retryFetch(chapter.apiUrl)
+    for (let i = 0; i < prev.length; i += batchSize) {
+      await Promise.all(prev.slice(i, i + batchSize).map((chapter, index) => {
+        finishedChapters[index + i] = { ...prev[index + i] };
+        if (chapter.needsFetching !== false) return retryFetch(chapter.apiUrl)
           .then(res => res.json())
           .then((json: reddit.post) => {
-            finishedChapters[index + i] = getPostContent(json);
+            finishedChapters[index + i] = { ...getPostContent(json), new: true };
             finishedChapters = finishedChapters; // tell svelte to update
           })
-        : (finishedChapters[index + i] = { ...chapter }, undefined)
-      ));
+        return undefined
+      }));
     }
 
     return { ...data, chapters: finishedChapters };
@@ -49,7 +52,7 @@
 
   <div class="chapters">
     {#each finishedChapters as chapter}
-      {#if chapter}
+      {#if chapter && chapter.new === true}
         <p class="valid small">{chapter.title}</p>
       {/if}
     {/each}
@@ -57,5 +60,15 @@
 {:then finishedData}
   {goNext(finishedData)}
 {:catch error}
-  <ErrorMessage {error} retry={() => fetchPromise = fetchChapters()} />
+  <p>Error fetching chapters:</p>
+
+  <div class="chapters">
+    {#each finishedChapters as chapter}
+      {#if chapter.new === true}
+        <p class="valid small">{chapter.title}</p>
+      {/if}
+    {/each}
+  </div>
+
+  <ErrorMessage {error} retry={() => fetchPromise = fetchChapters()} /> <a href="#back" on:click|preventDefault="{() => goNext({ ...data, chapters: finishedChapters })}">back</a>
 {/await}

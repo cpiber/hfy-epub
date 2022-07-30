@@ -12,7 +12,7 @@
   content = content ?? '';
   $: empty = !content || !content.trim().length;
   let decoded = ''
-  setTimeout(() => (decoded = decode(content || '')), 0); // moves the strain of decoding
+  $: setTimeout(() => (decoded = decode(content || '')), 0); // moves the strain of decoding
 </script>
 
 <style lang="postcss">
