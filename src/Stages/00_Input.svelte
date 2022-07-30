@@ -2,6 +2,7 @@
   export let search: string = undefined;
   export let goNext: (search: string) => void;
 
+  import { fade } from 'svelte/transition';
   import { getAllSeries } from '../sources/hfy';
   import { apiToRegular } from '../util';
 
@@ -80,19 +81,14 @@
   }
 
   .overlay {
-    position: relative;
+    content: '';
+    position: absolute;
+    background-color: white;
+    opacity: 0.6;
+    left: 0; right: 0; top: 0; bottom: 0;
 
-    &::after {
-      content: '';
-      position: absolute;
-      background-color: white;
-      opacity: 0;
-      left: 0; right: 0; top: 0; bottom: 0;
-      transition: opacity 0.02s ease-in-out;
-    }
-
-    &.open::after {
-      opacity: 0.6;
+    &-wrapper {
+      position: relative;
     }
   }
 </style>
@@ -104,7 +100,7 @@
         bind:value="{search}" on:keyup="{update}" on:blur="{onBlur}" on:click="{update}"
         class="search" placeholder="Search or URL..."
     />
-    <input type="submit" value="Go" class="submit" disabled={search === undefined || !search.trim().length} name="search" />
+    <input type="submit" value="Go" class="submit" disabled={search === undefined || !search.trim().length} />
   </p>
 
   {#if open}
@@ -122,8 +118,9 @@
 {/if}
 
 
-<div class="overlay" class:open={open}>
-  <p class="spaceabove">You can: <a class="small" href="https://github.com/cpiber/hfy-epub/tree/master/docs/index.md" target="_blank">Help</a></p>
+<div class="overlay-wrapper">
+  {#if open}<div transition:fade={{ duration: 100 }} class="overlay"></div>{/if}
+  <p class="spaceabove">You can:</p>
   <ul>
     <li>Search for a series title on the <a href="https://reddit.com/r/HFY/wiki/series" target="_blank">r/HFY wiki</a></li>
     <li>Enter a series link to the <a href="https://reddit.com/r/HFY" target="_blank">r/HFY</a> wiki</li>

@@ -15,7 +15,7 @@
 <style lang="postcss">
   @import '../variables';
   $len: 0.1s;
-  $wait: 0.5s;
+  $wait: 0.2s;
   $lr: 0.5em;
   $tb: 0.4em;
 
@@ -57,10 +57,14 @@
 
   .preview {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 2fr 3fr;
     gap: 5px;
     align-items: center;
     overflow: hidden;
+
+    &.empty {
+      grid-template-columns: 1fr;
+    }
 
     .title {
       position: relative;
@@ -131,7 +135,7 @@
 
 
 <div class="chapter" tabindex="0" {title} on:click="{select}">
-  <div class="preview">
+  <div class="preview" class:empty>
     <span class="title" aria-label="Title">{title}</span>
     <span class="content">{decode(content || '')}</span>
   </div>
