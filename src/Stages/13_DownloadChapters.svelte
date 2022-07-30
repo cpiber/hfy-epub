@@ -70,5 +70,5 @@
     {/each}
   </div>
 
-  <ErrorMessage {error} retry={() => fetchPromise = fetchChapters()} /> <a href="#back" on:click|preventDefault="{() => stage.next({ ...stage.bookData, chapters: finishedChapters })}">back</a>
+  <ErrorMessage {error} retry={() => fetchPromise = fetchChapters()} back="{() => stage.next({ ...stage.bookData, chapters: finishedChapters })}" />
 {/await}

@@ -59,5 +59,5 @@
 {:then newData}
   {stage.next(newData, newchapters.length)}
 {:catch error}
-  <ErrorMessage {error} retry={() => fetchPromise = fetchMore()} />
+  <ErrorMessage {error} retry={() => fetchPromise = fetchMore()} back="{() => stage.next({ ...stage.bookData, chapters }, newchapters.length)}" />
 {/await}

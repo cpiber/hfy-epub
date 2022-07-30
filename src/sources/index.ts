@@ -1,5 +1,6 @@
-import { NextLinkType, type Config } from '../configstore';
+import { config, NextLinkType, type Config } from '../configstore';
 import { retryFetch } from '../fetch';
+import { sandboxFn } from './fn';
 import { getSeriesPageData as getHFYSeriesPageData, isSeriesPage as isHFYSeriesPage } from './hfy';
 import { getPostData, isPost } from './post';
 import { commentLinkHTML } from './re';
@@ -45,17 +46,33 @@ export const findNextLinkDefault = (html: string) => {
   });
   if (post) return post[1];
 };
-export const findNextLinkRegexp = (regex: string, html: string) => {
-  const next = html.match(new RegExp(regex, 'i'));
-  debugger;
-  console.log(regex, next);
+let userRegex: RegExp;
+export const findNextLinkRegexp = (html: string) => {
+  const next = html.match(userRegex);
   if (next && next.length > 1) return next[1];
 };
+let userFn: ReturnType<typeof sandboxFn>;
+const parser = new DOMParser();
+export const findNextLinkFn = (html: string) => {
+  let doc: HTMLElement;
+  const closure = {
+    get document() {
+      return doc = doc ?? parser.parseFromString(html, 'text/html').documentElement;
+    },
+    console: { log: console.log, table: console.table, error: console.error, assert: console.assert },
+    html,
+  };
+  return userFn(closure);
+};
+config.subscribe(conf => {
+  userRegex = new RegExp(conf.nextLinkRegex, 'i');
+  userFn = sandboxFn(conf.nextLinkFn);
+});
 export const findNextLink = (config: Config, html: string) => {
   switch (config.nextLink) {
     case NextLinkType.DEFAULT: return findNextLinkDefault(html);
-    case NextLinkType.REGEXP: return findNextLinkRegexp(config.nextLinkRegex, html);
-    case NextLinkType.FUNCTION: throw new Error('not implemented');
+    case NextLinkType.REGEXP: return findNextLinkRegexp(html);
+    case NextLinkType.FUNCTION: return findNextLinkFn(html);
   }
 };
 
