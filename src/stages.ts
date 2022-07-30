@@ -18,6 +18,7 @@ export enum Stage {
 export abstract class StageData {
   stage: Stage;
   from?: StageData;
+  needsSaving?: boolean;
   abstract next(...args: any[]): StageData;
 }
 type StageDataCtor = { new(...a: any[]): StageData; };
@@ -57,16 +58,19 @@ export class BookData extends StageData {
 }
 export class EditData extends StageData {
   stage: Stage.EDIT_DATA = Stage.EDIT_DATA;
+  needsSaving = true;
   constructor(public bookData: Immutable<Bookdata>) { super(); }
   next(data: Bookdata): StageData { return next(this, BookData, data); }
 }
 export class FindChapters extends StageData {
   stage: Stage.FIND_CHAPTERS = Stage.FIND_CHAPTERS;
+  needsSaving = true;
   constructor(public bookData: Immutable<Bookdata>) { super(); }
   next(data: Bookdata, n: number): StageData { return next(this, BookData, data, n); }
 }
 export class DownloadChapters extends StageData {
   stage: Stage.DOWNLOAD_CHAPTERS = Stage.DOWNLOAD_CHAPTERS;
+  needsSaving = true;
   constructor(public bookData: Immutable<Bookdata>) { super(); }
   next(data: Bookdata): StageData { return next(this, BookData, data); }
 }

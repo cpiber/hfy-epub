@@ -116,7 +116,7 @@
   </Column>
 </div>
 
-<button type="submit" on:click="{() => { config.update(c => ({ ...c, nextLink, nextLinkRegex, nextLinkFn })); disableSave = true }}" disabled={disableSave}>Save</button>
+<button type="submit" on:click="{() => { config.set({ nextLink, nextLinkRegex, nextLinkFn, useTiny }); disableSave = true }}" disabled={disableSave}>Save</button>
 {#if disableSave && nextLink === NextLinkType.REGEXP && error}
   <span class="small error">Regex invalid: <code>{error}</code></span>
 {:else if disableSave && nextLink === NextLinkType.FUNCTION && error}

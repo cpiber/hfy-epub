@@ -68,7 +68,6 @@
     data.chapters = data.chapters;
   };
   const handleConsiderFinalize = (e: CustomEvent<DndEvent<Chapter>>) => {
-    const { info: { source, trigger } } = e.detail;
     acceptItems(e);
   };
 

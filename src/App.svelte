@@ -24,6 +24,10 @@
   let backToSearch: () => void;
   $: backToSearch = Stages.is(stage.from, Stages.Stage.SEARCH) ? () => Stages.next(stage, Stages.Search) : undefined;
 
+  const openSettings = () => {
+    if (!stage.needsSaving || confirm("Unsaved progress. Continue?")) Stages.next(stage, Stages.Settings);
+  };
+
   $: if (DEV) console.table({ is: stage, from: stage.from });
   $: if (DEV) (window as any)._data = { ...$store, store };
   $: if (DEV) (window as any)._config = { ...$config, config };
@@ -89,7 +93,7 @@
     {#if Stages.is(stage, Stages.Stage.SETTINGS)}
       <a href="#home" on:click|preventDefault="{() => stage.next()}" class="homelink"><BackArrow /> back</a>
     {:else}
-      <a href="#settings" on:click|preventDefault="{() => Stages.next(stage, Stages.Settings)}" class="settingslink"><Gear /></a>
+      <a href="#settings" on:click|preventDefault="{openSettings}" class="settingslink"><Gear /></a>
     {/if}
   </nav>
   <Header />
