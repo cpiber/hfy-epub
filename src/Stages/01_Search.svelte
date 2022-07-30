@@ -1,11 +1,12 @@
 <script lang="ts">
+  export let stage: Search;
   export let search: string;
-  export let goNext: (series: Series) => void;
 
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import { Source } from '../sources';
   import { getAllSeries } from '../sources/hfy';
+  import type { Search } from '../stages';
   import { apiToRegular } from '../util';
 
   const fetchSearch = () => getAllSeries(search).then(results => {
@@ -24,7 +25,7 @@
   <ul>
     {#each searchResults as result}
       <li>
-        <a href="{apiToRegular(result.url)}" on:click|preventDefault="{() => goNext({ url: result.url, type: Source.HFY_SERIES })}">{result.title}</a>
+        <a href="{apiToRegular(result.url)}" on:click|preventDefault="{() => stage.next({ url: result.url, type: Source.HFY_SERIES })}">{result.title}</a>
         {#if result.author}
           [<i>{result.author}</i>]
         {/if}

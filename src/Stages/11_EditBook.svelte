@@ -1,16 +1,16 @@
 <script lang="ts">
-  export let bookData: Immutable<Bookdata>;
-  export let goNext: (data: Bookdata) => void;
+  export let stage: EditData;
     
   import { dndzone } from "svelte-dnd-action";
   import { fly } from 'svelte/transition';
   import ChapterEdit from '../Components/ChapterEdit.svelte';
   import ChapterSelect from '../Components/ChapterSelect.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
+  import type { EditData } from '../stages';
   import { copyData } from '../util';
 
-  const odata = copyData(bookData);
-  const data = copyData(bookData);
+  const odata = copyData(stage.bookData);
+  const data = copyData(stage.bookData);
 
   let page = 0;
   const pageSize = 50;
@@ -145,7 +145,7 @@ You are editing:
 
 <div class="list">
   <div class:hide>
-    <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
+    <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => stage.next(data)}>
       {#key chapterSlice}
         <div in:fly={{ x: dir * 30 }} class="chapters" use:dndzone={{ items: chapterSlice, flipDurationMs }} on:consider={handleConsiderFinalize} on:finalize={handleConsiderFinalize}>
           {#each chapterSlice as chapter, i (chapter.id)}
@@ -196,5 +196,5 @@ You are editing:
   {/if}
 </div>
 
-<button type="submit" on:click="{() => goNext(data)}">Save</button>
-<a href="#cancel" class="small" on:click|preventDefault="{() => goNext(odata)}">Cancel</a>
+<button type="submit" on:click="{() => stage.next(data)}">Save</button>
+<a href="#cancel" class="small" on:click|preventDefault="{() => stage.next(odata)}">Cancel</a>

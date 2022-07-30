@@ -1,13 +1,13 @@
 <script lang="ts">
-  export let data: Immutable<Bookdata>;
-  export let goNext: (data: Bookdata) => void;
+  export let stage: DownloadChapters;
 
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import { retryFetch } from '../fetch';
   import { getPostContent } from '../sources';
+  import type { DownloadChapters } from '../stages';
 
-  let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...data.chapters.map(c => ({ ...c, new: false }))];
+  let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...stage.bookData.chapters.map(c => ({ ...c, new: false }))];
   const batchSize = 100;
 
   const fetchChapters = async () => {
@@ -28,7 +28,7 @@
       }));
     }
 
-    return { ...data, chapters: finishedChapters };
+    return { ...stage.bookData, chapters: finishedChapters };
   };
   let fetchPromise = fetchChapters();
 </script>
@@ -58,7 +58,7 @@
     {/each}
   </div>
 {:then finishedData}
-  {goNext(finishedData)}
+  {stage.next(finishedData)}
 {:catch error}
   <p>Error fetching chapters:</p>
 
@@ -70,5 +70,5 @@
     {/each}
   </div>
 
-  <ErrorMessage {error} retry={() => fetchPromise = fetchChapters()} /> <a href="#back" on:click|preventDefault="{() => goNext({ ...data, chapters: finishedChapters })}">back</a>
+  <ErrorMessage {error} retry={() => fetchPromise = fetchChapters()} /> <a href="#back" on:click|preventDefault="{() => stage.next({ ...stage.bookData, chapters: finishedChapters })}">back</a>
 {/await}

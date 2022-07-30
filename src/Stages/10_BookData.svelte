@@ -1,24 +1,20 @@
 <script lang="ts">
+  export let stage: BookData;
   export let series: Immutable<Series>;
-  export let bookData: Immutable<Bookdata> = undefined;
-  export let newChapters: number = undefined;
-  export let goNext: (data: Bookdata) => void;
   export let backToSearch: () => void;
-  export let edit: (data: Bookdata) => void;
-  export let findMore: (data: Bookdata) => void;
-  export let downloadAll: (data: Bookdata) => void;
   
   import BackToSearch from '../Components/BackToSearch.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { fetchBookData } from '../sources';
+  import type { BookData } from '../stages';
   import { copyData,decode } from '../util';
 
   let showChapters = false;
   
-  const fetchData = (): Promise<Bookdata> => bookData
-    ? Promise.resolve(copyData(bookData))
+  const fetchData = (): Promise<Bookdata> => stage.bookData
+    ? Promise.resolve(copyData(stage.bookData))
     : fetchBookData(series);
   let fetchPromise = fetchData();
 </script>
@@ -66,9 +62,9 @@
       <p class="no-margin">Found {data.chapters.length}
         <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">{#if !showChapters}show{:else}hide{/if}</a>
         <span class="spacer" />
-        <button on:click="{() => findMore(data)}">Find more</button>
-        {#if typeof newChapters === "number"}
-          <span on:click="{() => newChapters = undefined}">Found {newChapters} new</span>
+        <button on:click="{() => stage.findMore(data)}">Find more</button>
+        {#if typeof stage.newChapters === "number"}
+          <span on:click="{() => stage.newChapters = undefined}">Found {stage.newChapters} new</span>
         {/if}
       </p>
 
@@ -83,11 +79,11 @@
   </div>
 
   {#if data.chapters.find(c => c.needsFetching !== false)} <!-- if at least one needs to still be downloaded -->
-    <button on:click="{() => downloadAll(data)}">Fetch chapter contents</button>
+    <button on:click="{() => stage.downloadAll(data)}">Fetch chapter contents</button>
   {:else}
-    <button on:click="{() => goNext(data)}">Generate EPUB</button>
+    <button on:click="{() => stage.next(data)}">Generate EPUB</button>
   {/if}
-  <button on:click="{() => edit(data)}">Edit book</button>
+  <button on:click="{() => stage.edit(data)}">Edit book</button>
   
   <BackToSearch {backToSearch} />
 {:catch error}

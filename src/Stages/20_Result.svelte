@@ -1,12 +1,12 @@
 <script lang="ts">
-  export let data: Immutable<Bookdata>;
+  export let stage: Result;
   export let backToSearch: () => void;
-  export let backToBook: () => void;
 
   import download from 'downloadjs';
   import BackToSearch from '../Components/BackToSearch.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
+  import type { Result } from '../stages';
   import { decode } from '../util';
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
@@ -16,15 +16,15 @@
     logs = [];
     const { default: epub } = await epubPromise;
     return await epub({
-      title: decode(data.title),
-      author: decode(data.author),
+      title: decode(stage.bookData.title),
+      author: decode(stage.bookData.author),
       ignoreFailedDownloads: true,
       verbose: (type, msg, ...more) => {
         logs.push([type, msg]);
         if (DEV) (type === 'warn' ? console.warn : console.log)(msg, ...more);
         logs = logs; // tell svelte to update
       },
-    }, data.chapters.map(c => ({ title: decode(c.title), content: c.content, url: c.displayUrl })));
+    }, stage.bookData.chapters.map(c => ({ title: decode(c.title), content: c.content, url: c.displayUrl })));
   };
   let promise = generate();
 </script>
@@ -54,8 +54,8 @@
   </div>
 {:then book}
   <h3 class="valid">Your e-book is ready!</h3>
-  <button on:click="{() => download(book, `${decode(data.author)} - ${decode(data.title)}.epub`, 'application/epub+zip')}">Download</button>
-  <button on:click="{backToBook}">Back to book</button>
+  <button on:click="{() => download(book, `${decode(stage.bookData.author)} - ${decode(stage.bookData.title)}.epub`, 'application/epub+zip')}">Download</button>
+  <button on:click="{stage.next.bind(stage)}">Back to book</button>
   <BackToSearch {backToSearch} />
 
   {#if logs.find(([type]) => type === 'warn')}
@@ -69,6 +69,6 @@
   {/if}
 {:catch error}
   <ErrorMessage {error} retry={() => promise = generate()} />
-  <button on:click="{backToBook}">Back to book</button>
+  <button on:click="{stage.next.bind(stage)}">Back to book</button>
   <BackToSearch {backToSearch} />
 {/await}

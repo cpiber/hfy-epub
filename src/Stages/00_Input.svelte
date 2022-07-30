@@ -1,9 +1,10 @@
 <script lang="ts">
+  export let stage: Input;
   export let search: string = undefined;
-  export let goNext: (search: string) => void;
 
   import { fade } from 'svelte/transition';
   import { getAllSeries } from '../sources/hfy';
+  import type { Input } from '../stages';
   import { apiToRegular } from '../util';
 
   let series: ReturnType<typeof getAllSeries>;
@@ -92,7 +93,7 @@
   }
 </style>
 
-<form class="form" on:submit|preventDefault="{() => goNext(search || '')}" bind:this="{formRef}">
+<form class="form" on:submit|preventDefault="{() => stage.next(search || '')}" bind:this="{formRef}">
   <p>
     Search:
     <input
@@ -106,7 +107,7 @@
     {#await searchSeries(series, search) then all}
       <div class="search-results">
         {#each all as series}
-          <a class="result" href="{apiToRegular(series.url)}" on:click|preventDefault="{() => goNext(series.url)}">{series.title}</a>
+          <a class="result" href="{apiToRegular(series.url)}" on:click|preventDefault="{() => stage.next(series.url)}">{series.title}</a>
         {/each}
       </div>
     {/await}

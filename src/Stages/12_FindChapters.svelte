@@ -1,18 +1,18 @@
 <script lang="ts">
-  export let bookData: Immutable<Bookdata>;
-  export let goNext: (data: Bookdata, len: number) => void;
+  export let stage: FindChapters;
   
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import { retryFetch } from '../fetch';
   import { findNextLink,getPostContent } from '../sources';
+  import type { FindChapters } from '../stages';
   import { toApiCall } from '../util';
 
   let newchapters: { from: string, url: string }[] = [];
   let chapters: Bookdata['chapters'];
 
   const fetchMore = async () => {
-    chapters = bookData.chapters.map(c => ({ ...c })); // deep copy
+    chapters = stage.bookData.chapters.map(c => ({ ...c })); // deep copy
 
     while (true) {
       let cur = chapters[chapters.length - 1];
@@ -36,7 +36,7 @@
       if (!res.ok) throw json.message;
       chapters.push(getPostContent(json));
     }
-    return { ...bookData, chapters };
+    return { ...stage.bookData, chapters };
   };
   let fetchPromise = fetchMore();
 </script>
@@ -56,7 +56,7 @@
     {/each}
   </div>
 {:then newData}
-  {goNext(newData, newchapters.length)}
+  {stage.next(newData, newchapters.length)}
 {:catch error}
   <ErrorMessage {error} retry={() => fetchPromise = fetchMore()} />
 {/await}

@@ -3,8 +3,8 @@
   import Footer from './Footer.svelte';
   import Header from './Header.svelte';
   import BackArrow from './icons/back-arrow.svg';
-  import { getSourceType,Source } from './sources';
   import * as Stages from './stages';
+  import { store } from './stages';
   import Input from './Stages/00_Input.svelte';
   import Search from './Stages/01_Search.svelte';
   import BookData from './Stages/10_BookData.svelte';
@@ -12,38 +12,18 @@
   import FindChapters from './Stages/12_FindChapters.svelte';
   import DownloadChapters from './Stages/13_DownloadChapters.svelte';
   import Result from './Stages/20_Result.svelte';
-  import { toApiCall } from './util';
 
   loadConfig();
 </script>
 
 <script lang="ts">
-  let stage: Stages.StageData = new Stages.Input();
-
-  let search: string;
-  let series: Series;
-
-  const handleInput = (s: string) => {
-    const input = getSourceType(s);
-    search = s;
-    if (input !== Source.SEARCH) series = { url: toApiCall(s), type: input };
-    switch(input) {
-      case Source.SEARCH:
-        return stage = Stages.next(stage, Stages.Search);
-      default:
-        return stage = Stages.next(stage, Stages.BookData);
-    }
-  };
-  const handleSearch = (s: Series) => {
-    series = s;
-    stage = Stages.next(stage, Stages.BookData);
-  }
+  $: stage = $store.stage;
 
   let backToSearch: () => void;
-  $: backToSearch = Stages.is(stage.from, Stages.Stage.SEARCH) ? () => stage = Stages.next(stage, Stages.Search) : undefined;
+  $: backToSearch = Stages.is(stage.from, Stages.Stage.SEARCH) ? () => Stages.next(stage, Stages.Search) : undefined;
 
   $: if (DEV) console.table({ from: stage.from, is: stage });
-  $: if (DEV) (window as any)._data = { stage, search, series };
+  $: if (DEV) (window as any)._data = { ...$store };
 
   $: localStorage.setItem('config', JSON.stringify($config));
 </script>
@@ -89,30 +69,26 @@
 <div class="App">
   {#if !Stages.is(stage, Stages.Stage.INPUT)}
     <nav class="mainnav">
-      <a href="#home" on:click|preventDefault="{() => stage = Stages.next(stage, Stages.Input)}" class="homelink"><BackArrow /> home</a>
+      <a href="#home" on:click|preventDefault="{() => Stages.next(stage, Stages.Input)}" class="homelink"><BackArrow /> home</a>
     </nav>
   {/if}
   <Header />
 
   <main class="App-main">
     {#if Stages.is(stage, Stages.Stage.INPUT)}
-      <Input goNext={handleInput} {search} />
+      <Input {stage} search={$store.search} />
     {:else if Stages.is(stage, Stages.Stage.SEARCH)}
-      <Search goNext={handleSearch} {search} />
+      <Search {stage} search={$store.search} />
     {:else if Stages.is(stage, Stages.Stage.BOOK_DATA)}
-      <BookData goNext={d => Stages.next(stage, Stages.Result, d)} {series} {...stage} {backToSearch}
-          edit={d => stage = Stages.next(stage, Stages.EditData, d)}
-          findMore={d => stage = Stages.next(stage, Stages.FindChapters, d)}
-          downloadAll={d => stage = Stages.next(stage, Stages.DownloadChapters, d)}
-      />
+      <BookData {stage} series={$store.series} {backToSearch} />
     {:else if Stages.is(stage, Stages.Stage.EDIT_DATA)}
-      <EditBook goNext={d => stage = Stages.next(stage, Stages.BookData, d)} bookData={stage.bookData} />
+      <EditBook {stage} />
     {:else if Stages.is(stage, Stages.Stage.FIND_CHAPTERS)}
-      <FindChapters goNext={(d, n) => stage = Stages.next(stage, Stages.BookData, d, n)} bookData={stage.bookData} />
+      <FindChapters {stage} />
     {:else if Stages.is(stage, Stages.Stage.DOWNLOAD_CHAPTERS)}
-      <DownloadChapters goNext={d => stage = Stages.next(stage, Stages.BookData, d)} data={stage.bookData} />
+      <DownloadChapters {stage} />
     {:else if Stages.is(stage, Stages.Stage.RESULT)}
-      <Result data={stage.bookData} {backToSearch} backToBook={() => stage = Stages.next(stage, Stages.BookData)} />
+      <Result {stage} {backToSearch} />
     {/if}
   </main>
 
