@@ -15,6 +15,7 @@
   let page = 0;
   const pageSize = 50;
   const flipDurationMs = 200;
+  let dir: number;
 
   let maxPage: number;
   $: maxPage = Math.ceil(data.chapters.length / pageSize - 1);
@@ -56,10 +57,10 @@
       const input = prompt('New page:', '' + (page + 1));
       const npg = +input;
       if (input !== null && !isNaN(npg) && npg > 0 && npg <= maxPage + 1)
-        page = npg - 1;
-    } else {
-      page = pg;
+        pg = npg - 1;
     }
+    dir = Math.sign(pg - page);
+    page = pg;
   };
 
   const acceptItems = (e: CustomEvent<DndEvent<Chapter>>) => {
@@ -145,20 +146,22 @@ You are editing:
 <div class="list">
   <div class:hide>
     <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
-      <div class="chapters" use:dndzone={{ items: chapterSlice, flipDurationMs }} on:consider={handleConsiderFinalize} on:finalize={handleConsiderFinalize}>
-        {#each chapterSlice as chapter, i (chapter.id)}
-          <ChapterSelect
-              title={chapter.title}
-              content={chapter.content}
-              select={() => selectedChapterIndex = i}
-              moveUp={(page > 0 || i > 0) && moveUp.bind(null, i)}
-              moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, i)}
-              remove={remove.bind(null, i)}
-          />
-        {/each}
-      </div>
+      {#key chapterSlice}
+        <div in:fly={{ x: dir * 30 }} class="chapters" use:dndzone={{ items: chapterSlice, flipDurationMs }} on:consider={handleConsiderFinalize} on:finalize={handleConsiderFinalize}>
+          {#each chapterSlice as chapter, i (chapter.id)}
+            <ChapterSelect
+                title={chapter.title}
+                content={chapter.content}
+                select={() => selectedChapterIndex = i}
+                moveUp={(page > 0 || i > 0) && moveUp.bind(null, i)}
+                moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, i)}
+                remove={remove.bind(null, i)}
+            />
+          {/each}
+        </div>
+      {/key}
       <nav>
-        <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{() => page--}" disabled={page <= 0}>Previous</a>
+        <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page - 1)}" disabled={page <= 0}>Previous</a>
         ::
         {#if pageConf.pre !== null}
           <a class="small" href="{`#page ${pageConf.pre}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.pre - 1)}">{pageConf.pre}</a>
@@ -172,7 +175,7 @@ You are editing:
           <a class="small" href="{`#page ${pageConf.post}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.post - 1)}">{pageConf.post}</a>
         {/if}
         ::
-        <a class="small" href="#next" role="navigation" on:click|preventDefault="{() => page++}" disabled={page >= maxPage}>Next</a>
+        <a class="small" href="#next" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page + 1)}" disabled={page >= maxPage}>Next</a>
       </nav>
     </SeriesCard>
   </div>

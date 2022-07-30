@@ -10,7 +10,7 @@
   let open = false;
 
   let formRef: HTMLElement;
-  const onBlur = (e: FocusEvent) => open = formRef.contains(e.relatedTarget as HTMLElement);
+  const onBlur = (e: FocusEvent) => open = !!formRef && formRef.contains(e.relatedTarget as HTMLElement);
   const searchSeries = async (series: ReturnType<typeof getAllSeries>, search: string) => {
     if (!series) return [];
     const all = await series;
@@ -21,8 +21,7 @@
   }
   const update = () => {
     series = series || getAllSeries().finally(update);
-    open = false;
-    series.then(() => open = !!series && !!search);
+    open = !!series && !!search;
   }
 </script>
 
@@ -93,7 +92,7 @@
   }
 </style>
 
-<form class="form" on:submit|stopPropagation="{() => goNext(search || '')}" bind:this="{formRef}">
+<form class="form" on:submit|preventDefault="{() => goNext(search || '')}" bind:this="{formRef}">
   <p>
     Search:
     <input
