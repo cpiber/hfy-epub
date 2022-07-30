@@ -3,7 +3,6 @@
   export let goNext: (data: Bookdata) => void;
     
   import { dndzone } from "svelte-dnd-action";
-  import { flip } from "svelte/animate";
   import { fly } from 'svelte/transition';
   import ChapterEdit from '../Components/ChapterEdit.svelte';
   import ChapterSelect from '../Components/ChapterSelect.svelte';
@@ -133,16 +132,14 @@ You are editing:
     <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => goNext(data)}>
       <div class="chapters" use:dndzone={{ items: chapterSlice, flipDurationMs }} on:consider={handleConsiderFinalize} on:finalize={handleConsiderFinalize}>
         {#each chapterSlice as chapter, i (chapter.id)}
-          <div animate:flip="{{ duration: flipDurationMs }}">
-            <ChapterSelect
-                title={chapter.title}
-                content={chapter.content}
-                select={() => selectedChapterIndex = i}
-                moveUp={(page > 0 || i > 0) && moveUp.bind(null, i)}
-                moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, i)}
-                remove={remove.bind(null, i)}
-            />
-          </div>
+          <ChapterSelect
+              title={chapter.title}
+              content={chapter.content}
+              select={() => selectedChapterIndex = i}
+              moveUp={(page > 0 || i > 0) && moveUp.bind(null, i)}
+              moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, i)}
+              remove={remove.bind(null, i)}
+          />
         {/each}
       </div>
       <nav>

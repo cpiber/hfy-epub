@@ -10,6 +10,9 @@
   import { decode } from '../util';
 
   content = content ?? '';
+  $: empty = !content || !content.trim().length;
+  let decoded = ''
+  setTimeout(() => (decoded = decode(content || '')), 0); // moves the strain of decoding
 </script>
 
 <style lang="postcss">
@@ -137,7 +140,7 @@
 <div class="chapter" tabindex="0" {title} on:click="{select}">
   <div class="preview" class:empty>
     <span class="title" aria-label="Title">{title}</span>
-    <span class="content">{decode(content || '')}</span>
+    {#if !empty}<span class="content">{decoded}</span>{/if}
   </div>
   <div class="more controls">
     <a href="#up" class="small up" on:click|preventDefault|stopPropagation="{moveUp}" class:control-disabled={!moveUp}><Triangle /> move up</a>
