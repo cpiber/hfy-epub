@@ -11,9 +11,11 @@
   let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...stage.bookData.chapters.map(c => ({ ...c, new: false }))];
   const batchSize = 100;
 
+  let errors: any[] = [];
   const fetchChapters = async () => {
     let prev = finishedChapters;
     finishedChapters = new Array(finishedChapters.length);
+    errors = [];
 
     // bunch up in 100s
     for (let i = 0; i < prev.length; i += batchSize) {
@@ -25,6 +27,10 @@
             finishedChapters[index + i] = { ...transformChapter($config, getPostContent(json)), new: true };
             finishedChapters = finishedChapters; // tell svelte to update
           })
+          .catch(err => {
+            errors.push(err);
+            errors = errors; // tell svelte to update
+          });
         return undefined
       }));
     }
@@ -50,26 +56,20 @@
 
 {#await fetchPromise}
   <Loading>Please wait, fetching chapters...</Loading>
-
-  <div class="chapters">
-    {#each finishedChapters as chapter}
-      {#if chapter && chapter.new === true}
-        <p class="valid small">{chapter.title}</p>
-      {/if}
-    {/each}
-  </div>
 {:then finishedData}
-  {stage.next(finishedData)}
-{:catch error}
-  <p>Error fetching chapters:</p>
-
-  <div class="chapters">
-    {#each finishedChapters as chapter}
-      {#if chapter.new === true}
-        <p class="valid small">{chapter.title}</p>
-      {/if}
-    {/each}
-  </div>
-
-  <ErrorMessage {error} retry={() => fetchPromise = fetchChapters()} back="{() => stage.next({ ...stage.bookData, chapters: finishedChapters })}" />
+  {#if !errors.length}{stage.next(finishedData)}{/if}
 {/await}
+
+<div class="chapters">
+  {#each finishedChapters as chapter}
+    {#if chapter && chapter.new === true}
+      <p class="valid small">{chapter.title}</p>
+    {/if}
+  {/each}
+</div>
+
+{#if errors.length}
+  {#key errors}
+    <ErrorMessage error={errors} retry={() => fetchPromise = fetchChapters()} back="{() => stage.next({ ...stage.bookData, chapters: finishedChapters })}" />
+  {/key}
+{/if}
