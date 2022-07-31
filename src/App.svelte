@@ -32,6 +32,7 @@
   $: if (DEV) (window as any)._config = { ...$config, config };
 
   $: localStorage.setItem('config', JSON.stringify($config));
+  $: localStorage.setItem('state', JSON.stringify({ data: $store.stage.dump(), search: $store.search, series: $store.series }));
 </script>
 
 <style lang="postcss">

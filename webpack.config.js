@@ -13,7 +13,7 @@ module.exports = (_ /* env */, argv) => ({
   output: {
     filename: argv.mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: argv.mode === 'production' ? '/hfy-epub' : '/',
+    publicPath: argv.mode === 'production' ? '/hfy-epub/' : '/',
   },
   devtool: argv.mode === 'production' ? false : 'source-map',
   resolve: {

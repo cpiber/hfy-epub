@@ -1,6 +1,7 @@
 declare const VERSION: string;
 declare const DEV: boolean;
 declare const TINY_API_KEY: string;
+declare const __webpack_public_path__: string;
 
 interface Series {
   url: string,
@@ -45,10 +46,10 @@ interface Chapter {
 type ImmutablePrimitive = undefined | null | boolean | string | number | Function;
 
 type Immutable<T> =
-    T extends ImmutablePrimitive ? T :
-    T extends Array<infer U> ? ImmutableArray<U> :
-    T extends Map<infer K, infer V> ? ImmutableMap<K, V> :
-    T extends Set<infer M> ? ImmutableSet<M> : ImmutableObject<T>;
+  T extends ImmutablePrimitive ? T :
+  T extends Array<infer U> ? ImmutableArray<U> :
+  T extends Map<infer K, infer V> ? ImmutableMap<K, V> :
+  T extends Set<infer M> ? ImmutableSet<M> : ImmutableObject<T>;
 
 type ImmutableArray<T> = ReadonlyArray<Immutable<T>>;
 type ImmutableMap<K, V> = ReadonlyMap<Immutable<K>, Immutable<V>>;
@@ -57,11 +58,11 @@ type ImmutableObject<T> = { readonly [K in keyof T]: Immutable<T[K]> };
 
 declare type DndEvent<T extends Record<string, any>> = {
   items: T[],
-  info: import("svelte-dnd-action").DndEventInfo
+  info: import("svelte-dnd-action").DndEventInfo;
 };
 declare namespace svelte.JSX {
-    interface HTMLAttributes<T> {
-        onconsider?: (event: CustomEvent<DndEvent> & {target: EventTarget & T}) => void;
-        onfinalize?: (event: CustomEvent<DndEvent> & {target: EventTarget & T}) => void;
-    }
+  interface HTMLAttributes<T> {
+    onconsider?: (event: CustomEvent<DndEvent> & { target: EventTarget & T; }) => void;
+    onfinalize?: (event: CustomEvent<DndEvent> & { target: EventTarget & T; }) => void;
+  }
 }

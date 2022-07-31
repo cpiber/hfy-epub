@@ -16,7 +16,7 @@ export enum Stage {
   SETTINGS,
   _404,
 };
-const toUrl = (stage: Stage) => stage === Stage.INPUT ? '/' : `/${Stage[stage].toLowerCase().replace(/_/g, '-')}`;
+const toUrl = (stage: Stage) => stage === Stage.INPUT ? __webpack_public_path__ : `${__webpack_public_path__}${Stage[stage].toLowerCase().replace(/_/g, '-')}`;
 export abstract class StageData {
   stage: Stage;
   from?: StageData;
@@ -111,11 +111,11 @@ export function next<T extends StageDataCtor>(typ: T, ...args: ConstructorParame
   store.update(s => {
     const n = new typ(...args);
     n.from = s.stage;
-    history.pushState({ data: n.dump(), search: s.search }, '', toUrl(n.stage));
+    history.pushState({ data: n.dump(), search: s.search, series: s.series }, '', toUrl(n.stage));
     return { ...s, stage: n };
   });
 };
-function nextFromEnum(typ: Stage, { data, search }: { data?: any[], search?: string; } = {}) {
+function nextFromEnum(typ: Stage, { data, search, series }: { data?: any[], search?: string, series?: Series; } = {}) {
   data = data || [];
   store.update(s => {
     try {
@@ -123,13 +123,13 @@ function nextFromEnum(typ: Stage, { data, search }: { data?: any[], search?: str
       const n = new StageMapping[typ](...data);
       if (n.stage === s.stage.stage) return s; // no need to move if already here
       n.from = s.stage;
-      return { ...s, search, stage: n };
+      return { ...s, search, series, stage: n };
     } catch (e) {
       console.group('Failed to update page');
       console.error(e);
       console.log('Parameters:', typ, data, search);
       console.groupEnd();
-      history.pushState({ data: [], search: s.search }, '', '/');
+      history.pushState({ data: [], search: s.search, series: s.series }, '', '/');
       return s;
     }
   });
@@ -142,17 +142,25 @@ export function is<S extends Stage, T extends (typeof StageMapping)[S]>(stage: S
 }
 export const store = writable<StageStore>({ stage: new Input() });
 
+const pathRegex = new RegExp('^' + __webpack_public_path__.replace('/', '\/'));
 export const loadFromHistory = () => {
   window.removeEventListener('popstate', handlePopState);
   window.addEventListener('popstate', handlePopState);
   handlePopState();
 };
+const loadStateFromLocalStorage = () => {
+  try {
+    return JSON.parse(localStorage.getItem('state'));
+  } catch {
+    return undefined;
+  }
+};
 const handlePopState = () => {
-  const path = location.pathname.split('/')[1];
+  const path = location.pathname.replace(pathRegex, '').split('/')[0] || '';
   if (path.length > 60) return;
   if (path === "") return nextFromEnum(Stage.INPUT);
   const stage = path.toUpperCase().replace(/-/g, '_');
-  const state = history.state || {};
+  const state = history.state || loadStateFromLocalStorage() || {};
   if (stage in Stage) return nextFromEnum(Stage[stage as keyof typeof Stage], state);
   return nextFromEnum(Stage._404);
 };
