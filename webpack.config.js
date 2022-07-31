@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 const svelte = require('./svelte.config');
 require('dotenv').config();
 
@@ -12,6 +13,7 @@ module.exports = (_ /* env */, argv) => ({
   output: {
     filename: argv.mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
     path: path.resolve(__dirname, 'dist'),
+    publicPath: argv.mode === 'production' ? '/hfy-epub' : '/',
   },
   devtool: argv.mode === 'production' ? false : 'source-map',
   resolve: {
@@ -77,9 +79,18 @@ module.exports = (_ /* env */, argv) => ({
     ].filter(Boolean),
   },
   devServer: {
-    static: './dist',
+    static: false,
+    historyApiFallback: true,
+    client: {
+      progress: true,
+    },
   },
   plugins: [
+    new CopyPlugin({
+      patterns: [
+        { from: "public" },
+      ],
+    }),
     new HtmlWebpackPlugin({
      title: 'r/HFY epub',
     }),
