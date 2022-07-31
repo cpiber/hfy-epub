@@ -28,15 +28,15 @@
     cursor: move;
     $radius: 2px;
     
-    :global(:first-child) > & {
+    &:global(:first-child) {
       border-top-left-radius: $radius;
       border-top-right-radius: $radius;
     }
-    :global(:last-child) > & {
+    &:global(:last-child) {
       border-bottom-left-radius: $radius;
       border-bottom-right-radius: $radius;
     }
-    :global(:not(:first-child)) > & {
+    &:global(:not(:first-child)) {
       margin-top: -1px;
     }
 

@@ -179,7 +179,7 @@ You are editing:
     </SeriesCard>
   </div>
   {#if selectedChapterIndex >= 0}
-    <div transition:fly|local={{ x: 50 }}
+    <div transition:fly|local={{ x: 50, duration: 200 }}
         on:introend="{() => {hide = true; float = false}}"
         on:outrostart="{() => {float = true}}" on:outroend="{() => {hide = false}}" class:float
     >
