@@ -16,14 +16,15 @@
   import Settings from './Stages/Settings.svelte';
 
   loadConfig();
+  Stages.loadFromHistory();
 </script>
 
 <script lang="ts">
   $: stage = $store.stage;
-  $: backToSearch = Stages.is(stage.from, Stages.Stage.SEARCH) ? () => Stages.next(stage, Stages.Search) : undefined;
+  $: backToSearch = Stages.is(stage.from, Stages.Stage.SEARCH) ? () => Stages.next(Stages.Search) : undefined;
 
   const openSettings = () => {
-    if (!stage.needsSaving || confirm("Unsaved changes. Continue?")) Stages.next(stage, Stages.Settings);
+    if (!stage.needsSaving || confirm("Unsaved changes. Continue?")) Stages.next(Stages.Settings);
   };
 
   $: if (DEV) console.table({ is: stage, from: stage.from });
@@ -86,7 +87,7 @@
 <div class="App">
   <nav class="mainnav">
     {#if !Stages.is(stage, Stages.Stage.INPUT) && !Stages.is(stage, Stages.Stage.SETTINGS)}
-      <a href="#home" on:click|preventDefault="{() => Stages.next(stage, Stages.Input)}" class="homelink"><BackArrow /> home</a>
+      <a href="#home" on:click|preventDefault="{() => Stages.next(Stages.Input)}" class="homelink"><BackArrow /> home</a>
     {/if}
     {#if Stages.is(stage, Stages.Stage.SETTINGS)}
       <a href="#home" on:click|preventDefault="{() => stage.next()}" class="homelink"><BackArrow /> back</a>
@@ -113,6 +114,9 @@
       <Result {stage} {backToSearch} />
     {:else if Stages.is(stage, Stages.Stage.SETTINGS)}
       <Settings />
+    {:else if Stages.is(stage, Stages.Stage._404)}
+      <h2>Page not found</h2>
+      <p>Sorry, the requested page could not be found</p>
     {/if}
   </main>
 

@@ -14,12 +14,15 @@ export enum Stage {
   RESULT,
 
   SETTINGS,
+  _404,
 };
+const toUrl = (stage: Stage) => stage === Stage.INPUT ? '/' : `/${Stage[stage].toLowerCase().replace(/_/g, '-')}`;
 export abstract class StageData {
   stage: Stage;
   from?: StageData;
   needsSaving?: boolean;
-  abstract next(...args: any[]): StageData;
+  abstract next(...args: any[]): void;
+  dump(): any[] { return []; }
 }
 type StageDataCtor = { new(...a: any[]): StageData; };
 export type StageStore = {
@@ -30,58 +33,67 @@ export type StageStore = {
 
 export class Input extends StageData {
   stage: Stage.INPUT = Stage.INPUT;
-  next(search: string): StageData {
+  next(search: string) {
     const input = getSourceType(search);
     store.update(s => ({ ...s, search, series: input !== Source.SEARCH ? { url: toApiCall(search), type: input } : s.series }));
     switch (input) {
       case Source.SEARCH:
-        return next(this, Search);
+        return next(Search);
       default:
-        return next(this, BookData);
+        return next(BookData);
     }
   }
 }
 export class Search extends StageData {
   stage: Stage.SEARCH = Stage.SEARCH;
-  next(series: Series): StageData {
+  next(series: Series) {
     store.update(s => ({ ...s, series }));
-    return next(this, BookData);
+    return next(BookData);
   }
 }
 export class BookData extends StageData {
   stage: Stage.BOOK_DATA = Stage.BOOK_DATA;
   constructor(public bookData: Immutable<Bookdata> = undefined, public newChapters: number = undefined) { super(); }
-  next(data: Bookdata): StageData { return next(this, Result, data); }
-  edit(data: Bookdata) { return next(this, EditData, data); }
-  findMore(data: Bookdata) { return next(this, FindChapters, data); }
-  downloadAll(data: Bookdata) { return next(this, DownloadChapters, data); }
+  next(data: Bookdata) { return next(Result, data); }
+  edit(data: Bookdata) { return next(EditData, data); }
+  findMore(data: Bookdata) { return next(FindChapters, data); }
+  downloadAll(data: Bookdata) { return next(DownloadChapters, data); }
+  dump(): any[] { return [this.bookData, this.newChapters]; }
 }
 export class EditData extends StageData {
   stage: Stage.EDIT_DATA = Stage.EDIT_DATA;
   needsSaving = true;
-  constructor(public bookData: Immutable<Bookdata>) { super(); }
-  next(data: Bookdata): StageData { return next(this, BookData, data); }
+  constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
+  next(data: Bookdata) { return next(BookData, data); }
+  dump(): any[] { return [this.bookData]; }
 }
 export class FindChapters extends StageData {
   stage: Stage.FIND_CHAPTERS = Stage.FIND_CHAPTERS;
   needsSaving = true;
-  constructor(public bookData: Immutable<Bookdata>) { super(); }
-  next(data: Bookdata, n: number): StageData { return next(this, BookData, data, n); }
+  constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
+  next(data: Bookdata, n: number) { return next(BookData, data, n); }
+  dump(): any[] { return [this.bookData]; }
 }
 export class DownloadChapters extends StageData {
   stage: Stage.DOWNLOAD_CHAPTERS = Stage.DOWNLOAD_CHAPTERS;
   needsSaving = true;
-  constructor(public bookData: Immutable<Bookdata>) { super(); }
-  next(data: Bookdata): StageData { return next(this, BookData, data); }
+  constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
+  next(data: Bookdata) { return next(BookData, data); }
+  dump(): any[] { return [this.bookData]; }
 }
 export class Result extends StageData {
   stage: Stage.RESULT = Stage.RESULT;
-  constructor(public bookData: Immutable<Bookdata>) { super(); }
-  next(): StageData { return next(this, BookData, this.bookData); }
+  constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
+  next() { return next(BookData, this.bookData); }
+  dump(): any[] { return [this.bookData]; }
 }
 export class Settings extends StageData {
   stage: Stage.SETTINGS = Stage.SETTINGS;
-  next(): StageData { return back(this); }
+  next() { return back(); }
+}
+export class _404 extends StageData {
+  stage: Stage._404 = Stage._404;
+  next() { return back(); }
 }
 
 const StageMapping = {
@@ -93,18 +105,54 @@ const StageMapping = {
   [Stage.DOWNLOAD_CHAPTERS]: DownloadChapters,
   [Stage.RESULT]: Result,
   [Stage.SETTINGS]: Settings,
+  [Stage._404]: _404,
 } as const;
-export function next<T extends StageDataCtor>(from: StageData, typ: T, ...args: ConstructorParameters<T>) {
-  const n = new typ(...args);
-  n.from = from;
-  store.update(s => ({ ...s, stage: n }));
-  return n;
+export function next<T extends StageDataCtor>(typ: T, ...args: ConstructorParameters<T>) {
+  store.update(s => {
+    const n = new typ(...args);
+    n.from = s.stage;
+    history.pushState({ data: n.dump(), search: s.search }, '', toUrl(n.stage));
+    return { ...s, stage: n };
+  });
 };
-export function back(from: StageData) {
-  store.update(s => ({ ...s, stage: from.from }));
-  return from.from;
+function nextFromEnum(typ: Stage, { data, search }: { data?: any[], search?: string; } = {}) {
+  data = data || [];
+  store.update(s => {
+    try {
+      // @ts-ignore
+      const n = new StageMapping[typ](...data);
+      if (n.stage === s.stage.stage) return s; // no need to move if already here
+      n.from = s.stage;
+      return { ...s, search, stage: n };
+    } catch (e) {
+      console.group('Failed to update page');
+      console.error(e);
+      console.log('Parameters:', typ, data, search);
+      console.groupEnd();
+      history.pushState({ data: [], search: s.search }, '', '/');
+      return s;
+    }
+  });
+}
+export function back() {
+  history.back();
 }
 export function is<S extends Stage, T extends (typeof StageMapping)[S]>(stage: StageData, type: S): stage is InstanceType<T> {
   return !!stage && stage.stage === type;
 }
 export const store = writable<StageStore>({ stage: new Input() });
+
+export const loadFromHistory = () => {
+  window.removeEventListener('popstate', handlePopState);
+  window.addEventListener('popstate', handlePopState);
+  handlePopState();
+};
+const handlePopState = () => {
+  const path = location.pathname.split('/')[1];
+  if (path.length > 60) return;
+  if (path === "") return nextFromEnum(Stage.INPUT);
+  const stage = path.toUpperCase().replace(/-/g, '_');
+  const state = history.state || {};
+  if (stage in Stage) return nextFromEnum(Stage[stage as keyof typeof Stage], state);
+  return nextFromEnum(Stage._404);
+};
