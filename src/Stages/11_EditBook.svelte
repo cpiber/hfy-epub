@@ -25,22 +25,24 @@
 
   let selectedChapterIndex: number = -1;
   let selectedChapter: Bookdata['chapters'][number] = undefined;
-  $: selectedChapter = selectedChapterIndex >= 0 ? chapterSlice[selectedChapterIndex] : undefined;
+  $: selectedChapter = selectedChapterIndex >= 0 ? data.chapters[selectedChapterIndex] : undefined;
 
-  const moveUp = (i: number) => {
-    const j = i + pageSize * page;
+  const absIdx = (i: number) => i + pageSize * page;
+
+  const moveUp = (j: number) => {
     if (j < 1) return;
+    if (j === selectedChapterIndex) --selectedChapterIndex;
     data.chapters.splice(j - 1, 2, data.chapters[j], data.chapters[j - 1]);
     data.chapters = data.chapters;
   };
-  const moveDown = (i: number) => {
-    const j = i + pageSize * page;
+  const moveDown = (j: number) => {
     if (j >= data.chapters.length) return;
+    if (j === selectedChapterIndex) ++selectedChapterIndex;
     data.chapters.splice(j, 2, data.chapters[j + 1], data.chapters[j]);
     data.chapters = data.chapters;
   };
-  const remove = (i: number) => {
-    const j = i + pageSize * page;
+  const remove = (j: number) => {
+    selectedChapterIndex = -1;
     data.chapters.splice(j, 1);
     data.chapters = data.chapters;
   };
@@ -145,20 +147,18 @@ You are editing:
 <div class="list">
   <div class:hide>
     <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => stage.next(data)}>
-      {#key chapterSlice}
-        <div in:fly={{ x: dir * 30 }} class="chapters" use:dndzone={{ items: chapterSlice, flipDurationMs }} on:consider={handleConsiderFinalize} on:finalize={handleConsiderFinalize}>
-          {#each chapterSlice as chapter, i (chapter.id)}
-            <ChapterSelect
-                title={chapter.title}
-                content={chapter.content}
-                select={() => selectedChapterIndex = i}
-                moveUp={(page > 0 || i > 0) && moveUp.bind(null, i)}
-                moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, i)}
-                remove={remove.bind(null, i)}
-            />
-          {/each}
-        </div>
-      {/key}
+      <div class="chapters" use:dndzone={{ items: chapterSlice, flipDurationMs }} on:consider={handleConsiderFinalize} on:finalize={handleConsiderFinalize}>
+        {#each chapterSlice as chapter, i (chapter.id)}
+          <ChapterSelect
+              title={chapter.title}
+              content={chapter.content}
+              select={() => selectedChapterIndex = absIdx(i)}
+              moveUp={(page > 0 || i > 0) && moveUp.bind(null, absIdx(i))}
+              moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, absIdx(i))}
+              remove={remove.bind(null, absIdx(i))}
+          />
+        {/each}
+      </div>
       <nav>
         <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page - 1)}" disabled={page <= 0}>Previous</a>
         ::
@@ -190,6 +190,9 @@ You are editing:
           bind:url={selectedChapter.displayUrl}
           canFetch={!!selectedChapter.apiUrl}
           close={() => selectedChapterIndex = -1}
+          moveUp={(page > 0 || selectedChapterIndex > 0) && moveUp.bind(null, selectedChapterIndex)}
+          moveDown={(page < maxPage || selectedChapterIndex < chapterSlice.length - 1) && moveDown.bind(null, selectedChapterIndex)}
+          remove={remove.bind(null, selectedChapterIndex)}
       />
     </div>
   {/if}

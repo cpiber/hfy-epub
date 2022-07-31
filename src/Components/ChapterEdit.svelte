@@ -5,10 +5,14 @@
   export let url: string = undefined;
   export let canFetch = false;
   export let close: () => void;
+  export let moveUp: () => void = undefined;
+  export let moveDown: () => void = undefined;
+  export let remove: () => void;
 
   import Editor from '@tinymce/tinymce-svelte';
   import { config } from '../configstore';
   import BackArrow from '../icons/back-arrow.svg';
+  import ChapterControls from './ChapterControls.svelte';
   import Column from './Column.svelte';
 
   needsFetching = needsFetching ?? true;
@@ -164,4 +168,6 @@
       </label>
     {/if}
   </div>
+  <span />
+  <ChapterControls {moveUp} {moveDown} {remove} />
 </Column>
