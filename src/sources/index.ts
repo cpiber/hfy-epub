@@ -1,5 +1,6 @@
-import { config, NextLinkType, type Config } from '../configstore';
+import { ChapterTransformType, config, NextLinkType, type Config } from '../configstore';
 import { retryFetch } from '../fetch';
+import { isString } from '../util';
 import { sandboxFn } from './fn';
 import { getSeriesPageData as getHFYSeriesPageData, isSeriesPage as isHFYSeriesPage } from './hfy';
 import { getPostData, isPost } from './post';
@@ -12,6 +13,7 @@ export enum Source {
   POST,
   SEARCH,
 };
+const parser = new DOMParser();
 
 export const getSourceType = (search: string): Source => {
   try {
@@ -46,36 +48,92 @@ export const findNextLinkDefault = (html: string) => {
   });
   if (post) return post[1];
 };
-let userRegex: RegExp;
+let userNextRegex: RegExp;
 export const findNextLinkRegexp = (html: string) => {
-  const next = html.match(userRegex);
+  const next = html.match(userNextRegex);
   if (next && next.length > 1) return next[1];
 };
-let userFn: ReturnType<typeof sandboxFn>;
-const parser = new DOMParser();
-const cons = () => ({ log: console.log, table: console.table, error: console.error, assert: console.assert });
+let userNextFn: ReturnType<typeof sandboxFn>;
 export const findNextLinkFn = (html: string) => {
   let doc: Document;
-  const closure = {
-    get document() {
-      return doc = doc ?? parser.parseFromString(html, 'text/html');
+  const closure: Parameters<typeof userNextFn>[0] = {
+    document: {
+      get() { return doc = doc ?? parser.parseFromString(html, 'text/html'); },
+      configurable: true,
     },
-    console: cons(),
-    html,
+    html: {
+      writable: false,
+      value: html,
+      configurable: true,
+    },
   };
-  return userFn(closure);
+  return userNextFn(closure).ret;
 };
-config.subscribe(conf => {
-  userRegex = new RegExp(conf.nextLinkRegex, 'i');
-  userFn = sandboxFn(conf.nextLinkFn);
-});
-export const findNextLink = (config: Config, html: string) => {
+export const findNextLink = (config: Config, html: string): string => {
   switch (config.nextLink) {
     case NextLinkType.DEFAULT: return findNextLinkDefault(html);
     case NextLinkType.REGEXP: return findNextLinkRegexp(html);
     case NextLinkType.FUNCTION: return findNextLinkFn(html);
   }
 };
+
+let userTransformRegex: RegExp;
+export const transformChapterRegexp = (html: string) => {
+  const next = html.match(userTransformRegex);
+  if (next && next.length > 1) html = next[1];
+  return html;
+};
+export const transformChapterSelector = (sel: string, html: string) => {
+  return parser.parseFromString(html, 'text/html').querySelector(sel)?.innerHTML;
+};
+let userTransformFn: ReturnType<typeof sandboxFn>;
+export const transformChapterFn = (chapter: Chapter): Chapter => {
+  let doc: Document;
+  const closure: Parameters<typeof userTransformFn>[0] = {
+    document: {
+      get() { return doc = doc ?? parser.parseFromString(chapter.content || '', 'text/html'); },
+      configurable: true,
+    },
+    title: {
+      writable: true,
+      value: chapter.title,
+      configurable: true,
+    },
+    html: {
+      writable: true,
+      value: chapter.content,
+      configurable: true,
+    },
+    url: {
+      writable: true,
+      value: chapter.displayUrl,
+      configurable: true,
+    },
+  };
+  const { proxy } = userTransformFn(closure);
+  return {
+    ...chapter,
+    title: isString(proxy.title) ? proxy.title : chapter.title,
+    content: isString(proxy.html) ? proxy.html : chapter.content,
+    displayUrl: isString(proxy.url) ? proxy.url : chapter.displayUrl,
+  };
+};
+export const transformChapter = (config: Config, chapter: Chapter): Chapter => {
+  switch (config.transform) {
+    case ChapterTransformType.NONE: return { ...chapter };
+    case ChapterTransformType.REGEXP: return { ...chapter, content: transformChapterRegexp(chapter.content || '') };
+    case ChapterTransformType.SELECTOR: return { ...chapter, content: transformChapterSelector(config.transformSelector, chapter.content || '') };
+    case ChapterTransformType.FUNCTION: return transformChapterFn(chapter);
+  }
+};
+export const transformChapters = (config: Config, chapters: Bookdata['chapters']): Bookdata['chapters'] => chapters.map(transformChapter.bind(null, config));
+
+config.subscribe(conf => {
+  userNextRegex = new RegExp(conf.nextLinkRegex, 'i');
+  userNextFn = sandboxFn(conf.nextLinkFn);
+  userTransformRegex = new RegExp(conf.transformRegex, 'i');
+  userTransformFn = sandboxFn(conf.transformFn);
+});
 
 export const fetchBookData = async (series: Series) => {
   const res = await retryFetch(series.url);

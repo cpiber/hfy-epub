@@ -4,13 +4,24 @@ export enum NextLinkType {
   DEFAULT,
   REGEXP,
   FUNCTION,
-}
+};
+export enum ChapterTransformType {
+  NONE,
+  REGEXP,
+  SELECTOR,
+  FUNCTION,
+};
 
 export const defaultConfig = {
   useTiny: true,
   nextLink: NextLinkType.DEFAULT,
   nextLinkRegex: `href="([^"]+)"[^>]*>\\s*Next`,
   nextLinkFn: `return "https://www.reddit.com/r/HFY/comments/f94rak/oc_pthok_eats_an_ice_cream_cone/"`,
+  transform: ChapterTransformType.NONE,
+  transformRegex: '.md',
+  transformSelector: '',
+  transformFn: `title = "P'Thok Eats an Ice Cream Cone"
+html = "https://www.reddit.com/r/HFY/comments/f94rak/oc_pthok_eats_an_ice_cream_cone/"`,
 };
 export type Config = typeof defaultConfig;
 export const config = writable(defaultConfig);

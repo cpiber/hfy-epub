@@ -3,9 +3,12 @@ type Ctx = Record<string | symbol, any>;
 export const sandboxFn = (fn: string) => {
   const code = `with (sandbox) {${fn}}`;
   const func = new Function('sandbox', code);
-  return (closure?: Ctx) => {
-    const proxy = new Proxy<Ctx>(closure, { has, get });
-    return func(proxy);
+  const ctx = Object.create(null);
+  ctx['console'] = { log: console.log, table: console.table, error: console.error, assert: console.assert };
+  const proxy = new Proxy<Ctx>(ctx, { has, get });
+  return (closure?: Parameters<typeof Object.defineProperties>[1]) => {
+    Object.defineProperties(proxy, closure);
+    return { proxy, ret: func(proxy) };
   };
 };
 

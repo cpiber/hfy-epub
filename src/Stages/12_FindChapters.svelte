@@ -5,7 +5,7 @@
   import Loading from '../Components/Loading.svelte';
   import { config } from '../configstore';
   import { retryFetch } from '../fetch';
-  import { findNextLink,getPostContent } from '../sources';
+  import { findNextLink,getPostContent,transformChapter } from '../sources';
   import type { FindChapters } from '../stages';
   import { toApiCall } from '../util';
 
@@ -21,7 +21,7 @@
         const res = await retryFetch(cur.apiUrl);
         const json = await res.json();
         if (!res.ok) throw json.message;
-        chapters.splice(-1, 1, cur = getPostContent(json));
+        chapters.splice(-1, 1, cur = transformChapter($config, getPostContent(json)));
       }
 
       const next = findNextLink($config, cur.content);
@@ -35,7 +35,7 @@
       const res = await retryFetch(n);
       const json = await res.json();
       if (!res.ok) throw json.message;
-      chapters.push(getPostContent(json));
+      chapters.push(transformChapter($config, getPostContent(json)));
     }
     return { ...stage.bookData, chapters };
   };
@@ -53,7 +53,7 @@
 
   <div class="chapters">
     {#each newchapters as chapter}
-      <p class="valid small">{chapter.from}: Extracted <a href="{chapter.url}">{chapter.url}</a></p>
+      <p class="valid small">{chapter.from}: Found <a href="{chapter.url}">{chapter.url}</a></p>
     {/each}
   </div>
 {:then newData}

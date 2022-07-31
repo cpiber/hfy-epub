@@ -26,6 +26,8 @@ export const decode = (() => {
 
 export const copyData = (bookData: Immutable<Bookdata>): Bookdata => ({ ...bookData, chapters: bookData.chapters.map(c => ({ ...c })) });
 
+export function isString(input: unknown): input is string { return typeof input === "string" || input instanceof String; }
+
 export function fold(node: Element, {
   delay = 0,
   duration = 200,
@@ -34,7 +36,7 @@ export function fold(node: Element, {
 }: ScaleParams & { prop?: keyof CSSStyleDeclaration; } = {}): TransitionConfig {
   const style = getComputedStyle(node);
   const curval = style[prop];
-  if (typeof curval !== "string" || !curval.endsWith('px')) throw new Error(`invalid property '${prop}' does not return pixels`);
+  if (!isString(curval) || !curval.endsWith('px')) throw new Error(`invalid property '${prop}' does not return pixels`);
   const px = +curval.slice(0, -2);
 
   return {

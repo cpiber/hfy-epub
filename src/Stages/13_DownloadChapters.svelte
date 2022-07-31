@@ -3,8 +3,9 @@
 
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
+  import { config } from '../configstore';
   import { retryFetch } from '../fetch';
-  import { getPostContent } from '../sources';
+  import { getPostContent,transformChapter } from '../sources';
   import type { DownloadChapters } from '../stages';
 
   let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...stage.bookData.chapters.map(c => ({ ...c, new: false }))];
@@ -21,7 +22,7 @@
         if (chapter.needsFetching !== false) return retryFetch(chapter.apiUrl)
           .then(res => res.json())
           .then((json: reddit.post) => {
-            finishedChapters[index + i] = { ...getPostContent(json), new: true };
+            finishedChapters[index + i] = { ...transformChapter($config, getPostContent(json)), new: true };
             finishedChapters = finishedChapters; // tell svelte to update
           })
         return undefined

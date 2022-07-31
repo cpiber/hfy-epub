@@ -2,48 +2,58 @@
   import { onMount } from 'svelte';
   import Column from '../Components/Column.svelte';
   import Radio from '../Components/Radio.svelte';
-  import { config,defaultConfig,NextLinkType } from '../configstore';
+  import { ChapterTransformType,config,defaultConfig,NextLinkType } from '../configstore';
   import { sandboxFn } from '../sources/fn';
 
-  let nextLink = $config.nextLink;
-  let nextLinkRegex = $config.nextLinkRegex;
-  let nextLinkFn = $config.nextLinkFn;
-  let useTiny = $config.useTiny;
+  const cur = { ...$config };
   const org = { ...$config };
 
-  let error: any;
-  const validateRegex = (regex: string) => {
-    error = undefined;
+  const validateRegex = (regex: string, wasDisabled: boolean) => {
     if (!regex.trim().length) {
-      error = "Must specify a regular expression";
-      return false;
+      return { error: "Must specify a regular expression", disableSave: true };
     }
     try {
       new RegExp(regex, 'i');
-      return true;
-    } catch (e) {
-      error = e;
-      return false;
+      return { error: undefined, disableSave: wasDisabled };
+    } catch (error) {
+      return { error, disableSave: true };
     }
   };
-  const validateFn = (fn: string) => {
-    error = undefined;
+  const validateSelector = (sel: string, wasDisabled: boolean) => {
+    if (!sel.trim().length) {
+      return { error: "Must specify a selector", disableSave: true };
+    }
+    try {
+      document.querySelector(sel);
+      return { error: undefined, disableSave: wasDisabled };
+    } catch (error) {
+      return { error, disableSave: true };
+    }
+  };
+  const validateFn = (fn: string, wasDisabled: boolean) => {
     if (!fn.trim().length) {
-      error = "Must specify a function";
-      return false;
+      return { error: "Must specify a function", disableSave: true };
     }
     try {
       sandboxFn(fn);
-      return true;
-    } catch (e) {
-      error = e;
-      return false;
+      return { error: undefined, disableSave: wasDisabled };
+    } catch (error) {
+      return { error, disableSave: true };
     }
-  }
+  };
+  
   let disableSave = false;
-  $: disableSave = nextLink === org.nextLink && nextLinkRegex === org.nextLinkRegex && nextLinkFn === org.nextLinkFn && useTiny === org.useTiny;
-  $: if (!disableSave && nextLink === NextLinkType.REGEXP) disableSave = !validateRegex(nextLinkRegex);
-  $: if (!disableSave && nextLink === NextLinkType.FUNCTION) disableSave = !validateFn(nextLinkFn);
+  $: disableSave =
+         cur.nextLink === org.nextLink && cur.nextLinkRegex === org.nextLinkRegex && cur.nextLinkFn === org.nextLinkFn
+      && cur.transform === org.transform && cur.transformRegex === org.transformRegex && cur.transformSelector === org.transformSelector && cur.transformFn === org.transformFn
+      && cur.useTiny === org.useTiny;
+  let nextLinkError: any;
+  let tranformError: any;
+  $: if (cur.nextLink === NextLinkType.REGEXP) ({ disableSave, error: nextLinkError } = validateRegex(cur.nextLinkRegex, disableSave));
+  $: if (cur.nextLink === NextLinkType.FUNCTION) ({ disableSave, error: nextLinkError } = validateFn(cur.nextLinkFn, disableSave));
+  $: if (cur.transform === ChapterTransformType.REGEXP) ({ disableSave, error: tranformError } = validateRegex(cur.transformRegex, disableSave));
+  $: if (cur.transform === ChapterTransformType.SELECTOR) ({ disableSave, error: tranformError } = validateSelector(cur.transformSelector, disableSave));
+  $: if (cur.transform === ChapterTransformType.FUNCTION) ({ disableSave, error: tranformError } = validateFn(cur.transformFn, disableSave));
 
   onMount(() => disableSave = true);
 </script>
@@ -83,7 +93,7 @@
     <h3>Editor</h3>
     <div>
       <label class="field">
-        <input type="checkbox" bind:checked={useTiny} />
+        <input type="checkbox" bind:checked={cur.useTiny} />
         Use TinyMCE, a powerful HTML editor, for editing chapters
       </label>
     </div>
@@ -95,30 +105,66 @@
         { value: NextLinkType.DEFAULT, label: 'Default' },
         { value: NextLinkType.REGEXP, label: 'Regex' },
         { value: NextLinkType.FUNCTION, label: 'Function' },
-      ]}" bind:selected={nextLink} name="radio-next-type" />
+      ]}" bind:selected={cur.nextLink} name="radio-next-type" />
 
-      {#if nextLink === NextLinkType.DEFAULT}
+      {#if cur.nextLink === NextLinkType.DEFAULT}
         <span class="small">Finds a "First" link, with fallback to other links that aren't "Previous" or "Index" or "First"</span>
-      {:else if nextLink === NextLinkType.REGEXP}
+      {:else if cur.nextLink === NextLinkType.REGEXP}
         <label class="field">
           Regex:
-          <input type="text" bind:value={nextLinkRegex} placeholder="{defaultConfig.nextLinkRegex}" />
+          <input type="text" bind:value={cur.nextLinkRegex} placeholder="{defaultConfig.nextLinkRegex}" />
           <span class="small">Must produce the url in the first group</span>
         </label>
-      {:else if nextLink === NextLinkType.FUNCTION}
+      {:else if cur.nextLink === NextLinkType.FUNCTION}
         <label class="field">
           Function: <span class="small warning">Only input code you trust!</span>
-          <textarea type="text" bind:value={nextLinkFn} rows="5" placeholder="{defaultConfig.nextLinkFn}"></textarea>
+          <textarea type="text" bind:value={cur.nextLinkFn} rows="5" placeholder="{defaultConfig.nextLinkFn}"></textarea>
           <span class="small">Globals <code>document</code> and <code>html</code> are available; Must produce the url as <code>return</code></span>
+        </label>
+      {/if}
+    </div>
+
+    <h3>Chapter transform</h3>
+    <div>
+      <p>Automatically transform chapter contents.</p>
+      <Radio options="{[
+        { value: ChapterTransformType.NONE, label: 'No transform' },
+        { value: ChapterTransformType.REGEXP, label: 'Regex' },
+        { value: ChapterTransformType.SELECTOR, label: 'Query-Selector' },
+        { value: ChapterTransformType.FUNCTION, label: 'Function' },
+      ]}" bind:selected={cur.transform} name="radio-transform" />
+
+      {#if cur.transform === ChapterTransformType.REGEXP}
+        <label class="field">
+          Regex:
+          <input type="text" bind:value={cur.transformRegex} placeholder="{defaultConfig.transformRegex}" />
+          <span class="small">Must produce the new html in the first group</span>
+        </label>
+      {:else if cur.transform === ChapterTransformType.SELECTOR}
+        <label class="field">
+          Selector:
+          <input type="text" bind:value={cur.transformSelector} placeholder="{defaultConfig.transformSelector}" />
+        </label>
+      {:else if cur.transform === ChapterTransformType.FUNCTION}
+        <label class="field">
+          Function: <span class="small warning">Only input code you trust!</span>
+          <textarea type="text" bind:value={cur.transformFn} rows="5" placeholder="{defaultConfig.transformFn}"></textarea>
+          <span class="small">Globals <code>document</code>, <code>html</code>, <code>title</code> and <code>url</code> are available; Modify the latter two to transform</span>
         </label>
       {/if}
     </div>
   </Column>
 </div>
 
-<button type="submit" on:click="{() => { config.set({ nextLink, nextLinkRegex, nextLinkFn, useTiny }); disableSave = true }}" disabled={disableSave}>Save</button>
-{#if disableSave && nextLink === NextLinkType.REGEXP && error}
-  <span class="small error">Regex invalid: <code>{error}</code></span>
-{:else if disableSave && nextLink === NextLinkType.FUNCTION && error}
-  <span class="small error">Error: <code>{error}</code></span>
+<button type="submit" on:click="{() => { config.set(cur); disableSave = true }}" disabled={disableSave}>Save</button>
+{#if disableSave && cur.nextLink === NextLinkType.REGEXP && nextLinkError}
+  <span class="small error">Chapter Regex invalid: <code>{nextLinkError}</code></span>
+{:else if disableSave && cur.nextLink === NextLinkType.FUNCTION && nextLinkError}
+  <span class="small error">Chapter Function invalid: <code>{nextLinkError}</code></span>
+{:else if disableSave && cur.transform === ChapterTransformType.REGEXP && tranformError}
+  <span class="small error">Transform Regex invalid: <code>{tranformError}</code></span>
+{:else if disableSave && cur.transform === ChapterTransformType.SELECTOR && tranformError}
+  <span class="small error">Transform Selector invalid: <code>{tranformError}</code></span>
+{:else if disableSave && cur.transform === ChapterTransformType.FUNCTION && tranformError}
+  <span class="small error">Transform Function invalid: <code>{tranformError}</code></span>
 {/if}

@@ -7,7 +7,8 @@
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
-  import { fetchBookData } from '../sources';
+  import { config } from '../configstore';
+  import { fetchBookData,transformChapters } from '../sources';
   import type { BookData } from '../stages';
   import { copyData,decode,fold } from '../util';
 
@@ -15,7 +16,7 @@
   
   const fetchData = (): Promise<Bookdata> => stage.bookData
     ? Promise.resolve(copyData(stage.bookData))
-    : fetchBookData(series).then(data => stage.bookData = data);
+    : fetchBookData(series).then(data => stage.bookData = { ...data, chapters: transformChapters($config, data.chapters) });
   let fetchPromise = fetchData();
 </script>
 
