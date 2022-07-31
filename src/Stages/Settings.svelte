@@ -84,7 +84,7 @@
     <div>
       <label class="field">
         <input type="checkbox" bind:checked={useTiny} />
-        Use TinyMCE for editing chapters, a powerful HTML editor
+        Use TinyMCE, a powerful HTML editor, for editing chapters
       </label>
     </div>
 

@@ -20,12 +20,10 @@
 
 <script lang="ts">
   $: stage = $store.stage;
-
-  let backToSearch: () => void;
   $: backToSearch = Stages.is(stage.from, Stages.Stage.SEARCH) ? () => Stages.next(stage, Stages.Search) : undefined;
 
   const openSettings = () => {
-    if (!stage.needsSaving || confirm("Unsaved progress. Continue?")) Stages.next(stage, Stages.Settings);
+    if (!stage.needsSaving || confirm("Unsaved changes. Continue?")) Stages.next(stage, Stages.Settings);
   };
 
   $: if (DEV) console.table({ is: stage, from: stage.from });

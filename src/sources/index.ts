@@ -53,13 +53,14 @@ export const findNextLinkRegexp = (html: string) => {
 };
 let userFn: ReturnType<typeof sandboxFn>;
 const parser = new DOMParser();
+const cons = () => ({ log: console.log, table: console.table, error: console.error, assert: console.assert });
 export const findNextLinkFn = (html: string) => {
-  let doc: HTMLElement;
+  let doc: Document;
   const closure = {
     get document() {
-      return doc = doc ?? parser.parseFromString(html, 'text/html').documentElement;
+      return doc = doc ?? parser.parseFromString(html, 'text/html');
     },
-    console: { log: console.log, table: console.table, error: console.error, assert: console.assert },
+    console: cons(),
     html,
   };
   return userFn(closure);
@@ -83,7 +84,7 @@ export const fetchBookData = async (series: Series) => {
 
   const data = getDataFromSource(series.type, json);
 
-  if (!data || !data.chapters || !data.chapters.length)
+  if (!data?.chapters?.length)
     throw new Error('No chapters found');
   return data;
 };
