@@ -111,7 +111,12 @@ export function next<T extends StageDataCtor>(typ: T, ...args: ConstructorParame
   store.update(s => {
     const n = new typ(...args);
     n.from = s.stage;
-    history.pushState({ data: n.dump(), search: s.search, series: s.series }, '', toUrl(n.stage));
+    try {
+      history.pushState({ data: n.dump(), search: s.search, series: s.series }, '', toUrl(n.stage));
+    } catch {
+      history.pushState({ data: [], search: s.search, series: s.series }, '', toUrl(n.stage));
+      console.error('Data too large! Caution, forwards/backwards won\'t work as expected!');
+    }
     return { ...s, stage: n };
   });
 };

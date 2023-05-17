@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import { config,loadConfig } from './configstore';
+  import { config, loadConfig } from './configstore';
   import Footer from './Footer.svelte';
   import Header from './Header.svelte';
   import BackArrow from './icons/back-arrow.svg';
@@ -32,7 +32,12 @@
   $: if (DEV) (window as any)._config = { ...$config, config };
 
   $: localStorage.setItem('config', JSON.stringify($config));
-  $: localStorage.setItem('state', JSON.stringify({ data: $store.stage.dump(), search: $store.search, series: $store.series }));
+  $: try {
+    localStorage.setItem('state', JSON.stringify({ data: $store.stage.dump(), search: $store.search, series: $store.series }));
+  } catch {
+    localStorage.setItem('state', JSON.stringify({ data: [], search: $store.search, series: $store.series }));
+    console.error('Data too large! Caution, reloading won\'t work as expected!');
+  }
 </script>
 
 <style lang="postcss">
