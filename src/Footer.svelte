@@ -2,7 +2,7 @@
   import { config } from './configstore';
   import * as Stages from './stages';
   import { store } from './stages';
-  import { fold,redditApiBase } from './util';
+  import { fold, redditApiBase } from './util';
 
   let showPrivacy = false;
 </script>
@@ -25,7 +25,7 @@
 <footer>
   <p class="small">
     Made by <a href="https://github.com/cpiber" target="_blank">@cpiber</a>.
-    Source Code: <a href="https://github.com/cpiber/hfy-epub" target="_blank">cpiber/hfy-epub</a>.
+    Source Code &amp; bug tracker: <a href="https://github.com/cpiber/hfy-epub" target="_blank">cpiber/hfy-epub</a>.
     <!-- svelte-ignore missing-declaration -->
     Version {VERSION}.
     <a href="#privacy" on:click|preventDefault="{() => showPrivacy = !showPrivacy}">Privacy</a>.
