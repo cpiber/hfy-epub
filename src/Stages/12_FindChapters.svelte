@@ -1,11 +1,13 @@
 <script lang="ts">
+    import { onDestroy } from 'svelte';
+
   export let stage: FindChapters;
   
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import { config } from '../configstore';
   import { retryFetch } from '../fetch';
-  import { findNextLink,getPostContent,transformChapter } from '../sources';
+  import { findNextLink, getPostContent, transformChapter } from '../sources';
   import type { FindChapters } from '../stages';
   import { toApiCall } from '../util';
 
@@ -40,6 +42,25 @@
     return { ...stage.bookData, chapters };
   };
   let fetchPromise = fetchMore();
+
+  let forceScroll = true;
+  function isContentScrolledToBottom() {
+    // https://stackoverflow.com/a/55473962/
+    const rest = document.documentElement.scrollHeight - document.documentElement.scrollTop;
+    forceScroll = Math.abs(document.documentElement.clientHeight - rest) < 1;
+  }
+  window.addEventListener('scroll', isContentScrolledToBottom);
+  onDestroy(() => {
+    window.removeEventListener('scroll', isContentScrolledToBottom);
+  });
+
+  const scrollToBottom = (_: HTMLElement, __: any) => {
+    return {
+      update: ({ scroll }: { scroll: boolean }) => {
+        if (scroll) document.querySelector('footer').scrollIntoView();
+      },
+    };
+  }
 </script>
 
 <style lang="postcss">
@@ -51,7 +72,7 @@
 {#await fetchPromise}
   <Loading>Please wait, fetching chapters...</Loading>
 
-  <div class="chapters">
+  <div class="chapters" use:scrollToBottom={{newchapters, scroll: forceScroll}}>
     {#each newchapters as chapter}
       <p class="valid small">{chapter.from}: Found <a href="{chapter.url}">{chapter.url}</a></p>
     {/each}
