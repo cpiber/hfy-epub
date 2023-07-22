@@ -29,6 +29,7 @@ export const getSeriesPageData = ({ data: { content_md, content_html } }: reddit
 export const getAllSeries = async (search?: string) => {
   const res = await retryFetch(`https://${redditApiBase}/r/hfy/wiki/series.json`);
   const json = await res.json();
+  if (!res.ok) throw json.message;
   const content = json.data.content_md;
   const all = [...content.matchAll(/\[([^\]]+)\]\s*\(((?:https?:\/\/(?:[^.]+\.)?reddit\.com)?\/r\/hfy\/wiki\/series\/[^)]+)\)\s*(?:\[\*([^\]]+)\*\])?/igm)].map(matches => ({
     title: matches[1],

@@ -5,7 +5,7 @@
   import Loading from '../Components/Loading.svelte';
   import { config } from '../configstore';
   import { retryFetch } from '../fetch';
-  import { getPostContent,transformChapter } from '../sources';
+  import { getPostContent, transformChapter } from '../sources';
   import type { DownloadChapters } from '../stages';
 
   let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...stage.bookData.chapters.map(c => ({ ...c, new: false }))];
@@ -19,18 +19,18 @@
 
     // bunch up in 100s
     for (let i = 0; i < prev.length; i += batchSize) {
-      await Promise.all(prev.slice(i, i + batchSize).map((chapter, index) => {
+      await Promise.all(prev.slice(i, i + batchSize).map(async (chapter, index) => {
         finishedChapters[index + i] = { ...prev[index + i] };
-        if (chapter.needsFetching !== false) return retryFetch(chapter.apiUrl)
-          .then(res => res.json())
-          .then((json: reddit.post) => {
-            finishedChapters[index + i] = { ...transformChapter($config, getPostContent(json)), new: true };
-            finishedChapters = finishedChapters; // tell svelte to update
-          })
-          .catch(err => {
-            errors.push(err);
-            errors = errors; // tell svelte to update
-          });
+        if (chapter.needsFetching !== false) try {
+          const res = await retryFetch(chapter.apiUrl);
+          const json = await res.json();
+          if (!res.ok) throw json.message;
+          finishedChapters[index + i] = { ...transformChapter($config, getPostContent(json)), new: true };
+          finishedChapters = finishedChapters; // tell svelte to update
+        } catch (err) {
+          errors.push(err);
+          errors = errors; // tell svelte to update
+        }
         return undefined
       }));
     }
