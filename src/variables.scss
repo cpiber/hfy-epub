@@ -5,6 +5,7 @@ $medium_width: 950px;
 $error: #e32636;
 $warning: #f2b400;
 $ok: #34b334;
+$info: #b3e5fc;
 
 @mixin tiny {
   @media screen and (max-width: $tinymb_width) {

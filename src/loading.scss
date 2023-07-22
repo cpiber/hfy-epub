@@ -45,6 +45,17 @@
   }
 }
 
+@mixin info {
+  .info {
+    color: $info;
+
+    &::before {
+      content: '\2139';
+      margin-right: 0.5em;
+    }
+  }
+}
+
 @mixin valid {
   .valid {
     color: $ok;
