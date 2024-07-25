@@ -24,7 +24,7 @@
         if (DEV) (type === 'warn' ? console.warn : console.log)(msg, ...more);
         logs = logs; // tell svelte to update
       },
-    }, stage.bookData.chapters.map(c => ({ title: decode(c.title), content: c.content, url: c.displayUrl })));
+    }, stage.bookData.chapters.map(c => ({ title: decode(c.title), content: c.transformedContent, url: c.displayUrl })));
   };
   let promise = generate();
 </script>

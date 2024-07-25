@@ -38,6 +38,7 @@ interface Chapter {
    * Raw HTML chapter content
    */
   content?: string, // already decoded
+  transformedContent?: string,
   apiUrl: string,
   displayUrl?: string,
   needsFetching?: boolean,

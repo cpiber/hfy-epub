@@ -208,7 +208,7 @@ You are editing:
     >
       <ChapterEdit
           bind:title={selectedChapter.title}
-          bind:content={selectedChapter.content}
+          bind:content={selectedChapter.transformedContent}
           bind:needsFetching={selectedChapter.needsFetching}
           bind:url={selectedChapter.displayUrl}
           canFetch={!!selectedChapter.apiUrl}
@@ -226,7 +226,7 @@ You are editing:
     >
       <ChapterEdit
           bind:title={newChapter.title}
-          bind:content={newChapter.content}
+          bind:content={newChapter.transformedContent}
           bind:needsFetching={newChapter.needsFetching}
           bind:url={newChapter.displayUrl}
           canFetch={!!newChapter.apiUrl}

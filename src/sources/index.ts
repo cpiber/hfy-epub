@@ -140,15 +140,15 @@ export const transformChapterFn = (chapter: Chapter): Chapter => {
   return {
     ...chapter,
     title: isString(proxy.title) ? proxy.title : chapter.title,
-    content: isString(proxy.html) ? proxy.html : chapter.content,
+    transformedContent: isString(proxy.html) ? proxy.html : chapter.content,
     displayUrl: isString(proxy.url) ? proxy.url : chapter.displayUrl,
   };
 };
 export const transformChapter = (config: Config, chapter: Chapter): Chapter => {
   switch (config.transform) {
-    case ChapterTransformType.NONE: return { ...chapter };
-    case ChapterTransformType.REGEXP: return { ...chapter, content: transformChapterRegexp(chapter.content || '') };
-    case ChapterTransformType.SELECTOR: return { ...chapter, content: transformChapterSelector(config.transformSelector, chapter.content || '') };
+    case ChapterTransformType.NONE: return { ...chapter, transformedContent: chapter.content };
+    case ChapterTransformType.REGEXP: return { ...chapter, transformedContent: transformChapterRegexp(chapter.content || '') };
+    case ChapterTransformType.SELECTOR: return { ...chapter, transformedContent: transformChapterSelector(config.transformSelector, chapter.content || '') };
     case ChapterTransformType.FUNCTION: return transformChapterFn(chapter);
   }
 };
