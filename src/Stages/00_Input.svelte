@@ -9,6 +9,11 @@
 
   let series: ReturnType<typeof getAllSeries>;
   let open = false;
+  let list: string = undefined;
+  let showList = false;
+
+  let placeholder = `https://example.com/chapter1
+https://example.com/chapter2`;
 
   let formRef: HTMLElement;
   const onBlur = (e: FocusEvent) => open = !!formRef && formRef.contains(e.relatedTarget as HTMLElement);
@@ -91,30 +96,53 @@
       position: relative;
     }
   }
+
+  textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  p.small {
+    margin: 0;
+  }
 </style>
 
-<form class="form" on:submit|preventDefault="{() => stage.next(search || '')}" bind:this="{formRef}">
-  <p>
-    Search:
-    <input
-        bind:value="{search}" on:keyup="{update}" on:blur="{onBlur}" on:click="{update}"
-        class="search" placeholder="Search or URL..."
-    />
-    <input type="submit" value="Go" class="submit" disabled={search === undefined || !search.trim().length} />
-  </p>
+{#if !showList}
+  <form class="form" on:submit|preventDefault="{() => stage.next(search || '')}" bind:this="{formRef}">
+    <p>
+      Search:
+      <input
+          bind:value="{search}" on:keyup="{update}" on:blur="{onBlur}" on:click="{update}"
+          class="search" placeholder="Search or URL..."
+      />
+      <input type="submit" value="Go" class="submit" disabled={search === undefined || !search.trim().length} />
+    </p>
 
-  {#if open}
-    {#await searchSeries(series, search) then all}
-      <div class="search-results">
-        {#each all as series}
-          <a class="result" href="{apiToRegular(series.url)}" on:click|preventDefault="{() => stage.next(series.url)}">{series.title}</a>
-        {/each}
-      </div>
-    {/await}
+    {#if open}
+      {#await searchSeries(series, search) then all}
+        <div class="search-results">
+          {#each all as series}
+            <a class="result" href="{apiToRegular(series.url)}" on:click|preventDefault="{() => stage.next(series.url)}">{series.title}</a>
+          {/each}
+        </div>
+      {/await}
+    {/if}
+
+    <button on:click|preventDefault="{() => showList = true}">Switch to URL List</button>
+  </form>
+  {#if search !== undefined && !search.trim().length}
+    <p class="small error">Please enter a search string</p>
   {/if}
-</form>
-{#if search !== undefined && !search.trim().length}
-  <p class="small error">Please enter a search string</p>
+{:else}
+  <form class="form" on:submit|preventDefault="{() => stage.fromList(list || '')}">
+    <p>Enter list of URLs:</p>
+    <p class="small">One URL per line</p>
+    <textarea bind:value={list} rows="5" placeholder="{placeholder}"></textarea>
+    <button on:click|preventDefault="{() => showList = false}">Switch to Search</button>
+    <input type="submit" value="Go" class="submit" disabled={list === undefined || !list.trim().length} />
+  </form>
 {/if}
 
 
@@ -124,6 +152,6 @@
   <ul>
     <li>Search for a series title on the <a href="https://reddit.com/r/HFY/wiki/series" target="_blank">r/HFY wiki</a></li>
     <li>Enter a series link to the <a href="https://reddit.com/r/HFY" target="_blank">r/HFY</a> wiki</li>
-    <li>Enter a link to any reddit post</li>
+    <li>Enter a link to any reddit post, or other link (see <a href="https://github.com/cpiber/hfy-epub/blob/master/docs/other/cors.md" target="_blank">CORS</a>)</li>
   </ul>
 </div>

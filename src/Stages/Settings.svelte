@@ -118,7 +118,7 @@
       {:else if cur.nextLink === NextLinkType.FUNCTION}
         <label class="field">
           Function: <span class="small warning">Only input code you trust!</span>
-          <textarea type="text" bind:value={cur.nextLinkFn} rows="5" placeholder="{defaultConfig.nextLinkFn}"></textarea>
+          <textarea bind:value={cur.nextLinkFn} rows="5" placeholder="{defaultConfig.nextLinkFn}"></textarea>
           <span class="small">Globals <code>document</code> and <code>html</code> are available; Must produce the url as <code>return</code></span>
         </label>
       {/if}
@@ -148,7 +148,7 @@
       {:else if cur.transform === ChapterTransformType.FUNCTION}
         <label class="field">
           Function: <span class="small warning">Only input code you trust!</span>
-          <textarea type="text" bind:value={cur.transformFn} rows="5" placeholder="{defaultConfig.transformFn}"></textarea>
+          <textarea bind:value={cur.transformFn} rows="5" placeholder="{defaultConfig.transformFn}"></textarea>
           <span class="small">Globals <code>document</code>, <code>html</code>, <code>title</code> and <code>url</code> are available; Modify the latter three to transform</span>
         </label>
       {/if}

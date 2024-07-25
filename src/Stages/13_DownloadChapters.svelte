@@ -10,7 +10,7 @@
   import { store } from '../stages';
 
   let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...stage.bookData.chapters.map(c => ({ ...c, new: false }))];
-  const batchSize = 100;
+  const batchSize = 10;
   let stop = false;
 
   let errors: any[] = [];
@@ -19,7 +19,7 @@
     finishedChapters = new Array(finishedChapters.length);
     errors = [];
 
-    // bunch up in 100s
+    // bunch up several requests
     for (let i = 0; i < prev.length && !stop; i += batchSize) {
       await Promise.all(prev.slice(i, i + batchSize).map(async (chapter, index) => {
         finishedChapters[index + i] = { ...prev[index + i] };
@@ -58,6 +58,8 @@
 
 {#await fetchPromise}
   <Loading>Please wait, fetching chapters...</Loading>
+
+  <button on:click|preventDefault="{() => stop = true}" disabled="{stop}">Cancel</button>
 {:then finishedData}
   {#if !errors.length}{stage.next(finishedData)}{/if}
 {/await}
@@ -69,8 +71,6 @@
     {/if}
   {/each}
 </div>
-
-<button on:click|preventDefault="{() => stop = true}" disabled="{stop}">Cancel</button>
 
 {#if errors.length}
   {#key errors}

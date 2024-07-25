@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { writable } from 'svelte/store';
 import { getFetchUrlForSource, getSourceType, Source } from './sources';
 
@@ -42,6 +43,11 @@ export class Input extends StageData {
       default:
         return next(BookData);
     }
+  }
+  fromList(list: string) {
+    const urls = list.split('\n');
+    store.update(s => ({ ...s, series: { url: urls[0], type: Source.GENERIC } }));
+    return next(BookData, { author: 'unknown', title: 'unknown', chapters: urls.map((u, i) => ({ apiUrl: u, id: nanoid(), title: `Chapter ${i}`, displayUrl: u, })) });
   }
 }
 export class Search extends StageData {
