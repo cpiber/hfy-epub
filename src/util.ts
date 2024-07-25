@@ -1,7 +1,15 @@
+import { nanoid } from 'nanoid';
 import { cubicOut } from 'svelte/easing';
 import type { ScaleParams, TransitionConfig } from 'svelte/transition';
 
 export const redditApiBase = 'www.reddit.com';
+
+export const blankChapter = (): Bookdata['chapters'][number] => ({
+  id: nanoid(),
+  title: '',
+  apiUrl: '',
+  displayUrl: '',
+});
 
 export const toApiCall = (url: URL | string) => {
   if (!(url instanceof URL)) url = new URL(url);

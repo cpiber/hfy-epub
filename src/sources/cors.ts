@@ -7,6 +7,7 @@ export const getGenericData = (content: string): Bookdata => {
     title: doc.title,
     author: 'unkown',
     chapters: Array.from(doc.querySelectorAll<HTMLAnchorElement>('ul a, ol a')).map(item => ({
+      displayUrl: item.href,
       apiUrl: item.href,
       id: nanoid(),
       title: item.textContent,

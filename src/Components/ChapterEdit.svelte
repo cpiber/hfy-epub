@@ -7,7 +7,8 @@
   export let close: () => void;
   export let moveUp: () => void = undefined;
   export let moveDown: () => void = undefined;
-  export let remove: () => void;
+  export let remove: () => void = undefined;
+  export let hideControls = false;
 
   import Editor from '@tinymce/tinymce-svelte';
   import { config } from '../configstore';
@@ -168,6 +169,8 @@
       </label>
     {/if}
   </div>
-  <span />
-  <ChapterControls {moveUp} {moveDown} {remove} />
+  {#if !hideControls}
+    <span />
+    <ChapterControls {moveUp} {moveDown} {remove} />
+  {/if}
 </Column>

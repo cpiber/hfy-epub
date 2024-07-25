@@ -6,8 +6,10 @@
   import ChapterEdit from '../Components/ChapterEdit.svelte';
   import ChapterSelect from '../Components/ChapterSelect.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
+  import { Source } from '../sources/index';
   import type { EditData } from '../stages';
-  import { copyData } from '../util';
+  import { store } from '../stages';
+  import { blankChapter, copyData, toApiCall } from '../util';
 
   const odata = copyData(stage.bookData);
   const data = copyData(stage.bookData);
@@ -26,6 +28,9 @@
   let selectedChapterIndex: number = -1;
   let selectedChapter: Bookdata['chapters'][number] = undefined;
   $: selectedChapter = selectedChapterIndex >= 0 ? data.chapters[selectedChapterIndex] : undefined;
+
+  let showNew = false;
+  let newChapter: Bookdata['chapters'][number] = undefined;
 
   const absIdx = (i: number) => i + pageSize * page;
 
@@ -71,6 +76,12 @@
   };
   const handleConsiderFinalize = (e: CustomEvent<DndEvent<Chapter>>) => {
     acceptItems(e);
+  };
+
+  const closeChapter = (chap: Bookdata['chapters'][number]) => {
+    if (!chap.displayUrl) return;
+    if ($store.series.type === Source.GENERIC) chap.apiUrl = chap.displayUrl;
+    else chap.apiUrl = toApiCall(chap.displayUrl);
   };
 
   let pageConf: { pre: number | null, pages: number[], post: number | null } = { pre: null, pages: [], post: null };
@@ -139,6 +150,14 @@
       text-decoration: underline;
     }
   }
+
+  .remove {
+    color: $error;
+
+    &:hover {
+      color: color-mod($error lightness(-20%));
+    }
+  }
 </style>
 
 
@@ -159,23 +178,27 @@ You are editing:
           />
         {/each}
       </div>
-      <nav>
-        <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page - 1)}" disabled={page <= 0}>Previous</a>
-        ::
-        {#if pageConf.pre !== null}
-          <a class="small" href="{`#page ${pageConf.pre}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.pre - 1)}">{pageConf.pre}</a>
-          .
-        {/if}
-        {#each pageConf.pages as pg}
-          <a class="small" href="{`#page ${pg + 1}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
-        {/each}
-        {#if pageConf.post !== null}
-          .
-          <a class="small" href="{`#page ${pageConf.post}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.post - 1)}">{pageConf.post}</a>
-        {/if}
-        ::
-        <a class="small" href="#next" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page + 1)}" disabled={page >= maxPage}>Next</a>
-      </nav>
+      {#if data.chapters.length > 0}
+        <nav>
+          <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page - 1)}" disabled={page <= 0}>Previous</a>
+          ::
+          {#if pageConf.pre !== null}
+            <a class="small" href="{`#page ${pageConf.pre}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.pre - 1)}">{pageConf.pre}</a>
+            .
+          {/if}
+          {#each pageConf.pages as pg}
+            <a class="small" href="{`#page ${pg + 1}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
+          {/each}
+          {#if pageConf.post !== null}
+            .
+            <a class="small" href="{`#page ${pageConf.post}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.post - 1)}">{pageConf.post}</a>
+          {/if}
+          ::
+          <a class="small" href="#next" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page + 1)}" disabled={page >= maxPage}>Next</a>
+        </nav>
+        <a class="small remove" href="#clear" on:click|preventDefault="{() => data.chapters = []}">Remove all</a>
+      {/if}
+      <button on:click|preventDefault="{() => {showNew = true; newChapter = blankChapter()}}">Add new</button>
     </SeriesCard>
   </div>
   {#if selectedChapterIndex >= 0}
@@ -189,10 +212,26 @@ You are editing:
           bind:needsFetching={selectedChapter.needsFetching}
           bind:url={selectedChapter.displayUrl}
           canFetch={!!selectedChapter.apiUrl}
-          close={() => selectedChapterIndex = -1}
+          close={() => {closeChapter(selectedChapter); selectedChapterIndex = -1}}
           moveUp={(page > 0 || selectedChapterIndex > 0) && moveUp.bind(null, selectedChapterIndex)}
           moveDown={(page < maxPage || selectedChapterIndex < chapterSlice.length - 1) && moveDown.bind(null, selectedChapterIndex)}
           remove={remove.bind(null, selectedChapterIndex)}
+      />
+    </div>
+  {/if}
+  {#if showNew}
+    <div transition:fly|local={{ x: 50, duration: 200 }}
+        on:introend="{() => {hide = true; float = false}}"
+        on:outrostart="{() => {float = true}}" on:outroend="{() => {hide = false}}" class:float
+    >
+      <ChapterEdit
+          bind:title={newChapter.title}
+          bind:content={newChapter.content}
+          bind:needsFetching={newChapter.needsFetching}
+          bind:url={newChapter.displayUrl}
+          canFetch={!!newChapter.apiUrl}
+          hideControls
+          close={() => {closeChapter(newChapter); data.chapters.push(newChapter); data.chapters = data.chapters; showNew = false;}}
       />
     </div>
   {/if}
