@@ -37,6 +37,7 @@ export class Input extends StageData {
     const input = getSourceType(search);
     console.debug('Input', search, 'resulted in type', input);
     store.update(s => ({ ...s, search, series: input !== Source.SEARCH ? { url: getFetchUrlForSource(input, search), type: input } : s.series }));
+    bookDataStore.update(() => undefined);
     switch (input) {
       case Source.SEARCH:
         return next(Search);
@@ -60,6 +61,7 @@ export class Search extends StageData {
   stage: Stage.SEARCH = Stage.SEARCH;
   next(series: Series) {
     store.update(s => ({ ...s, series }));
+    bookDataStore.update(() => undefined);
     return next(BookData);
   }
 }
