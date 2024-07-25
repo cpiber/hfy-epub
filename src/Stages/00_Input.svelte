@@ -7,10 +7,16 @@
   import type { Input } from '../stages';
   import { apiToRegular } from '../util';
 
+  enum Mode {
+    Search = "search",
+    List = "list",
+    Import = "import",
+  };
+
   let series: ReturnType<typeof getAllSeries>;
   let open = false;
   let list: string = undefined;
-  let showList = false;
+  let mode: Mode = Mode.Search;
 
   let placeholder = `https://example.com/chapter1
 https://example.com/chapter2`;
@@ -37,6 +43,7 @@ https://example.com/chapter2`;
   .form p {
     display: flex;
     gap: 6px;
+    margin: 0;
   }
 
   .search {
@@ -107,51 +114,88 @@ https://example.com/chapter2`;
   p.small {
     margin: 0;
   }
+
+  .mode-select {
+    input {
+      opacity: 0;
+      width: 1;
+      height: 1;
+      position: absolute;
+      left: -10px;
+    }
+
+    label {
+      display: inline-block;
+      padding: 8px;
+      border-bottom: 2px hidden black;
+      cursor: pointer;
+
+      &:hover {
+        border-bottom-style: solid;
+        border-bottom-color: rgba(10, 10, 10, 0.6);
+      }
+
+      &.selected {
+        border-bottom-style: solid;
+        border-bottom-color: black;
+      }
+    }
+  }
+
+  .mode {
+    border: 0.5px solid rgba(20, 20, 20, 0.3);
+    padding: 14px 8px;
+  }
 </style>
 
-{#if !showList}
-  <form class="form" on:submit|preventDefault="{() => stage.next(search || '')}" bind:this="{formRef}">
-    <p>
-      Search:
-      <input
-          bind:value="{search}" on:keyup="{update}" on:blur="{onBlur}" on:click="{update}"
-          class="search" placeholder="Search or URL..."
-      />
-      <input type="submit" value="Go" class="submit" disabled={search === undefined || !search.trim().length} />
-    </p>
+<div class="mode-select">
+  <label class:selected={mode == Mode.Search}><input type="radio" name="mode" value="search" bind:group="{mode}" />Search</label>
+  <label class:selected={mode == Mode.List}><input type="radio" name="mode" value="list" bind:group="{mode}" />URLs</label>
+  <label class:selected={mode == Mode.Import}><input type="radio" name="mode" value="import" bind:group="{mode}" />Import</label>
+</div>
+<div class="mode">
+  {#if mode == Mode.Search}
+    <form class="form" on:submit|preventDefault="{() => stage.next(search || '')}" bind:this="{formRef}">
+      <p>
+        Search:
+        <input
+            bind:value="{search}" on:keyup="{update}" on:blur="{onBlur}" on:click="{update}"
+            class="search" placeholder="Search or URL..."
+        />
+        <input type="submit" value="Go" class="submit" disabled={search === undefined || !search.trim().length} />
+      </p>
 
-    {#if open}
-      {#await searchSeries(series, search) then all}
-        <div class="search-results">
-          {#each all as series}
-            <a class="result" href="{apiToRegular(series.url)}" on:click|preventDefault="{() => stage.next(series.url)}">{series.title}</a>
-          {/each}
-        </div>
-      {/await}
+      {#if open}
+        {#await searchSeries(series, search) then all}
+          <div class="search-results">
+            {#each all as series}
+              <a class="result" href="{apiToRegular(series.url)}" on:click|preventDefault="{() => stage.next(series.url)}">{series.title}</a>
+            {/each}
+          </div>
+        {/await}
+      {/if}
+    </form>
+    {#if search !== undefined && !search.trim().length}
+      <p class="small error">Please enter a search string</p>
     {/if}
 
-    <button on:click|preventDefault="{() => showList = true}">Switch to URL List</button>
-  </form>
-  {#if search !== undefined && !search.trim().length}
-    <p class="small error">Please enter a search string</p>
+    <div class="overlay-wrapper">
+      {#if open}<div transition:fade={{ duration: 100 }} class="overlay"></div>{/if}
+      <p class="spaceabove">You can:</p>
+      <ul>
+        <li>Search for a series title on the <a href="https://reddit.com/r/HFY/wiki/series" target="_blank">r/HFY wiki</a></li>
+        <li>Enter a series link to the <a href="https://reddit.com/r/HFY" target="_blank">r/HFY</a> wiki</li>
+        <li>Enter a link to any reddit post, or other link (see <a href="https://github.com/cpiber/hfy-epub/blob/master/docs/other/cors.md" target="_blank">CORS</a>)</li>
+      </ul>
+    </div>
+  {:else if mode == Mode.List}
+    <form class="form" on:submit|preventDefault="{() => stage.fromList(list || '')}">
+      <p>Enter list of URLs:</p>
+      <textarea bind:value={list} rows="5" placeholder="{placeholder}"></textarea>
+      <p class="small">One URL per line</p>
+      <p><input type="submit" value="Go" class="submit" disabled={list === undefined || !list.trim().length} /></p>
+    </form>
+  {:else if mode == Mode.Import}
+    TODO
   {/if}
-{:else}
-  <form class="form" on:submit|preventDefault="{() => stage.fromList(list || '')}">
-    <p>Enter list of URLs:</p>
-    <p class="small">One URL per line</p>
-    <textarea bind:value={list} rows="5" placeholder="{placeholder}"></textarea>
-    <button on:click|preventDefault="{() => showList = false}">Switch to Search</button>
-    <input type="submit" value="Go" class="submit" disabled={list === undefined || !list.trim().length} />
-  </form>
-{/if}
-
-
-<div class="overlay-wrapper">
-  {#if open}<div transition:fade={{ duration: 100 }} class="overlay"></div>{/if}
-  <p class="spaceabove">You can:</p>
-  <ul>
-    <li>Search for a series title on the <a href="https://reddit.com/r/HFY/wiki/series" target="_blank">r/HFY wiki</a></li>
-    <li>Enter a series link to the <a href="https://reddit.com/r/HFY" target="_blank">r/HFY</a> wiki</li>
-    <li>Enter a link to any reddit post, or other link (see <a href="https://github.com/cpiber/hfy-epub/blob/master/docs/other/cors.md" target="_blank">CORS</a>)</li>
-  </ul>
 </div>
