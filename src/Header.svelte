@@ -21,4 +21,5 @@
 <header>
   <h1>r/HFY epub generator <a class="small" href="https://github.com/cpiber/hfy-epub/tree/master/docs/index.md" target="_blank">Help</a></h1>
   <Alert>Due to <a href="https://www.redditinc.com/blog/apifacts" target="_blank">recent API changes on reddit</a>, creating ebooks has become limited. If you run into a "Too many requests" error, please wait 10 minutes before trying again.</Alert>
+  <Alert>When generating an ebook via URL, please be aware of <code>NetworkError</code>s, see <a href="https://github.com/cpiber/hfy-epub/blob/master/docs/other/cors.md" target="_blank">CORS</a>.</Alert>
 </header>
