@@ -23,7 +23,7 @@
 
   const exportBook = () => {
     const json = JSON.stringify({ bookData: stage.bookData, series: $store.series });
-    download(json, `${decode(stage.bookData.author)} - ${decode(stage.bookData.title)}.json`, 'application/json');
+    download(new Blob([json]), `${decode(stage.bookData.author)} - ${decode(stage.bookData.title)}.json`, 'application/json');
   };
 </script>
 
