@@ -90,7 +90,7 @@
     </SeriesCard>
   </div>
 
-  {#if data.chapters.find(c => c.needsFetching !== false)} <!-- if at least one needs to still be downloaded -->
+  {#if data.chapters.find(c => c.needsFetching !== false && c.apiUrl)} <!-- if at least one needs to still be downloaded -->
     <button on:click="{() => stage.downloadAll()}">Fetch chapter contents</button>
   {:else}
     <button on:click="{() => stage.next()}">Generate EPUB</button>

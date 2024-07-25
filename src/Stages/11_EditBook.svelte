@@ -90,6 +90,8 @@
     pageConf.pre = pageConf.pages[0] !== 0 ? 1 : null;
     pageConf.post = pageConf.pages[pageConf.pages.length - 1] !== maxPage ? maxPage + 1 : null;
   };
+  $: if (selectedChapter) closeChapter(selectedChapter);
+  $: if (newChapter) closeChapter(newChapter);
 
   let hide = false;
   let float = true;

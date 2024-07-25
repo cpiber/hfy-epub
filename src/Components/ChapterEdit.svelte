@@ -159,9 +159,9 @@
     {/if}
     {#if $config.useTiny}
       <!-- svelte-ignore missing-declaration -->
-      <Editor bind:value={content} disabled={needsFetching} apiKey={TINY_API_KEY} {conf} />
+      <Editor bind:value={content} disabled={needsFetching && canFetch} apiKey={TINY_API_KEY} {conf} />
     {:else}
-      <textarea bind:value="{content}" disabled={needsFetching}></textarea>
+      <textarea bind:value="{content}" disabled={needsFetching && canFetch}></textarea>
     {/if}
     {#if canFetch}
       <label>
