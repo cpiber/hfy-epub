@@ -23,16 +23,19 @@ export abstract class StageData {
   needsSaving?: boolean;
   abstract next(...args: any[]): void;
   dump(): any[] { return []; }
+  static usesBookData: boolean;
 }
-type StageDataCtor = { new(...a: any[]): StageData; };
+type StageDataCtor = { new(...a: any[]): StageData; usesBookData: boolean; };
 export type StageStore = {
   stage: StageData;
+  lastBookData?: Bookdata;
   search?: string;
   series?: Series;
 };
 
 export class Input extends StageData {
   stage: Stage.INPUT = Stage.INPUT;
+  static usesBookData = false;
   next(search: string) {
     const input = getSourceType(search);
     console.debug('Input', search, 'resulted in type', input);
@@ -56,6 +59,7 @@ export class Input extends StageData {
 }
 export class Search extends StageData {
   stage: Stage.SEARCH = Stage.SEARCH;
+  static usesBookData = false;
   next(series: Series) {
     store.update(s => ({ ...s, series }));
     return next(BookData);
@@ -64,6 +68,7 @@ export class Search extends StageData {
 export class BookData extends StageData {
   stage: Stage.BOOK_DATA = Stage.BOOK_DATA;
   constructor(public bookData: Immutable<Bookdata> = undefined, public newChapters: number = undefined) { super(); }
+  static usesBookData = true;
   next(data: Bookdata) { return next(Result, data); }
   edit(data: Bookdata) { return next(EditData, data); }
   findMore(data: Bookdata) { return next(FindChapters, data); }
@@ -73,6 +78,7 @@ export class BookData extends StageData {
 export class EditData extends StageData {
   stage: Stage.EDIT_DATA = Stage.EDIT_DATA;
   needsSaving = true;
+  static usesBookData = true;
   constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
   next(data: Bookdata) { return next(BookData, data); }
   dump(): any[] { return [this.bookData]; }
@@ -80,6 +86,7 @@ export class EditData extends StageData {
 export class FindChapters extends StageData {
   stage: Stage.FIND_CHAPTERS = Stage.FIND_CHAPTERS;
   needsSaving = true;
+  static usesBookData = true;
   constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
   next(data: Bookdata, n: number) { return next(BookData, data, n); }
   dump(): any[] { return [this.bookData]; }
@@ -87,22 +94,26 @@ export class FindChapters extends StageData {
 export class DownloadChapters extends StageData {
   stage: Stage.DOWNLOAD_CHAPTERS = Stage.DOWNLOAD_CHAPTERS;
   needsSaving = true;
+  static usesBookData = true;
   constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
   next(data: Bookdata) { return next(BookData, data); }
   dump(): any[] { return [this.bookData]; }
 }
 export class Result extends StageData {
   stage: Stage.RESULT = Stage.RESULT;
+  static usesBookData = true;
   constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
   next() { return next(BookData, this.bookData); }
   dump(): any[] { return [this.bookData]; }
 }
 export class Settings extends StageData {
   stage: Stage.SETTINGS = Stage.SETTINGS;
+  static usesBookData = false;
   next() { return back(); }
 }
 export class _404 extends StageData {
   stage: Stage._404 = Stage._404;
+  static usesBookData = false;
   next() { return back(); }
 }
 
@@ -121,22 +132,31 @@ export function next<T extends StageDataCtor>(typ: T, ...args: ConstructorParame
   store.update(s => {
     const n = new typ(...args);
     n.from = s.stage;
+    const data = n.dump();
     try {
-      if (typ === Settings) {
-        history.pushState({ search: s.search, series: s.series }, '', toUrl(n.stage));
+      if (n.stage === Stage.SETTINGS) {
+        history.pushState({ data: data, search: s.search, series: s.series }, '', toUrl(n.stage));
       } else {
-        history.replaceState({ search: s.search, series: s.series }, '', toUrl(n.stage));
+        history.replaceState({ data: data, search: s.search, series: s.series }, '', toUrl(n.stage));
       }
     } catch {
       console.error('Data too large! Caution, forwards/backwards won\'t work as expected!');
+      if (data.length > 0) data[0] = undefined;
+      if (n.stage === Stage.SETTINGS) {
+        history.pushState({ data: data, search: s.search, series: s.series }, '', toUrl(n.stage));
+      } else {
+        history.replaceState({ data: data, search: s.search, series: s.series }, '', toUrl(n.stage));
+      }
     }
-    return { ...s, stage: n };
+    // @ts-expect-error
+    return { ...s, stage: n, lastBookData: typ.usesBookData ? n.bookData as Bookdata : s.lastBookData };
   });
 };
 function nextFromEnum(typ: Stage, { data, search, series }: { data?: any[], search?: string, series?: Series; } = {}) {
   data = data || [];
   store.update(s => {
     try {
+      if (StageMapping[typ].usesBookData && s.lastBookData) data[0] = s.lastBookData;
       // @ts-ignore
       const n = new StageMapping[typ](...data);
       if (n.stage === s.stage.stage) return s; // no need to move if already here
@@ -178,7 +198,8 @@ const handlePopState = () => {
   if (path.length > 60) return;
   if (path === "") return nextFromEnum(Stage.INPUT);
   const stage = path.toUpperCase().replace(/-/g, '_');
-  const state = history.state || loadStateFromLocalStorage() || {};
+  const localState = loadStateFromLocalStorage();
+  const state = { ...localState, ...(history.state || {}) };
   if (stage in Stage) return nextFromEnum(Stage[stage as keyof typeof Stage], state);
   return nextFromEnum(Stage._404);
 };
