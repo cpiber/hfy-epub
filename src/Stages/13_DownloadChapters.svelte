@@ -18,9 +18,10 @@
     let prev = finishedChapters;
     finishedChapters = new Array(finishedChapters.length);
     errors = [];
+    let i: number;
 
     // bunch up several requests
-    for (let i = 0; i < prev.length && !stop; i += batchSize) {
+    for (i = 0; i < prev.length && !stop; i += batchSize) {
       await Promise.all(prev.slice(i, i + batchSize).map(async (chapter, index) => {
         finishedChapters[index + i] = { ...prev[index + i] };
         if (chapter.needsFetching !== false) try {
@@ -35,6 +36,9 @@
         }
         return undefined
       }));
+    }
+    for (; i < prev.length; i++) {
+      finishedChapters[i] = { ...prev[i] };
     }
 
     return { ...stage.bookData, chapters: finishedChapters };
