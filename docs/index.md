@@ -13,3 +13,10 @@ The app is separated into stages, which is reflected in this documentation.
 A link "Go back home" will be visible on all pages except [Input](00_input.md) and take you back to that.
 
 Note: All external links will be opened in a new tab (or window, depending on your browser configuration).
+
+## Other pages
+
+General information not related to the flow of data are listed here:
+
+- [CORS](other/cors.md)
+- [Settings](other/settings.md)
