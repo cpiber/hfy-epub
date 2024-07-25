@@ -23,7 +23,7 @@
       await Promise.all(prev.slice(i, i + batchSize).map(async (chapter, index) => {
         finishedChapters[index + i] = { ...prev[index + i] };
         if (chapter.needsFetching !== false) try {
-          const res = await retryFetch(chapter.apiUrl);
+          const res = await retryFetch(chapter.apiUrl, new URL($store.series.url).origin);
           const json = await requestToResource($store.series, res);
           if (!res.ok) throw '' + (json.message ?? json);
           finishedChapters[index + i] = { ...transformChapter($config, getChapterDataFromSource($store.series.type, json, chapter.apiUrl)), new: true };

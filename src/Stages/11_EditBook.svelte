@@ -170,7 +170,7 @@ You are editing:
         {#each chapterSlice as chapter, i (chapter.id)}
           <ChapterSelect
               title={chapter.title}
-              content={chapter.content}
+              content={chapter.transformedContent}
               select={() => selectedChapterIndex = absIdx(i)}
               moveUp={(page > 0 || i > 0) && moveUp.bind(null, absIdx(i))}
               moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, absIdx(i))}

@@ -1,5 +1,5 @@
 import { ChapterTransformType, config, NextLinkType, type Config } from '../configstore';
-import { retryFetch } from '../fetch';
+import { retryFetchURL } from '../fetch';
 import { isString, toApiCall } from '../util';
 import { getGenericContent, getGenericData } from './cors';
 import { sandboxFn } from './fn';
@@ -174,7 +174,7 @@ config.subscribe(conf => {
 });
 
 export const fetchBookData = async (series: Series) => {
-  const res = await retryFetch(series.url);
+  const res = await retryFetchURL(new URL(series.url));
   const json = await requestToResource(series, res);
   if (!res.ok) throw '' + (json.message ?? json);
 

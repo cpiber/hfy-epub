@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Column from '../Components/Column.svelte';
   import Radio from '../Components/Radio.svelte';
-  import { ChapterTransformType,config,defaultConfig,NextLinkType } from '../configstore';
+  import { ChapterTransformType, config, defaultConfig, NextLinkType } from '../configstore';
   import { sandboxFn } from '../sources/fn';
 
   const cur = { ...$config };
@@ -149,7 +149,7 @@
         <label class="field">
           Function: <span class="small warning">Only input code you trust!</span>
           <textarea type="text" bind:value={cur.transformFn} rows="5" placeholder="{defaultConfig.transformFn}"></textarea>
-          <span class="small">Globals <code>document</code>, <code>html</code>, <code>title</code> and <code>url</code> are available; Modify the latter two to transform</span>
+          <span class="small">Globals <code>document</code>, <code>html</code>, <code>title</code> and <code>url</code> are available; Modify the latter three to transform</span>
         </label>
       {/if}
     </div>

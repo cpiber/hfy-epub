@@ -20,16 +20,16 @@
     while (true) {
       let cur = chapters[chapters.length - 1];
       if (cur.needsFetching !== false) {
-        const res = await retryFetch(cur.apiUrl);
+        const res = await retryFetch(cur.apiUrl, new URL($store.series.url).origin);
         const json = await requestToResource($store.series, res);
         if (!res.ok) throw '' + (json.message ?? json);
         chapters.splice(-1, 1, cur = transformChapter($config, getChapterDataFromSource($store.series.type, json, cur.apiUrl)));
       }
 
       let next = findNextLink($config, cur.transformedContent ?? '');
-      console.debug('Got next link', next, ' from', cur.apiUrl, 'via transformed content');
+      if (DEV) console.debug('Got next link', next, ' from', cur.apiUrl, 'via transformed content');
       if (!next) next = findNextLink($config, cur.content);
-      console.debug('Got next link', next, ' from', cur.apiUrl, 'via original content');
+      if (DEV) console.debug('Got next link', next, ' from', cur.apiUrl, 'via original content');
       if (!next) break;
       const n = getFetchUrlForSource($store.series.type, next);
       if (chapters.find(c => c.apiUrl === n)) break; // no duplicates
@@ -37,7 +37,7 @@
       newchapters.push({ from: cur.title, url: next });
       newchapters = newchapters; // tell svelte to update
 
-      const res = await retryFetch(n);
+      const res = await retryFetch(n, new URL($store.series.url).origin);
       const json = await requestToResource($store.series, res);
       if (!res.ok) throw '' + (json.message ?? json);
       chapters.push(transformChapter($config, getChapterDataFromSource($store.series.type, json, n)));

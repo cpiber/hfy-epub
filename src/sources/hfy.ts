@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { retryFetch } from '../fetch';
+import { retryFetchURL } from '../fetch';
 import { decode, redditApiBase, toApiCall } from '../util';
 import { commentLink } from './re';
 
@@ -27,7 +27,7 @@ export const getSeriesPageData = ({ data: { content_md, content_html } }: reddit
 };
 
 export const getAllSeries = async (search?: string) => {
-  const res = await retryFetch(`https://${redditApiBase}/r/hfy/wiki/series.json`);
+  const res = await retryFetchURL(new URL(`https://${redditApiBase}/r/hfy/wiki/series.json`));
   const json = await res.json();
   if (!res.ok) throw json.message;
   const content = json.data.content_md;
