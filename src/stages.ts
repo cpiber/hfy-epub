@@ -49,6 +49,10 @@ export class Input extends StageData {
     store.update(s => ({ ...s, series: { url: urls[0], type: Source.GENERIC } }));
     return next(BookData, { author: 'unknown', title: 'unknown', chapters: urls.map((u, i) => ({ apiUrl: u, id: nanoid(), title: `Chapter ${i}`, displayUrl: u, })) });
   }
+  fromJSON({ series, bookData }: { series: Series, bookData: Bookdata; }) {
+    store.update(s => ({ ...s, series }));
+    return next(BookData, bookData);
+  }
 }
 export class Search extends StageData {
   stage: Stage.SEARCH = Stage.SEARCH;

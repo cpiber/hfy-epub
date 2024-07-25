@@ -17,6 +17,8 @@
   let open = false;
   let list: string = undefined;
   let mode: Mode = Mode.Search;
+  let file: File = undefined;
+  let disabled = false;
 
   let placeholder = `https://example.com/chapter1
 https://example.com/chapter2`;
@@ -30,11 +32,23 @@ https://example.com/chapter2`;
     const filtered = all.filter(s => s.title.toLowerCase().indexOf(searchSmall) !== -1);
     if (!filtered.length) open = false;
     return filtered;
-  }
+  };
   const update = () => {
     series = series || getAllSeries().finally(update);
     open = !!series && !!search;
-  }
+  };
+  const readUpload = async () => {
+    disabled = true;
+    const reader = new FileReader();
+    const promise = new Promise((resolve, reject) => {
+      reader.onload = resolve;
+      reader.onerror = reject;
+    });
+    reader.readAsText(file);
+    await promise;
+    disabled = false;
+    return JSON.parse(reader.result as string);
+  };
 </script>
 
 <style lang="postcss">
@@ -46,7 +60,7 @@ https://example.com/chapter2`;
     margin: 0;
   }
 
-  .search {
+  .search, input[type="file"] {
     width: 100%;
     box-sizing: border-box;
   }
@@ -161,8 +175,9 @@ https://example.com/chapter2`;
         <input
             bind:value="{search}" on:keyup="{update}" on:blur="{onBlur}" on:click="{update}"
             class="search" placeholder="Search or URL..."
+            disabled={disabled}
         />
-        <input type="submit" value="Go" class="submit" disabled={search === undefined || !search.trim().length} />
+        <input type="submit" value="Go" class="submit" disabled={search === undefined || !search.trim().length || disabled} />
       </p>
 
       {#if open}
@@ -191,11 +206,21 @@ https://example.com/chapter2`;
   {:else if mode == Mode.List}
     <form class="form" on:submit|preventDefault="{() => stage.fromList(list || '')}">
       <p>Enter list of URLs:</p>
-      <textarea bind:value={list} rows="5" placeholder="{placeholder}"></textarea>
+      <textarea bind:value={list} rows="5" placeholder="{placeholder}" disabled={disabled}></textarea>
       <p class="small">One URL per line</p>
-      <p><input type="submit" value="Go" class="submit" disabled={list === undefined || !list.trim().length} /></p>
+      <p><input type="submit" value="Go" class="submit" disabled={list === undefined || !list.trim().length || disabled} /></p>
     </form>
   {:else if mode == Mode.Import}
-    TODO
+    <form class="form" on:submit|preventDefault="{async () => stage.fromJSON(await readUpload())}" enctype="multipart/form-data">
+      <p>
+        Import:
+        <input
+            id="upload" type="file" accept="application/json,*.json" name="files" size=30
+            on:change="{(e) => file = e.currentTarget.files[0]}"
+            disabled={disabled} />
+        <input type="submit" value="Go" class="submit" disabled={file === undefined || disabled} />
+      </p>
+      <p class="small">Please only upload genuine backups, as there is no schema checking currently.</p>
+    </form>
   {/if}
 </div>

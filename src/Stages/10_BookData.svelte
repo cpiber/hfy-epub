@@ -3,14 +3,16 @@
   export let series: Immutable<Series>;
   export let backToSearch: () => void;
   
+  import download from 'downloadjs';
   import BackToSearch from '../Components/BackToSearch.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { config } from '../configstore';
-  import { fetchBookData,transformChapters } from '../sources';
+  import { fetchBookData, transformChapters } from '../sources';
   import type { BookData } from '../stages';
-  import { copyData,decode,fold } from '../util';
+  import { store } from '../stages';
+  import { copyData, decode, fold } from '../util';
 
   let showChapters = false;
   
@@ -18,6 +20,11 @@
     ? Promise.resolve(copyData(stage.bookData))
     : fetchBookData(series).then(data => stage.bookData = { ...data, chapters: transformChapters($config, data.chapters) });
   let fetchPromise = fetchData();
+
+  const exportBook = () => {
+    const json = JSON.stringify({ bookData: stage.bookData, series: $store.series });
+    download(json, `${decode(stage.bookData.author)} - ${decode(stage.bookData.title)}.json`, 'application/json');
+  };
 </script>
 
 <style lang="postcss">
@@ -85,6 +92,7 @@
     <button on:click="{() => stage.next(data)}">Generate EPUB</button>
   {/if}
   <button on:click="{() => stage.edit(data)}">Edit book</button>
+  <button on:click="{() => exportBook()}">Export</button>
   
   <BackToSearch {backToSearch} />
 {:catch error}
