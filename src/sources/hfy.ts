@@ -7,7 +7,7 @@ const seriesPageMatch = /^https?:\/\/(?:[^.]+\.)?reddit\.com\/r\/hfy\/wiki\/seri
 
 export const isSeriesPage = (search: string) => !!search.match(seriesPageMatch);
 
-export const getSeriesPageData = ({ data: { content_md, content_html } }: reddit.wikipage) => {
+export const getSeriesPageData = ({ data: { content_md, content_html } }: reddit.wikipage): Bookdata => {
   const content = new DOMParser().parseFromString(decode(content_html), 'text/html');
   const links = content.querySelectorAll<HTMLAnchorElement>('a[href]');
 

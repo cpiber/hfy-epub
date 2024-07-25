@@ -1,6 +1,7 @@
 import { ChapterTransformType, config, NextLinkType, type Config } from '../configstore';
 import { retryFetch } from '../fetch';
-import { isString } from '../util';
+import { isString, toApiCall } from '../util';
+import { getGenericData } from './cors';
 import { sandboxFn } from './fn';
 import { getSeriesPageData as getHFYSeriesPageData, isSeriesPage as isHFYSeriesPage } from './hfy';
 import { getPostData, isPost } from './post';
@@ -11,6 +12,7 @@ export { getPostContent } from './post';
 export enum Source {
   HFY_SERIES,
   POST,
+  GENERIC,
   SEARCH,
 };
 const parser = new DOMParser();
@@ -22,9 +24,23 @@ export const getSourceType = (search: string): Source => {
       return Source.HFY_SERIES;
     if (isPost(search))
       return Source.POST;
-    // fallthrough: urls that don't fit are interpreted as searches
+    return Source.GENERIC;
   } catch { }
   return Source.SEARCH;
+};
+
+export const getFetchUrlForSource = (source: Source, url: string): string => {
+  switch (source) {
+    case Source.GENERIC: return url;
+    default: return toApiCall(url);
+  }
+};
+
+export const requestToResource = (series: Series, res: Response): Promise<any> => {
+  switch (series.type) {
+    case Source.GENERIC: return res.text();
+    default: return res.json();
+  }
 };
 
 export const getDataFromSource = (source: Source, json: any): Bookdata | undefined => {
@@ -33,6 +49,8 @@ export const getDataFromSource = (source: Source, json: any): Bookdata | undefin
       return getHFYSeriesPageData(json);
     case Source.POST:
       return getPostData(json);
+    case Source.GENERIC:
+      return getGenericData(json);
   }
   throw new Error(`Getting data from source type \`${Source[source]}\` not supported, this should never happen`);
 };
@@ -137,8 +155,8 @@ config.subscribe(conf => {
 
 export const fetchBookData = async (series: Series) => {
   const res = await retryFetch(series.url);
-  const json = await res.json();
-  if (!res.ok) throw json.message;
+  const json = await requestToResource(series, res);
+  if (!res.ok) throw '' + (json.message ?? json);
 
   const data = getDataFromSource(series.type, json);
 

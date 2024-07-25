@@ -1,6 +1,5 @@
 import { writable } from 'svelte/store';
-import { getSourceType, Source } from './sources';
-import { toApiCall } from './util';
+import { getFetchUrlForSource, getSourceType, Source } from './sources';
 
 export enum Stage {
   INPUT,
@@ -35,7 +34,8 @@ export class Input extends StageData {
   stage: Stage.INPUT = Stage.INPUT;
   next(search: string) {
     const input = getSourceType(search);
-    store.update(s => ({ ...s, search, series: input !== Source.SEARCH ? { url: toApiCall(search), type: input } : s.series }));
+    console.debug('Input', search, 'resulted in type', input);
+    store.update(s => ({ ...s, search, series: input !== Source.SEARCH ? { url: getFetchUrlForSource(input, search), type: input } : s.series }));
     switch (input) {
       case Source.SEARCH:
         return next(Search);

@@ -16,12 +16,21 @@ export const toApiCall = (url: URL | string) => {
   return url.toString();
 };
 
-export const apiToRegular = (url: string) => url.slice(0, -5).replace('https://api', 'https://www');
+export const apiToRegular = (url: string) => {
+  const u = new URL(url);
+  if ((u.host === 'reddit.com' || u.host.match(/\.reddit\.com$/)) && url.match('\.json$')) return url.slice(0, -5).replace('https://api', 'https://www');
+  return url;
+};
 
 // https://stackoverflow.com/a/34064434/
 export const decode = (() => {
   const parser = new DOMParser();
   return (text: string) => parser.parseFromString(text, 'text/html').documentElement.textContent;
+})();
+
+export const stringToDocument = (() => {
+  const parser = new DOMParser();
+  return (text: string) => parser.parseFromString(text, 'text/html');
 })();
 
 export const copyData = (bookData: Immutable<Bookdata>): Bookdata => ({ ...bookData, chapters: bookData.chapters.map(c => ({ ...c })) });
