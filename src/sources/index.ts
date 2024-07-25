@@ -177,7 +177,7 @@ config.subscribe(conf => {
 export const fetchBookData = async (series: Series) => {
   const res = await retryFetchURL(new URL(series.url));
   const json = await requestToResource(series, res);
-  if (!res.ok) throw '' + (json.message ?? json);
+  if (!res.ok) throw '' + (json.message ?? res.statusText ?? res.status);
 
   const data = getDataFromSource(series.type, json);
 

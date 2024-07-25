@@ -26,7 +26,7 @@
         if (chapter.needsFetching !== false) try {
           const res = await retryFetch(chapter.apiUrl, new URL($store.series.url).origin);
           const json = await requestToResource($store.series, res);
-          if (!res.ok) throw '' + (json.message ?? json);
+          if (!res.ok) throw '' + (json.message ?? res.statusText ?? res.status);
           finishedChapters[index + i] = { ...transformChapter($config, getChapterDataFromSource($store.series.type, json, chapter.apiUrl)), new: true };
           finishedChapters = finishedChapters; // tell svelte to update
         } catch (err) {
