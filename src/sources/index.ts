@@ -56,6 +56,7 @@ export const getDataFromSource = (source: Source, json: any): Bookdata | undefin
 export const getChapterDataFromSource = (source: Source, json: any, url: string): Chapter | undefined => {
   switch (source) {
     case Source.POST:
+    case Source.HFY_SERIES:
       return getPostContent(json);
     case Source.GENERIC:
       return getGenericContent(json, url);
