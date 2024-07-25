@@ -13,11 +13,12 @@
 
   let newchapters: { from: string, url: string }[] = [];
   let chapters: Bookdata['chapters'];
+  let stop = false;
 
   const fetchMore = async () => {
     chapters = stage.bookData.chapters.map(c => ({ ...c })); // deep copy
 
-    while (true) {
+    while (!stop) {
       let cur = chapters[chapters.length - 1];
       if (cur.needsFetching !== false) {
         const res = await retryFetch(cur.apiUrl, new URL($store.series.url).origin);
@@ -80,6 +81,8 @@
       <p class="valid small">{chapter.from}: Found <a href="{chapter.url}">{chapter.url}</a></p>
     {/each}
   </div>
+
+  <button on:click|preventDefault="{() => stop = true}" disabled="{stop}">Cancel</button>
 {:then newData}
   {stage.next(newData, newchapters.length)}
 {:catch error}

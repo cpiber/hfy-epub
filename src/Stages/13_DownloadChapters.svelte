@@ -11,6 +11,7 @@
 
   let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...stage.bookData.chapters.map(c => ({ ...c, new: false }))];
   const batchSize = 100;
+  let stop = false;
 
   let errors: any[] = [];
   const fetchChapters = async () => {
@@ -19,7 +20,7 @@
     errors = [];
 
     // bunch up in 100s
-    for (let i = 0; i < prev.length; i += batchSize) {
+    for (let i = 0; i < prev.length && !stop; i += batchSize) {
       await Promise.all(prev.slice(i, i + batchSize).map(async (chapter, index) => {
         finishedChapters[index + i] = { ...prev[index + i] };
         if (chapter.needsFetching !== false) try {
@@ -68,6 +69,8 @@
     {/if}
   {/each}
 </div>
+
+<button on:click|preventDefault="{() => stop = true}" disabled="{stop}">Cancel</button>
 
 {#if errors.length}
   {#key errors}
