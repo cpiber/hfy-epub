@@ -8,11 +8,11 @@
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { Source } from '../sources/index';
   import type { EditData } from '../stages';
-  import { store } from '../stages';
+  import { bookDataStore, store } from '../stages';
   import { blankChapter, copyData, toApiCall } from '../util';
 
-  const odata = copyData(stage.bookData);
-  const data = copyData(stage.bookData);
+  const odata = copyData($bookDataStore);
+  const data = $bookDataStore!;
 
   let page = 0;
   const pageSize = 50;

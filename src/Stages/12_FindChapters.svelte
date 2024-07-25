@@ -9,14 +9,14 @@
   import { retryFetch } from '../fetch';
   import { findNextLink, getChapterDataFromSource, getFetchUrlForSource, requestToResource, transformChapter } from '../sources';
   import type { FindChapters } from '../stages';
-  import { store } from '../stages';
+  import { bookDataStore, store } from '../stages';
 
   let newchapters: { from: string, url: string }[] = [];
   let chapters: Bookdata['chapters'];
   let stop = false;
 
   const fetchMore = async () => {
-    chapters = stage.bookData.chapters.map(c => ({ ...c })); // deep copy
+    chapters = $bookDataStore.chapters.map(c => ({ ...c })); // deep copy
 
     while (!stop) {
       let cur = chapters[chapters.length - 1];
@@ -43,7 +43,7 @@
       if (!res.ok) throw '' + (json.message ?? res.statusText ?? res.status);
       chapters.push(transformChapter($config, getChapterDataFromSource($store.series.type, json, n)));
     }
-    return { ...stage.bookData, chapters };
+    return { ...$bookDataStore, chapters };
   };
   let fetchPromise = fetchMore();
 
@@ -86,5 +86,5 @@
 {:then newData}
   {stage.next(newData, newchapters.length)}
 {:catch error}
-  <ErrorMessage {error} retry={() => fetchPromise = fetchMore()} back="{() => stage.next({ ...stage.bookData, chapters }, newchapters.length)}" />
+  <ErrorMessage {error} retry={() => fetchPromise = fetchMore()} back="{() => stage.next({ ...$bookDataStore, chapters }, newchapters.length)}" />
 {/await}

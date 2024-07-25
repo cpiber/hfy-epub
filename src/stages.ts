@@ -23,19 +23,16 @@ export abstract class StageData {
   needsSaving?: boolean;
   abstract next(...args: any[]): void;
   dump(): any[] { return []; }
-  static usesBookData: boolean;
 }
-type StageDataCtor = { new(...a: any[]): StageData; usesBookData: boolean; };
+type StageDataCtor = { new(...a: any[]): StageData; };
 export type StageStore = {
   stage: StageData;
-  lastBookData?: Bookdata;
   search?: string;
   series?: Series;
 };
 
 export class Input extends StageData {
   stage: Stage.INPUT = Stage.INPUT;
-  static usesBookData = false;
   next(search: string) {
     const input = getSourceType(search);
     console.debug('Input', search, 'resulted in type', input);
@@ -50,16 +47,17 @@ export class Input extends StageData {
   fromList(list: string) {
     const urls = list.split('\n');
     store.update(s => ({ ...s, series: { url: urls[0], type: Source.GENERIC } }));
-    return next(BookData, { author: 'unknown', title: 'unknown', chapters: urls.map((u, i) => ({ apiUrl: u, id: nanoid(), title: `Chapter ${i}`, displayUrl: u, })) });
+    bookDataStore.update(() => ({ author: 'unknown', title: 'unknown', chapters: urls.map((u, i) => ({ apiUrl: u, id: nanoid(), title: `Chapter ${i}`, displayUrl: u, })) }));
+    return next(BookData);
   }
   fromJSON({ series, bookData }: { series: Series, bookData: Bookdata; }) {
     store.update(s => ({ ...s, series }));
-    return next(BookData, bookData);
+    bookDataStore.update(() => bookData);
+    return next(BookData);
   }
 }
 export class Search extends StageData {
   stage: Stage.SEARCH = Stage.SEARCH;
-  static usesBookData = false;
   next(series: Series) {
     store.update(s => ({ ...s, series }));
     return next(BookData);
@@ -67,53 +65,38 @@ export class Search extends StageData {
 }
 export class BookData extends StageData {
   stage: Stage.BOOK_DATA = Stage.BOOK_DATA;
-  constructor(public bookData: Immutable<Bookdata> = undefined, public newChapters: number = undefined) { super(); }
-  static usesBookData = true;
-  next(data: Bookdata) { return next(Result, data); }
-  edit(data: Bookdata) { return next(EditData, data); }
-  findMore(data: Bookdata) { return next(FindChapters, data); }
-  downloadAll(data: Bookdata) { return next(DownloadChapters, data); }
-  dump(): any[] { return [this.bookData, this.newChapters]; }
+  constructor(public newChapters: number = undefined) { super(); }
+  next() { return next(Result); }
+  edit() { return next(EditData); }
+  findMore() { return next(FindChapters); }
+  downloadAll() { return next(DownloadChapters); }
+  dump(): any[] { return [this.newChapters]; }
 }
 export class EditData extends StageData {
   stage: Stage.EDIT_DATA = Stage.EDIT_DATA;
   needsSaving = true;
-  static usesBookData = true;
-  constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
-  next(data: Bookdata) { return next(BookData, data); }
-  dump(): any[] { return [this.bookData]; }
+  next(data: Bookdata) { bookDataStore.update(() => data); return next(BookData); }
 }
 export class FindChapters extends StageData {
   stage: Stage.FIND_CHAPTERS = Stage.FIND_CHAPTERS;
   needsSaving = true;
-  static usesBookData = true;
-  constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
-  next(data: Bookdata, n: number) { return next(BookData, data, n); }
-  dump(): any[] { return [this.bookData]; }
+  next(data: Bookdata, n: number) { bookDataStore.update(() => data); return next(BookData, n); }
 }
 export class DownloadChapters extends StageData {
   stage: Stage.DOWNLOAD_CHAPTERS = Stage.DOWNLOAD_CHAPTERS;
   needsSaving = true;
-  static usesBookData = true;
-  constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
-  next(data: Bookdata) { return next(BookData, data); }
-  dump(): any[] { return [this.bookData]; }
+  next(data: Bookdata) { bookDataStore.update(() => data); return next(BookData); }
 }
 export class Result extends StageData {
   stage: Stage.RESULT = Stage.RESULT;
-  static usesBookData = true;
-  constructor(public bookData: Immutable<Bookdata>) { super(); if (!bookData) throw new Error('bookData must be defined'); }
-  next() { return next(BookData, this.bookData); }
-  dump(): any[] { return [this.bookData]; }
+  next() { return next(BookData); }
 }
 export class Settings extends StageData {
   stage: Stage.SETTINGS = Stage.SETTINGS;
-  static usesBookData = false;
   next() { return back(); }
 }
 export class _404 extends StageData {
   stage: Stage._404 = Stage._404;
-  static usesBookData = false;
   next() { return back(); }
 }
 
@@ -156,7 +139,6 @@ function nextFromEnum(typ: Stage, { data, search, series }: { data?: any[], sear
   data = data || [];
   store.update(s => {
     try {
-      if (StageMapping[typ].usesBookData && s.lastBookData) data[0] = s.lastBookData;
       // @ts-ignore
       const n = new StageMapping[typ](...data);
       if (n.stage === s.stage.stage) return s; // no need to move if already here
@@ -179,12 +161,20 @@ export function is<S extends Stage, T extends (typeof StageMapping)[S]>(stage: S
   return !!stage && stage.stage === type;
 }
 export const store = writable<StageStore>({ stage: new Input() });
+export const bookDataStore = writable<Bookdata>(undefined);
 
 const pathRegex = new RegExp('^' + __webpack_public_path__.replace('/', '\/'));
 export const loadFromHistory = () => {
   window.removeEventListener('popstate', handlePopState);
   window.addEventListener('popstate', handlePopState);
   handlePopState();
+};
+export const loadBookData = () => {
+  try {
+    const bookData = JSON.parse(localStorage.getItem('book'));
+    bookDataStore.update(() => bookData);
+  } catch {
+  }
 };
 const loadStateFromLocalStorage = () => {
   try {

@@ -7,9 +7,9 @@
   import { retryFetch } from '../fetch';
   import { getChapterDataFromSource, requestToResource, transformChapter } from '../sources';
   import type { DownloadChapters } from '../stages';
-  import { store } from '../stages';
+  import { bookDataStore, store } from '../stages';
 
-  let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...stage.bookData.chapters.map(c => ({ ...c, new: false }))];
+  let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...$bookDataStore.chapters.map(c => ({ ...c, new: false }))];
   const batchSize = 10;
   let stop = false;
 
@@ -41,7 +41,7 @@
       finishedChapters[i] = { ...prev[i] };
     }
 
-    return { ...stage.bookData, chapters: finishedChapters };
+    return { ...$bookDataStore, chapters: finishedChapters };
   };
   let fetchPromise = fetchChapters();
 </script>
@@ -91,7 +91,7 @@
 
   {#if errors.length}
     {#key errors}
-      <ErrorMessage error={errors} retry={() => fetchPromise = fetchChapters()} back="{() => stage.next({ ...stage.bookData, chapters: finishedChapters })}" />
+      <ErrorMessage error={errors} retry={() => fetchPromise = fetchChapters()} back="{() => stage.next({ ...$bookDataStore, chapters: finishedChapters })}" />
     {/key}
   {/if}
 {/await}

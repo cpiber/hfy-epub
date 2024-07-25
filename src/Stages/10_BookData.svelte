@@ -11,19 +11,23 @@
   import { config } from '../configstore';
   import { fetchBookData, transformChapters } from '../sources';
   import type { BookData } from '../stages';
-  import { store } from '../stages';
-  import { copyData, decode, fold } from '../util';
+  import { bookDataStore, store } from '../stages';
+  import { decode, fold } from '../util';
 
   let showChapters = false;
   
-  const fetchData = (): Promise<Bookdata> => stage.bookData
-    ? Promise.resolve(copyData(stage.bookData))
-    : fetchBookData(series).then(data => stage.bookData = { ...data, chapters: transformChapters($config, data.chapters) });
+  const fetchData = (): Promise<Bookdata> => $bookDataStore
+    ? Promise.resolve($bookDataStore)
+    : fetchBookData(series).then(data => {
+      const bookData = { ...data, chapters: transformChapters($config, data.chapters) };
+      bookDataStore.update(() => bookData);
+      return bookData;
+    });
   let fetchPromise = fetchData();
 
   const exportBook = () => {
-    const json = JSON.stringify({ bookData: stage.bookData, series: $store.series });
-    download(new Blob([json]), `${decode(stage.bookData.author)} - ${decode(stage.bookData.title)}.json`, 'application/json');
+    const json = JSON.stringify({ bookData: $bookDataStore, series: $store.series });
+    download(new Blob([json]), `${decode($bookDataStore.author)} - ${decode($bookDataStore.title)}.json`, 'application/json');
   };
 </script>
 
@@ -70,7 +74,7 @@
       <p class="no-margin">Found {data.chapters.length}
         <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">{#if !showChapters}show{:else}hide{/if}</a>
         <span class="spacer" />
-        <button on:click="{() => stage.findMore(data)}">Find more</button>
+        <button on:click="{() => stage.findMore()}">Find more</button>
         {#if typeof stage.newChapters === "number"}
           <span on:click="{() => stage.newChapters = undefined}">Found {stage.newChapters} new</span>
         {/if}
@@ -87,11 +91,11 @@
   </div>
 
   {#if data.chapters.find(c => c.needsFetching !== false)} <!-- if at least one needs to still be downloaded -->
-    <button on:click="{() => stage.downloadAll(data)}">Fetch chapter contents</button>
+    <button on:click="{() => stage.downloadAll()}">Fetch chapter contents</button>
   {:else}
-    <button on:click="{() => stage.next(data)}">Generate EPUB</button>
+    <button on:click="{() => stage.next()}">Generate EPUB</button>
   {/if}
-  <button on:click="{() => stage.edit(data)}">Edit book</button>
+  <button on:click="{() => stage.edit()}">Edit book</button>
   <button on:click="{() => exportBook()}">Export</button>
   
   <BackToSearch {backToSearch} />

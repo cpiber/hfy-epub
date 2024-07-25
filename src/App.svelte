@@ -5,7 +5,7 @@
   import BackArrow from './icons/back-arrow.svg';
   import Gear from './icons/gear.svg';
   import * as Stages from './stages';
-  import { store } from './stages';
+  import { bookDataStore, store } from './stages';
   import Input from './Stages/00_Input.svelte';
   import Search from './Stages/01_Search.svelte';
   import BookData from './Stages/10_BookData.svelte';
@@ -16,6 +16,7 @@
   import Settings from './Stages/Settings.svelte';
 
   loadConfig();
+  Stages.loadBookData();
   Stages.loadFromHistory();
 </script>
 
@@ -32,10 +33,11 @@
   $: if (DEV) (window as any)._config = { ...$config, config };
 
   $: localStorage.setItem('config', JSON.stringify($config));
+  $: localStorage.setItem('state', JSON.stringify({ data: $store.stage.dump(), search: $store.search, series: $store.series }));
   $: try {
-    localStorage.setItem('state', JSON.stringify({ data: $store.stage.dump(), search: $store.search, series: $store.series }));
+    localStorage.setItem('book', JSON.stringify($bookDataStore));
   } catch {
-    localStorage.setItem('state', JSON.stringify({ data: [], search: $store.search, series: $store.series }));
+    localStorage.removeItem('book');
     console.error('Data too large! Caution, reloading won\'t work as expected!');
   }
 </script>
