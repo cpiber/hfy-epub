@@ -1,6 +1,6 @@
 <script lang="ts">
   export let error: any;
-  export let retry: () => void;
+  export let retry: () => void = undefined;
   export let back: () => void = undefined;
 
   if (DEV) console.error(error);
@@ -24,7 +24,9 @@
   {/each}
 </p>
 
-<button on:click="{retry}">Retry</button>
+{#if retry}
+  <button on:click="{retry}">Retry</button>
+{/if}
 
 {#if back}
   <a href="#back" on:click|preventDefault="{back}">back</a>

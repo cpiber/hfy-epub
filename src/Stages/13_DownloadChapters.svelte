@@ -64,20 +64,34 @@
   <Loading>Please wait, fetching chapters...</Loading>
 
   <button on:click|preventDefault="{() => stop = true}" disabled="{stop}">Cancel</button>
+
+  <div class="chapters">
+    {#each finishedChapters as chapter}
+      {#if chapter && chapter.new === true}
+        <p class="valid small">{chapter.title}</p>
+      {/if}
+    {/each}
+  </div>
+
+  {#if errors.length}
+    {#key errors}
+      <ErrorMessage error={errors} />
+    {/key}
+  {/if}
 {:then finishedData}
   {#if !errors.length}{stage.next(finishedData)}{/if}
+
+  <div class="chapters">
+    {#each finishedChapters as chapter}
+      {#if chapter && chapter.new === true}
+        <p class="valid small">{chapter.title}</p>
+      {/if}
+    {/each}
+  </div>
+
+  {#if errors.length}
+    {#key errors}
+      <ErrorMessage error={errors} retry={() => fetchPromise = fetchChapters()} back="{() => stage.next({ ...stage.bookData, chapters: finishedChapters })}" />
+    {/key}
+  {/if}
 {/await}
-
-<div class="chapters">
-  {#each finishedChapters as chapter}
-    {#if chapter && chapter.new === true}
-      <p class="valid small">{chapter.title}</p>
-    {/if}
-  {/each}
-</div>
-
-{#if errors.length}
-  {#key errors}
-    <ErrorMessage error={errors} retry={() => fetchPromise = fetchChapters()} back="{() => stage.next({ ...stage.bookData, chapters: finishedChapters })}" />
-  {/key}
-{/if}
