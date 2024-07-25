@@ -5,8 +5,9 @@
   import Loading from '../Components/Loading.svelte';
   import { config } from '../configstore';
   import { retryFetch } from '../fetch';
-  import { getPostContent, transformChapter } from '../sources';
+  import { getChapterDataFromSource, requestToResource, transformChapter } from '../sources';
   import type { DownloadChapters } from '../stages';
+  import { store } from '../stages';
 
   let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...stage.bookData.chapters.map(c => ({ ...c, new: false }))];
   const batchSize = 100;
@@ -23,9 +24,9 @@
         finishedChapters[index + i] = { ...prev[index + i] };
         if (chapter.needsFetching !== false) try {
           const res = await retryFetch(chapter.apiUrl);
-          const json = await res.json();
-          if (!res.ok) throw json.message;
-          finishedChapters[index + i] = { ...transformChapter($config, getPostContent(json)), new: true };
+          const json = await requestToResource($store.series, res);
+          if (!res.ok) throw '' + (json.message ?? json);
+          finishedChapters[index + i] = { ...transformChapter($config, getChapterDataFromSource($store.series.type, json, chapter.apiUrl)), new: true };
           finishedChapters = finishedChapters; // tell svelte to update
         } catch (err) {
           errors.push(err);

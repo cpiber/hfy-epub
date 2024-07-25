@@ -196,9 +196,9 @@ You are editing:
           ::
           <a class="small" href="#next" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page + 1)}" disabled={page >= maxPage}>Next</a>
         </nav>
-        <a class="small remove" href="#clear" on:click|preventDefault="{() => data.chapters = []}">Remove all</a>
       {/if}
       <button on:click|preventDefault="{() => {showNew = true; newChapter = blankChapter()}}">Add new</button>
+      <a class="small remove" href="#clear" on:click|preventDefault="{() => data.chapters = []}">Remove all</a>
     </SeriesCard>
   </div>
   {#if selectedChapterIndex >= 0}

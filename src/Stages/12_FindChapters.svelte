@@ -7,9 +7,9 @@
   import Loading from '../Components/Loading.svelte';
   import { config } from '../configstore';
   import { retryFetch } from '../fetch';
-  import { findNextLink, getPostContent, transformChapter } from '../sources';
+  import { findNextLink, getChapterDataFromSource, getFetchUrlForSource, requestToResource, transformChapter } from '../sources';
   import type { FindChapters } from '../stages';
-  import { toApiCall } from '../util';
+  import { store } from '../stages';
 
   let newchapters: { from: string, url: string }[] = [];
   let chapters: Bookdata['chapters'];
@@ -21,23 +21,23 @@
       let cur = chapters[chapters.length - 1];
       if (cur.needsFetching !== false) {
         const res = await retryFetch(cur.apiUrl);
-        const json = await res.json();
-        if (!res.ok) throw json.message;
-        chapters.splice(-1, 1, cur = transformChapter($config, getPostContent(json)));
+        const json = await requestToResource($store.series, res);
+        if (!res.ok) throw '' + (json.message ?? json);
+        chapters.splice(-1, 1, cur = transformChapter($config, getChapterDataFromSource($store.series.type, json, cur.apiUrl)));
       }
 
       const next = findNextLink($config, cur.content);
       if (!next) break;
-      const n = toApiCall(next);
+      const n = getFetchUrlForSource($store.series.type, next);
       if (chapters.find(c => c.apiUrl === n)) break; // no duplicates
 
       newchapters.push({ from: cur.title, url: next });
       newchapters = newchapters; // tell svelte to update
 
       const res = await retryFetch(n);
-      const json = await res.json();
-      if (!res.ok) throw json.message;
-      chapters.push(transformChapter($config, getPostContent(json)));
+      const json = await requestToResource($store.series, res);
+      if (!res.ok) throw '' + (json.message ?? json);
+      chapters.push(transformChapter($config, getChapterDataFromSource($store.series.type, json, n)));
     }
     return { ...stage.bookData, chapters };
   };

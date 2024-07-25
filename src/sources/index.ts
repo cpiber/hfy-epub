@@ -1,13 +1,11 @@
 import { ChapterTransformType, config, NextLinkType, type Config } from '../configstore';
 import { retryFetch } from '../fetch';
 import { isString, toApiCall } from '../util';
-import { getGenericData } from './cors';
+import { getGenericContent, getGenericData } from './cors';
 import { sandboxFn } from './fn';
 import { getSeriesPageData as getHFYSeriesPageData, isSeriesPage as isHFYSeriesPage } from './hfy';
-import { getPostData, isPost } from './post';
+import { getPostContent, getPostData, isPost } from './post';
 import { commentLinkHTML } from './re';
-
-export { getPostContent } from './post';
 
 export enum Source {
   HFY_SERIES,
@@ -51,6 +49,16 @@ export const getDataFromSource = (source: Source, json: any): Bookdata | undefin
       return getPostData(json);
     case Source.GENERIC:
       return getGenericData(json);
+  }
+  throw new Error(`Getting data from source type \`${Source[source]}\` not supported, this should never happen`);
+};
+
+export const getChapterDataFromSource = (source: Source, json: any, url: string): Chapter | undefined => {
+  switch (source) {
+    case Source.POST:
+      return getPostContent(json);
+    case Source.GENERIC:
+      return getGenericContent(json, url);
   }
   throw new Error(`Getting data from source type \`${Source[source]}\` not supported, this should never happen`);
 };
