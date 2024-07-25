@@ -26,7 +26,10 @@
         chapters.splice(-1, 1, cur = transformChapter($config, getChapterDataFromSource($store.series.type, json, cur.apiUrl)));
       }
 
-      const next = findNextLink($config, cur.content);
+      let next = findNextLink($config, cur.transformedContent ?? '');
+      console.debug('Got next link', next, ' from', cur.apiUrl, 'via transformed content');
+      if (!next) next = findNextLink($config, cur.content);
+      console.debug('Got next link', next, ' from', cur.apiUrl, 'via original content');
       if (!next) break;
       const n = getFetchUrlForSource($store.series.type, next);
       if (chapters.find(c => c.apiUrl === n)) break; // no duplicates

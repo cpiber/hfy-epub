@@ -5,7 +5,7 @@ import { getGenericContent, getGenericData } from './cors';
 import { sandboxFn } from './fn';
 import { getSeriesPageData as getHFYSeriesPageData, isSeriesPage as isHFYSeriesPage } from './hfy';
 import { getPostContent, getPostData, isPost } from './post';
-import { commentLinkHTML } from './re';
+import { anyLinkHTML, commentLinkHTML } from './re';
 
 export enum Source {
   HFY_SERIES,
@@ -73,6 +73,18 @@ export const findNextLinkDefault = (html: string) => {
     return !t.startsWith('first') && !t.startsWith('prev') && !t.startsWith('index');
   });
   if (post) return post[1];
+  const links = [...html.matchAll(anyLinkHTML)];
+  const nextLink = links.find(match => {
+    const t = match[2].toLowerCase();
+    return t.indexOf('next') !== -1;
+  });
+  if (nextLink) return nextLink[1];
+  // don't use "First Chapter", "Previous Chapter" or "Index" links
+  const link = links.reverse().find(match => {
+    const t = match[2].toLowerCase();
+    return !t.startsWith('first') && !t.startsWith('prev') && !t.startsWith('index');
+  });
+  if (link) return link[1];
 };
 let userNextRegex: RegExp;
 export const findNextLinkRegexp = (html: string) => {
