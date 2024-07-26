@@ -26,6 +26,7 @@
   let fetchPromise = fetchData();
 
   const exportBook = () => {
+    if (!$bookDataStore) throw new Error('Inconsistent state, expected to have book data');
     const json = JSON.stringify({ bookData: $bookDataStore, series: $store.series });
     download(new Blob([json]), `${decode($bookDataStore.author)} - ${decode($bookDataStore.title)}.json`, 'application/json');
   };
@@ -76,7 +77,7 @@
         <span class="spacer" />
         <button on:click="{() => stage.findMore()}">Find more</button>
         {#if typeof stage.newChapters === "number"}
-          <span on:click="{() => stage.newChapters = undefined}">Found {stage.newChapters} new</span>
+          <a on:click|preventDefault="{() => stage.newChapters = undefined}" href="#?">Found {stage.newChapters} new</a>
         {/if}
       </p>
 

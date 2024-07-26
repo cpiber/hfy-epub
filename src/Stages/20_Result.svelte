@@ -11,6 +11,7 @@
   import { decode } from '../util';
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
+  if (!$bookDataStore) throw new Error('Inconsistent state, expected to have book data');
   let logs: ['log' | 'warn', any][] = [];
 
   const generate = async () => {
@@ -25,7 +26,7 @@
         if (DEV) (type === 'warn' ? console.warn : console.log)(msg, ...more);
         logs = logs; // tell svelte to update
       },
-    }, $bookDataStore.chapters.map(c => ({ title: decode(c.title), content: c.transformedContent, url: c.displayUrl })));
+    }, $bookDataStore.chapters.map(c => ({ title: decode(c.title), content: c.transformedContent ?? '<i>Content missing</i>', url: c.displayUrl })));
   };
   let promise = generate();
 </script>

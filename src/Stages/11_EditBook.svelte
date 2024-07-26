@@ -11,8 +11,9 @@
   import { bookDataStore, store } from '../stages';
   import { blankChapter, copyData, toApiCall } from '../util';
 
+  if (!$bookDataStore) throw new Error('Inconsistent state, expected to have book data');
   const odata = copyData($bookDataStore);
-  const data = $bookDataStore!;
+  const data = $bookDataStore;
 
   let page = 0;
   const pageSize = 50;
@@ -26,11 +27,10 @@
   $: chapterSlice = data.chapters.slice(page * pageSize, (page + 1) * pageSize);
 
   let selectedChapterIndex: number = -1;
-  let selectedChapter: Bookdata['chapters'][number] = undefined;
+  let selectedChapter: Bookdata['chapters'][number] | undefined = undefined;
   $: selectedChapter = selectedChapterIndex >= 0 ? data.chapters[selectedChapterIndex] : undefined;
 
-  let showNew = false;
-  let newChapter: Bookdata['chapters'][number] = undefined;
+  let newChapter: Bookdata['chapters'][number] | undefined = undefined;
 
   const absIdx = (i: number) => i + pageSize * page;
 
@@ -62,7 +62,7 @@
   const handlePaging = (pg: number) => {
     if (page == pg) {
       const input = prompt('New page:', '' + (page + 1));
-      const npg = +input;
+      const npg = +(input || '');
       if (input !== null && !isNaN(npg) && npg > 0 && npg <= maxPage + 1)
         pg = npg - 1;
     }
@@ -80,7 +80,7 @@
 
   const closeChapter = (chap: Bookdata['chapters'][number]) => {
     if (!chap.displayUrl) return;
-    if ($store.series.type === Source.GENERIC) chap.apiUrl = chap.displayUrl;
+    if ($store.series?.type === Source.GENERIC) chap.apiUrl = chap.displayUrl;
     else chap.apiUrl = toApiCall(chap.displayUrl);
   };
 
@@ -174,36 +174,36 @@ You are editing:
               title={chapter.title}
               content={chapter.transformedContent}
               select={() => selectedChapterIndex = absIdx(i)}
-              moveUp={(page > 0 || i > 0) && moveUp.bind(null, absIdx(i))}
-              moveDown={(page < maxPage || i < chapterSlice.length - 1) && moveDown.bind(null, absIdx(i))}
+              moveUp={(page > 0 || i > 0) ? moveUp.bind(null, absIdx(i)) : undefined}
+              moveDown={(page < maxPage || i < chapterSlice.length - 1) ? moveDown.bind(null, absIdx(i)) : undefined}
               remove={remove.bind(null, absIdx(i))}
           />
         {/each}
       </div>
       {#if data.chapters.length > 0}
         <nav>
-          <a class="small" href="#prevous" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page - 1)}" disabled={page <= 0}>Previous</a>
+          <a class="small" href="#prevous" on:click|preventDefault="{handlePaging.bind(null, page - 1)}" disabled={page <= 0}>Previous</a>
           ::
           {#if pageConf.pre !== null}
-            <a class="small" href="{`#page ${pageConf.pre}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.pre - 1)}">{pageConf.pre}</a>
+            <a class="small" href="{`#page ${pageConf.pre}`}" on:click|preventDefault="{handlePaging.bind(null, pageConf.pre - 1)}">{pageConf.pre}</a>
             .
           {/if}
           {#each pageConf.pages as pg}
-            <a class="small" href="{`#page ${pg + 1}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
+            <a class="small" href="{`#page ${pg + 1}`}" on:click|preventDefault="{handlePaging.bind(null, pg)}" class:current={pg == page}>{pg + 1}</a>
           {/each}
           {#if pageConf.post !== null}
             .
-            <a class="small" href="{`#page ${pageConf.post}`}" role="navigation" on:click|preventDefault="{handlePaging.bind(null, pageConf.post - 1)}">{pageConf.post}</a>
+            <a class="small" href="{`#page ${pageConf.post}`}" on:click|preventDefault="{handlePaging.bind(null, pageConf.post - 1)}">{pageConf.post}</a>
           {/if}
           ::
-          <a class="small" href="#next" role="navigation" on:click|preventDefault="{handlePaging.bind(null, page + 1)}" disabled={page >= maxPage}>Next</a>
+          <a class="small" href="#next" on:click|preventDefault="{handlePaging.bind(null, page + 1)}" disabled={page >= maxPage}>Next</a>
         </nav>
       {/if}
-      <button on:click|preventDefault="{() => {showNew = true; newChapter = blankChapter()}}">Add new</button>
+      <button on:click|preventDefault="{() => {newChapter = blankChapter()}}">Add new</button>
       <a class="small remove" href="#clear" on:click|preventDefault="{() => data.chapters = []}">Remove all</a>
     </SeriesCard>
   </div>
-  {#if selectedChapterIndex >= 0}
+  {#if selectedChapter}
     <div transition:fly|local={{ x: 50, duration: 200 }}
         on:introend="{() => {hide = true; float = false}}"
         on:outrostart="{() => {float = true}}" on:outroend="{() => {hide = false}}" class:float
@@ -215,13 +215,13 @@ You are editing:
           bind:url={selectedChapter.displayUrl}
           canFetch={!!selectedChapter.apiUrl}
           close={() => {closeChapter(selectedChapter); selectedChapterIndex = -1}}
-          moveUp={(page > 0 || selectedChapterIndex > 0) && moveUp.bind(null, selectedChapterIndex)}
-          moveDown={(page < maxPage || selectedChapterIndex < chapterSlice.length - 1) && moveDown.bind(null, selectedChapterIndex)}
+          moveUp={(page > 0 || selectedChapterIndex > 0) ? moveUp.bind(null, selectedChapterIndex) : undefined}
+          moveDown={(page < maxPage || selectedChapterIndex < chapterSlice.length - 1) ? moveDown.bind(null, selectedChapterIndex) : undefined}
           remove={remove.bind(null, selectedChapterIndex)}
       />
     </div>
   {/if}
-  {#if showNew}
+  {#if newChapter}
     <div transition:fly|local={{ x: 50, duration: 200 }}
         on:introend="{() => {hide = true; float = false}}"
         on:outrostart="{() => {float = true}}" on:outroend="{() => {hide = false}}" class:float
@@ -233,7 +233,7 @@ You are editing:
           bind:url={newChapter.displayUrl}
           canFetch={!!newChapter.apiUrl}
           hideControls
-          close={() => {closeChapter(newChapter); data.chapters.push(newChapter); data.chapters = data.chapters; showNew = false;}}
+          close={() => {if (!newChapter) throw ''; closeChapter(newChapter); data.chapters.push(newChapter); data.chapters = data.chapters; newChapter = undefined;}}
       />
     </div>
   {/if}

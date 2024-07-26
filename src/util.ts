@@ -33,7 +33,7 @@ export const apiToRegular = (url: string) => {
 // https://stackoverflow.com/a/34064434/
 export const decode = (() => {
   const parser = new DOMParser();
-  return (text: string) => parser.parseFromString(text, 'text/html').documentElement.textContent;
+  return (text: string) => parser.parseFromString(text, 'text/html').documentElement.textContent ?? '';
 })();
 
 export const stringToDocument = (() => {

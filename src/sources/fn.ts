@@ -7,7 +7,7 @@ export const sandboxFn = (fn: string) => {
   ctx['console'] = { log: console.log, table: console.table, error: console.error, assert: console.assert };
   const proxy = new Proxy<Ctx>(ctx, { has, get });
   return (closure?: Parameters<typeof Object.defineProperties>[1]) => {
-    Object.defineProperties(proxy, closure);
+    if (closure) Object.defineProperties(proxy, closure);
     return { proxy, ret: func(proxy) };
   };
 };

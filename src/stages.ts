@@ -18,7 +18,7 @@ export enum Stage {
 };
 const toUrl = (stage: Stage) => stage === Stage.INPUT ? __webpack_public_path__ : `${__webpack_public_path__}${Stage[stage].toLowerCase().replace(/_/g, '-')}`;
 export abstract class StageData {
-  stage: Stage;
+  stage: Stage = Stage.INPUT;
   from?: StageData;
   needsSaving?: boolean;
   abstract next(...args: any[]): void;
@@ -67,7 +67,7 @@ export class Search extends StageData {
 }
 export class BookData extends StageData {
   stage: Stage.BOOK_DATA = Stage.BOOK_DATA;
-  constructor(public newChapters: number = undefined) { super(); }
+  constructor(public newChapters: number | undefined = undefined) { super(); }
   next() { return next(Result); }
   edit() { return next(EditData); }
   findMore() { return next(FindChapters); }
@@ -163,7 +163,7 @@ export function is<S extends Stage, T extends (typeof StageMapping)[S]>(stage: S
   return !!stage && stage.stage === type;
 }
 export const store = writable<StageStore>({ stage: new Input() });
-export const bookDataStore = writable<Bookdata>(undefined);
+export const bookDataStore = writable<Bookdata | undefined>(undefined);
 
 const pathRegex = new RegExp('^' + __webpack_public_path__.replace('/', '\/'));
 export const loadFromHistory = () => {
@@ -173,14 +173,14 @@ export const loadFromHistory = () => {
 };
 export const loadBookData = () => {
   try {
-    const bookData = JSON.parse(localStorage.getItem('book'));
+    const bookData = JSON.parse(localStorage.getItem('book') ?? '');
     bookDataStore.update(() => bookData);
   } catch {
   }
 };
 const loadStateFromLocalStorage = () => {
   try {
-    return JSON.parse(localStorage.getItem('state'));
+    return JSON.parse(localStorage.getItem('state') ?? '');
   } catch {
     return undefined;
   }

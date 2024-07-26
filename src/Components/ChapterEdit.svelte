@@ -1,13 +1,13 @@
 <script lang="ts">
   export let title: string;
-  export let content: string;
-  export let needsFetching: boolean;
-  export let url: string = undefined;
+  export let content: string | undefined;
+  export let needsFetching: boolean | undefined;
+  export let url: string | undefined = undefined;
   export let canFetch = false;
   export let close: () => void;
-  export let moveUp: () => void = undefined;
-  export let moveDown: () => void = undefined;
-  export let remove: () => void = undefined;
+  export let moveUp: (() => void) | undefined = undefined;
+  export let moveDown: (() => void) | undefined = undefined;
+  export let remove: (() => void) | undefined = undefined;
   export let hideControls = false;
 
   import Editor from '@tinymce/tinymce-svelte';
@@ -149,12 +149,12 @@
   <div class="chapter edit">
     <div class="field">
       <span class="label">Title</span>
-      <span class="title" aria-label="Title" contenteditable bind:innerHTML="{title}" on:keydown="{keydownDisableEnter}"></span>
+      <span class="title" aria-label="Title" contenteditable bind:innerHTML="{title}" on:keydown="{keydownDisableEnter}" role="textbox" tabindex="0"></span>
     </div>
     {#if url !== undefined}
       <div class="field">
         <span class="label">URL</span>
-        <span class="url" aria-label="URL" contenteditable bind:innerHTML="{url}" on:keydown="{keydownDisableEnter}"></span>
+        <span class="url" aria-label="URL" contenteditable bind:innerHTML="{url}" on:keydown="{keydownDisableEnter}" role="textbox" tabindex="0"></span>
       </div>
     {/if}
     {#if $config.useTiny}

@@ -108,7 +108,7 @@ export const findNextLinkFn = (html: string) => {
   };
   return userNextFn(closure).ret;
 };
-export const findNextLink = (config: Config, html: string): string => {
+export const findNextLink = (config: Config, html: string): string | undefined => {
   switch (config.nextLink) {
     case NextLinkType.DEFAULT: return findNextLinkDefault(html);
     case NextLinkType.REGEXP: return findNextLinkRegexp(html);

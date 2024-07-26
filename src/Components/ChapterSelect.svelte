@@ -1,9 +1,9 @@
 <script lang="ts">
   export let title: string;
-  export let content: string;
+  export let content: string | undefined;
   export let select: () => void;
-  export let moveUp: () => void = undefined;
-  export let moveDown: () => void = undefined;
+  export let moveUp: (() => void) | undefined = undefined;
+  export let moveDown: (() => void) | undefined = undefined;
   export let remove: () => void;
 
   import { decode } from '../util';
@@ -13,6 +13,10 @@
   $: empty = !content || !content.trim().length;
   let decoded = ''
   $: setTimeout(() => (decoded = decode(content || '')), 0); // moves the strain of decoding
+
+  const keydownHandler = (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.keyCode === 13) select();
+  };
 </script>
 
 <style lang="postcss">
@@ -97,7 +101,7 @@
 </style>
 
 
-<div class="chapter" tabindex="0" {title} on:click="{select}" on:contextmenu|preventDefault >
+<div class="chapter" tabindex="0" {title} on:click="{select}" on:keydown="{keydownHandler}" on:contextmenu|preventDefault role="button">
   <div class="preview" class:empty>
     <span class="title" aria-label="Title">{title}</span>
     {#if !empty}<span class="content">{decoded}</span>{/if}

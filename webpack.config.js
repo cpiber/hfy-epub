@@ -18,10 +18,11 @@ module.exports = (_ /* env */, argv) => ({
   devtool: argv.mode === 'production' ? false : 'source-map',
   resolve: {
     alias: {
-      svelte: path.resolve('node_modules', 'svelte'),
+      svelte: path.resolve('node_modules', 'svelte/src/runtime'),
     },
     extensions: ['.mjs', '.js', '.svelte', '.ts'],
     mainFields: ['svelte', 'browser', 'module', 'main'],
+    conditionNames: ['svelte', 'browser'],
     fallback: {
       fs: false,
       path: require.resolve("path-browserify"),
@@ -88,7 +89,7 @@ module.exports = (_ /* env */, argv) => ({
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: "public" },
+        { from: "public", filter: (pth) => !pth.endsWith('favicon_orig.png') },
       ],
     }),
     new HtmlWebpackPlugin({

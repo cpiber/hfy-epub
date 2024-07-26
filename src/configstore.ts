@@ -36,7 +36,7 @@ export const toValidConfig = (nconf?: any) => {
 };
 export const loadConfig = () => {
   try {
-    const nconf = JSON.parse(localStorage.getItem('config'));
+    const nconf = JSON.parse(localStorage.getItem('config') ?? '');
     config.set(toValidConfig(nconf));
   } catch { }
 };
