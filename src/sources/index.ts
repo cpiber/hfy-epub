@@ -168,10 +168,14 @@ export const transformChapter = (config: Config, chapter: Chapter): Chapter => {
 export const transformChapters = (config: Config, chapters: Bookdata['chapters']): Bookdata['chapters'] => chapters.map(transformChapter.bind(null, config));
 
 config.subscribe(conf => {
-  userNextRegex = new RegExp(conf.nextLinkRegex, 'i');
-  userNextFn = sandboxFn(conf.nextLinkFn);
-  userTransformRegex = new RegExp(conf.transformRegex, 'i');
-  userTransformFn = sandboxFn(conf.transformFn);
+  try {
+    userNextRegex = new RegExp(conf.nextLinkRegex, 'i');
+    userTransformRegex = new RegExp(conf.transformRegex, 'i');
+    userNextFn = sandboxFn(conf.nextLinkFn);
+    userTransformFn = sandboxFn(conf.transformFn);
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 export const fetchBookData = async (series: Series) => {

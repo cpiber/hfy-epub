@@ -16,12 +16,12 @@ export const defaultConfig = {
   useTiny: false,
   nextLink: NextLinkType.DEFAULT,
   nextLinkRegex: `href="([^"]+)"[^>]*>\\s*Next`,
-  nextLinkFn: `return "https://www.reddit.com/r/HFY/comments/f94rak/oc_pthok_eats_an_ice_cream_cone/"`,
+  nextLinkFn: `return "https://www.reddit.com/r/HFY/comments/f94rak/oc_pthok_eats_an_ice_cream_cone/" // use \`document\` or \`html\` to extract`,
   transform: ChapterTransformType.NONE,
   transformRegex: '.md',
   transformSelector: '',
-  transformFn: `title = "P'Thok Eats an Ice Cream Cone"
-html = "https://www.reddit.com/r/HFY/comments/f94rak/oc_pthok_eats_an_ice_cream_cone/"`,
+  transformFn: `title = "P'Thok Eats an Ice Cream Cone" // or read from \`title\`
+html = "https://www.reddit.com/r/HFY/comments/f94rak/oc_pthok_eats_an_ice_cream_cone/" // use \`document\`, \`html\`, \`url\``,
 };
 export type Config = typeof defaultConfig;
 export const config = writable(defaultConfig);
