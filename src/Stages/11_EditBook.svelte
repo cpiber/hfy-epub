@@ -142,7 +142,7 @@
       text-decoration: none;
     }
 
-    a[disabled="true"] {
+    a.disabled {
       opacity: 0.6;
       pointer-events: none;
     }
@@ -182,7 +182,7 @@ You are editing:
       </div>
       {#if data.chapters.length > 0}
         <nav>
-          <a class="small" href="#prevous" on:click|preventDefault="{handlePaging.bind(null, page - 1)}" disabled={page <= 0}>Previous</a>
+          <a class="small" href="#prevous" on:click|preventDefault="{handlePaging.bind(null, page - 1)}" class:disabled={page <= 0}>Previous</a>
           ::
           {#if pageConf.pre !== null}
             <a class="small" href="{`#page ${pageConf.pre}`}" on:click|preventDefault="{handlePaging.bind(null, pageConf.pre - 1)}">{pageConf.pre}</a>
@@ -196,7 +196,7 @@ You are editing:
             <a class="small" href="{`#page ${pageConf.post}`}" on:click|preventDefault="{handlePaging.bind(null, pageConf.post - 1)}">{pageConf.post}</a>
           {/if}
           ::
-          <a class="small" href="#next" on:click|preventDefault="{handlePaging.bind(null, page + 1)}" disabled={page >= maxPage}>Next</a>
+          <a class="small" href="#next" on:click|preventDefault="{handlePaging.bind(null, page + 1)}" class:disabled={page >= maxPage}>Next</a>
         </nav>
       {/if}
       <button on:click|preventDefault="{() => {newChapter = blankChapter()}}">Add new</button>
