@@ -1,7 +1,7 @@
 // https://blog.risingstack.com/writing-a-javascript-framework-sandboxed-code-evaluation/
 type Ctx = Record<string | symbol, any>;
 export const sandboxFn = (fn: string) => {
-  const code = `with (sandbox) {${fn}}`;
+  const code = `with (sandbox) {${fn}\n}`;
   const func = new Function('sandbox', code);
   const ctx = Object.create(null);
   ctx['console'] = { log: console.log, table: console.table, error: console.error, assert: console.assert };
