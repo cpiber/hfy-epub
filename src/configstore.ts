@@ -13,7 +13,7 @@ export enum ChapterTransformType {
 };
 
 export const defaultConfig = {
-  useTiny: true,
+  useTiny: false,
   nextLink: NextLinkType.DEFAULT,
   nextLinkRegex: `href="([^"]+)"[^>]*>\\s*Next`,
   nextLinkFn: `return "https://www.reddit.com/r/HFY/comments/f94rak/oc_pthok_eats_an_ice_cream_cone/"`,

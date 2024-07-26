@@ -38,6 +38,9 @@
       No data is ever sent away.
       For collecting the chapter data, this site contacts <code>{redditApiBase}</code> only. The book is generated in the browser.
     </p>
+    <p class="small" transition:fold>
+      If TinyMCE-Editor is activated, the user's browser connects to <code>cdn.tiny.cloud</code> and <code>sp.tinymce.com</code> to load the necessary files.
+    </p>
   {/if}
 
   {#if !Stages.is($store.stage, Stages.Stage.SETTINGS)}
