@@ -80,7 +80,7 @@
 
   const closeChapter = (chap: Bookdata['chapters'][number]) => {
     if (!chap.displayUrl) return;
-    if ($store.series?.type === Source.GENERIC) chap.apiUrl = chap.displayUrl;
+    if ($store.series.type === Source.GENERIC) chap.apiUrl = chap.displayUrl;
     else chap.apiUrl = toApiCall(chap.displayUrl);
   };
 

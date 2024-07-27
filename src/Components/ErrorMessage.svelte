@@ -1,7 +1,7 @@
 <script lang="ts">
   export let error: any;
-  export let retry: () => void = undefined;
-  export let back: () => void = undefined;
+  export let retry: (() => void) | undefined = undefined;
+  export let back: (() => void) | undefined = undefined;
 
   if (DEV) console.error(error);
   let errors = Array.isArray(error) ? error : [error];

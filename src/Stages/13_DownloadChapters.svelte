@@ -9,6 +9,7 @@
   import type { DownloadChapters } from '../stages';
   import { bookDataStore, store } from '../stages';
 
+  if (!$bookDataStore) throw new Error('Inconsistent state, expected to have book data');
   let finishedChapters: Bookdata['chapters'] & { new?: boolean }[] = [...$bookDataStore.chapters.map(c => ({ ...c, new: false }))];
   const batchSize = 10;
   let stop = false;

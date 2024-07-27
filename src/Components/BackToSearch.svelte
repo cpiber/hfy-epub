@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let backToSearch: () => void = undefined;
+  export let backToSearch: (() => void) | undefined = undefined;
 </script>
 
 

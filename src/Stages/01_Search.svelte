@@ -1,6 +1,6 @@
 <script lang="ts">
   export let stage: Search;
-  export let search: string;
+  export let search: string | undefined;
 
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';

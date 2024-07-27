@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let onSubmit: () => void = undefined;
+  export let onSubmit: (() => void) | undefined = undefined;
 </script>
 
 <style lang="postcss">

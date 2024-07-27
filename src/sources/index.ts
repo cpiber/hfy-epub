@@ -41,7 +41,7 @@ export const requestToResource = (series: Series, res: Response): Promise<any> =
   }
 };
 
-export const getDataFromSource = (source: Source, json: any): Bookdata | undefined => {
+export const getDataFromSource = (source: Source, json: any): Bookdata => {
   switch (source) {
     case Source.HFY_SERIES:
       return getHFYSeriesPageData(json);
@@ -53,7 +53,7 @@ export const getDataFromSource = (source: Source, json: any): Bookdata | undefin
   throw new Error(`Getting data from source type \`${Source[source]}\` not supported, this should never happen`);
 };
 
-export const getChapterDataFromSource = (source: Source, json: any, url: string): Chapter | undefined => {
+export const getChapterDataFromSource = (source: Source, json: any, url: string): Chapter => {
   switch (source) {
     case Source.POST:
     case Source.HFY_SERIES:

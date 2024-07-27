@@ -1,6 +1,6 @@
 <script lang="ts">
   export let stage: Input;
-  export let search: string = undefined;
+  export let search: string | undefined = undefined;
 
   import { fade } from 'svelte/transition';
   import { getAllSeries } from '../sources/hfy';
@@ -15,9 +15,9 @@
 
   let series: ReturnType<typeof getAllSeries>;
   let open = false;
-  let list: string = undefined;
+  let list: string | undefined = undefined;
   let mode: Mode = Mode.Search;
-  let file: File = undefined;
+  let file: File | undefined = undefined;
   let disabled = false;
 
   let placeholder = `https://example.com/chapter1
@@ -38,6 +38,7 @@ https://example.com/chapter2`;
     open = !!series && !!search;
   };
   const readUpload = async () => {
+    if (!file) return;
     disabled = true;
     const reader = new FileReader();
     const promise = new Promise((resolve, reject) => {
@@ -181,7 +182,7 @@ https://example.com/chapter2`;
       </p>
 
       {#if open}
-        {#await searchSeries(series, search) then all}
+        {#await searchSeries(series, search ?? '') then all}
           <div class="search-results">
             {#each all as series}
               <a class="result" href="{apiToRegular(series.url)}" on:click|preventDefault="{() => stage.next(series.url)}">{series.title}</a>
@@ -216,7 +217,7 @@ https://example.com/chapter2`;
         Import:
         <input
             id="upload" type="file" accept="application/json,*.json" name="files" size=30
-            on:change="{(e) => file = e.currentTarget.files[0]}"
+            on:change="{(e) => file = e.currentTarget.files?.[0]}"
             disabled={disabled} />
         <input type="submit" value="Go" class="submit" disabled={file === undefined || disabled} />
       </p>

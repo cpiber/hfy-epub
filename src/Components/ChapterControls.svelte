@@ -1,7 +1,7 @@
 <script lang="ts">
-  export let moveUp: () => void = undefined;
-  export let moveDown: () => void = undefined;
-  export let remove: () => void = undefined;
+  export let moveUp: (() => void) | undefined = undefined;
+  export let moveDown: (() => void) | undefined = undefined;
+  export let remove: (() => void) | undefined = undefined;
 
   import Triangle from '../icons/triangle.svg';
 </script>

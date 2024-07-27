@@ -1,6 +1,6 @@
 <script lang="ts">
   export let stage: Result;
-  export let backToSearch: () => void;
+  export let backToSearch: (() => void) | undefined;
 
   import download from 'downloadjs';
   import BackToSearch from '../Components/BackToSearch.svelte';

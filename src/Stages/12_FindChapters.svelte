@@ -10,12 +10,13 @@
   import { findNextLink, getChapterDataFromSource, getFetchUrlForSource, requestToResource, transformChapter } from '../sources';
   import type { FindChapters } from '../stages';
   import { bookDataStore, store } from '../stages';
-
+  
+  if (!$bookDataStore) throw new Error('Inconsistent state, expected to have book data');
   let newchapters: { from: string, url: string }[] = [];
   let chapters: Bookdata['chapters'];
   let stop = false;
 
-  const fetchMore = async () => {
+  const fetchMore = async (): Promise<Bookdata> => {
     chapters = $bookDataStore.chapters.map(c => ({ ...c })); // deep copy
 
     while (!stop) {
@@ -29,7 +30,7 @@
 
       let next = findNextLink($config, cur.transformedContent ?? '');
       if (DEV) console.debug('Got next link', next, ' from', cur.apiUrl, 'via transformed content');
-      if (!next) next = findNextLink($config, cur.content);
+      if (!next) next = findNextLink($config, cur.content ?? '');
       if (DEV) console.debug('Got next link', next, ' from', cur.apiUrl, 'via original content');
       if (!next) break;
       const n = getFetchUrlForSource($store.series.type, next);
@@ -61,7 +62,7 @@
   const scrollToBottom = (_: HTMLElement, __: any) => {
     return {
       update: ({ scroll }: { scroll: boolean }) => {
-        if (scroll) document.querySelector('footer').scrollIntoView();
+        if (scroll) document.querySelector('footer')!.scrollIntoView();
       },
     };
   }

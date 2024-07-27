@@ -28,7 +28,7 @@ type StageDataCtor = { new(...a: any[]): StageData; };
 export type StageStore = {
   stage: StageData;
   search?: string;
-  series?: Series;
+  series: Series;
 };
 
 export class Input extends StageData {
@@ -137,7 +137,7 @@ export function next<T extends StageDataCtor>(typ: T, ...args: ConstructorParame
     return { ...s, stage: n, lastBookData: typ.usesBookData ? n.bookData as Bookdata : s.lastBookData };
   });
 };
-function nextFromEnum(typ: Stage, { data, search, series }: { data?: any[], search?: string, series?: Series; } = {}) {
+function nextFromEnum(typ: Stage, { data, search, series }: { data?: any[], search?: string, series: Series; } = { series: { type: Source.GENERIC, url: '' } }) {
   data = data || [];
   store.update(s => {
     try {
@@ -159,10 +159,10 @@ function nextFromEnum(typ: Stage, { data, search, series }: { data?: any[], sear
 export function back() {
   history.back();
 }
-export function is<S extends Stage, T extends (typeof StageMapping)[S]>(stage: StageData, type: S): stage is InstanceType<T> {
+export function is<S extends Stage, T extends (typeof StageMapping)[S]>(stage: StageData | undefined, type: S): stage is InstanceType<T> {
   return !!stage && stage.stage === type;
 }
-export const store = writable<StageStore>({ stage: new Input() });
+export const store = writable<StageStore>({ stage: new Input(), series: { type: Source.GENERIC, url: '' } });
 export const bookDataStore = writable<Bookdata | undefined>(undefined);
 
 const pathRegex = new RegExp('^' + __webpack_public_path__.replace('/', '\/'));

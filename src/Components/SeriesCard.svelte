@@ -3,9 +3,9 @@
   export let title: string;
   export let author: string;
   export let url = '';
-  export let onSubmit: () => void = undefined;
+  export let onSubmit: (() => void) | undefined = undefined;
 
-  import { apiToRegular,decode } from '../util';
+  import { apiToRegular, decode } from '../util';
   import Column from './Column.svelte';
 </script>
 
