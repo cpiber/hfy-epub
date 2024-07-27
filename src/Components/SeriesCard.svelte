@@ -7,6 +7,10 @@
 
   import { apiToRegular, decode } from '../util';
   import Column from './Column.svelte';
+
+  const keydownDisableEnter = (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.keyCode === 13) e.preventDefault(); // prevent newlines
+  };
 </script>
 
 <style lang="postcss">
@@ -15,6 +19,7 @@
     width: 100%;
     box-sizing: border-box;
     border-bottom: 1px solid currentColor;
+    word-break: break-all;
   }
 </style>
 
@@ -25,7 +30,7 @@
     {#if !edit}
       <a href="{apiToRegular(url)}" target="_blank">{decode(data.title)}</a>
     {:else}
-      <span class="edit" bind:innerHTML="{data.title}" contenteditable></span>
+      <span class="edit" bind:innerText="{data.title}" contenteditable on:keydown="{keydownDisableEnter}" role="textbox" tabindex="0"></span>
     {/if}
   </p>
   <h3>Author</h3>
@@ -33,7 +38,7 @@
     {#if !edit}
       {decode(data.author)}
     {:else}
-      <span class="edit" bind:innerHTML="{data.author}" contenteditable></span>
+      <span class="edit" bind:innerText="{data.author}" contenteditable on:keydown="{keydownDisableEnter}" role="textbox" tabindex="0"></span>
     {/if}
   </p>
   {#if edit}

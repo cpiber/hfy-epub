@@ -19,8 +19,6 @@
   needsFetching = needsFetching ?? true;
   content = content ?? '';
 
-  $: title = title.replace(/<[^>]*>/g, '');
-
   const keydownDisableEnter = (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.keyCode === 13) e.preventDefault(); // prevent newlines
   };
@@ -94,6 +92,10 @@
       margin: $tb 1px;
     }
 
+    span[contenteditable] {
+      word-break: break-all;
+    }
+
     .label {
       overflow: hidden;
       transition: opacity $len ease-in-out;
@@ -149,12 +151,12 @@
   <div class="chapter edit">
     <div class="field">
       <span class="label">Title</span>
-      <span class="title" aria-label="Title" contenteditable bind:innerHTML="{title}" on:keydown="{keydownDisableEnter}" role="textbox" tabindex="0"></span>
+      <span class="title" aria-label="Title" contenteditable bind:innerText="{title}" on:keydown="{keydownDisableEnter}" role="textbox" tabindex="0"></span>
     </div>
     {#if url !== undefined}
       <div class="field">
         <span class="label">URL</span>
-        <span class="url" aria-label="URL" contenteditable bind:innerHTML="{url}" on:keydown="{keydownDisableEnter}" role="textbox" tabindex="0"></span>
+        <span class="url" aria-label="URL" contenteditable bind:innerText="{url}" on:keydown="{keydownDisableEnter}" role="textbox" tabindex="0"></span>
       </div>
     {/if}
     {#if $config.useTiny}
