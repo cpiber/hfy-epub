@@ -3,6 +3,7 @@
   export let search: string | undefined = undefined;
 
   import { fade } from 'svelte/transition';
+  import Radio from '../Components/Radio.svelte';
   import { getAllSeries } from '../sources/hfy';
   import type { Input } from '../stages';
   import { apiToRegular } from '../util';
@@ -130,17 +131,18 @@ https://example.com/chapter2`;
     margin: 0;
   }
 
-  .mode-select {
+  :global .mode-select {
     input {
       opacity: 0;
-      width: 1;
-      height: 1;
+      width: 1px;
+      height: 1px;
       position: absolute;
       left: -10px;
+      pointer-events: none;
     }
 
     label {
-      display: inline-block;
+      display: inline-block !important;
       padding: 8px;
       border-bottom: 2px hidden black;
       cursor: pointer;
@@ -163,11 +165,11 @@ https://example.com/chapter2`;
   }
 </style>
 
-<div class="mode-select">
-  <label class:selected={mode == Mode.Search}><input type="radio" name="mode" value="search" bind:group="{mode}" />Search</label>
-  <label class:selected={mode == Mode.List}><input type="radio" name="mode" value="list" bind:group="{mode}" />URLs</label>
-  <label class:selected={mode == Mode.Import}><input type="radio" name="mode" value="import" bind:group="{mode}" />Import</label>
-</div>
+<Radio options="{[
+  { value: Mode.Search, label: 'Search' },
+  { value: Mode.List, label: 'URLs' },
+  { value: Mode.Import, label: 'Import' },
+]}" bind:selected="{mode}" name="mode" class="mode-select" />
 <div class="mode">
   {#if mode == Mode.Search}
     <form class="form" on:submit|preventDefault="{() => stage.next(search || '')}" bind:this="{formRef}">
