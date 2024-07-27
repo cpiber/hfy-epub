@@ -67,6 +67,16 @@
   }
 }
 
+@mixin remove {
+  .remove {
+    color: $error;
+
+    &:hover {
+      color: color-mod($error lightness(-20%));
+    }
+  }
+}
+
 @keyframes slide {
   0% {
     left: 0;

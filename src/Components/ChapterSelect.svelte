@@ -21,6 +21,9 @@
 
 <style lang="postcss">
   @import '../variables';
+  @import '../loading';
+  @include remove;
+
   $len: 0.1s;
   $wait: 0.2s;
   $lr: 0.5em;
@@ -64,13 +67,13 @@
 
   .preview {
     display: grid;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 2fr 3fr min-content;
     gap: 5px;
     align-items: center;
     overflow: hidden;
 
     &.empty {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr min-content;
     }
 
     .title {
@@ -79,6 +82,10 @@
     }
     .content {
 
+    }
+    .remove {
+      margin-right: 5px;
+      text-decoration: none;
     }
 
     .title, .content {
@@ -90,7 +97,7 @@
 
     @include medium {
       & {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr min-content;
       }
 
       .content {
@@ -105,6 +112,7 @@
   <div class="preview" class:empty>
     <span class="title" aria-label="Title">{title}</span>
     {#if !empty}<span class="content">{decoded}</span>{/if}
+    <a class="small remove" href="#remove" on:click|preventDefault="{remove}">&times;</a>
   </div>
   <div class="more">
     <ChapterControls {moveUp} {moveDown} {remove} />

@@ -8,6 +8,8 @@
 
 <style lang="postcss">
   @import '../variables';
+  @import '../loading';
+  @include remove;
 
   %button {
     display: inline-flex;
@@ -39,13 +41,6 @@
     :global(svg) {
       transform: rotate(180deg);
       margin: auto 0;
-    }
-  }
-  .remove {
-    color: $error;
-
-    &:hover {
-      color: color-mod($error lightness(-20%));
     }
   }
 </style>

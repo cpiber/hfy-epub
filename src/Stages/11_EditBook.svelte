@@ -105,6 +105,8 @@
 
 <style lang="postcss">
   @import '../variables';
+  @import '../loading';
+  @include remove;
 
   .list {
     margin: 1em 0;
@@ -156,14 +158,6 @@
     .current {
       opacity: 0.6;
       text-decoration: underline;
-    }
-  }
-
-  .remove {
-    color: $error;
-
-    &:hover {
-      color: color-mod($error lightness(-20%));
     }
   }
 </style>
