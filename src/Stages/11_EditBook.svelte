@@ -6,7 +6,8 @@
   import ChapterEdit from '../Components/ChapterEdit.svelte';
   import ChapterSelect from '../Components/ChapterSelect.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
-  import { Source } from '../sources/index';
+  import { config } from '../configstore';
+  import { Source, transformChapters } from '../sources/index';
   import type { EditData } from '../stages';
   import { bookDataStore, store } from '../stages';
   import { blankChapter, copyData, toApiCall } from '../util';
@@ -82,6 +83,11 @@
     if (!chap.displayUrl) return;
     if ($store.series.type === Source.GENERIC) chap.apiUrl = chap.displayUrl;
     else chap.apiUrl = toApiCall(chap.displayUrl);
+  };
+
+  const transformAll = () => {
+    if (!window.confirm('Really continue? This will discard all changes!')) return;
+    data.chapters = transformChapters($config, data.chapters);
   };
 
   let pageConf: { pre: number | null, pages: number[], post: number | null } = { pre: null, pages: [], post: null };
@@ -167,7 +173,7 @@ You are editing:
 
 <div class="list">
   <div class:hide>
-    <SeriesCard bind:title={data.title} bind:author={data.author} edit={true} onSubmit={() => stage.next(data)}>
+    <SeriesCard {data} edit={true} onSubmit={() => stage.next(data)} onTransformAll={transformAll}>
       <div class="chapters" use:dndzone={{ items: chapterSlice, flipDurationMs }} on:consider={handleConsiderFinalize} on:finalize={handleConsiderFinalize}>
         {#each chapterSlice as chapter, i (chapter.id)}
           <ChapterSelect

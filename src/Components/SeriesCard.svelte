@@ -1,9 +1,9 @@
 <script lang="ts">
   export let edit = false;
-  export let title: string;
-  export let author: string;
+  export let data: Bookdata;
   export let url = '';
   export let onSubmit: (() => void) | undefined = undefined;
+  export let onTransformAll: (() => void) | undefined = undefined;
 
   import { apiToRegular, decode } from '../util';
   import Column from './Column.svelte';
@@ -23,19 +23,25 @@
   <h3>Title</h3>
   <p>
     {#if !edit}
-      <a href="{apiToRegular(url)}" target="_blank">{decode(title)}</a>
+      <a href="{apiToRegular(url)}" target="_blank">{decode(data.title)}</a>
     {:else}
-      <span class="edit" bind:innerHTML="{title}" contenteditable></span>
+      <span class="edit" bind:innerHTML="{data.title}" contenteditable></span>
     {/if}
   </p>
   <h3>Author</h3>
   <p>
     {#if !edit}
-      {decode(author)}
+      {decode(data.author)}
     {:else}
-      <span class="edit" bind:innerHTML="{author}" contenteditable></span>
+      <span class="edit" bind:innerHTML="{data.author}" contenteditable></span>
     {/if}
   </p>
+  {#if edit}
+  <h3>Actions</h3>
+  <p>
+    <button on:click|preventDefault="{onTransformAll}">Transform all</button>
+  </p>
+  {/if}
   {#if $$slots.default}
     <h3>Chapters</h3>
     <div>

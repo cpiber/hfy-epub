@@ -71,7 +71,7 @@
   Got the following series:
 
   <div class="list">
-    <SeriesCard title={data.title} author={data.author} url={series.url}>
+    <SeriesCard {data} url={series.url}>
       <p class="no-margin">Found {data.chapters.length}
         <a href="#show" class="small" on:click|preventDefault="{() => showChapters = !showChapters}">{#if !showChapters}show{:else}hide{/if}</a>
         <span class="spacer" />
