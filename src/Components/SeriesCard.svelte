@@ -7,6 +7,7 @@
   export let onFetchAll: (() => void) | undefined = undefined;
 
   import Editor from '@tinymce/tinymce-svelte';
+  import type { ChangeEventHandler } from 'svelte/elements';
   import { config } from '../configstore';
   import { apiToRegular } from '../util';
   import Column from './Column.svelte';
@@ -19,6 +20,30 @@
     plugins: 'code',
     toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | code',
   };
+  
+  const storeFile: ChangeEventHandler<HTMLInputElement> = async (e) => {
+    if (e.currentTarget.files && e.currentTarget.files.length) data.cover = e.currentTarget.files[0];
+    else data.cover = undefined;
+  };
+  
+  let coverURL: string | undefined = undefined;
+  const clearURL = () => {
+    if (coverURL) URL.revokeObjectURL(coverURL);
+  };
+  const coverReader = new FileReader();
+  coverReader.onload = () => coverURL = coverReader.result as string;
+  $: {
+    clearURL();
+    if (data.cover) {
+      try {
+        coverReader.abort();
+        coverReader.readAsDataURL(data.cover);
+      } catch (err) {
+        console.error(err);
+        data.cover = undefined;
+      }
+    }
+  }
 </script>
 
 <style lang="postcss">
@@ -43,6 +68,11 @@
       margin-bottom: 0;
     }
   }
+
+  img {
+    max-height: 200px;
+    display: block;
+  }
 </style>
 
 
@@ -61,6 +91,18 @@
       {data.author}
     {:else}
       <span class="edit" bind:innerText="{data.author}" contenteditable on:keydown="{keydownDisableEnter}" role="textbox" tabindex="0"></span>
+    {/if}
+  </p>
+  <h3>Cover</h3>
+  <p>
+    {#if data.cover}
+      <img src={coverURL} alt="cover" />
+    {:else}
+      <i>None set</i>
+    {/if}
+    {#if edit}
+      <input type="file" accept="image/*" on:change={storeFile} />
+      <input type="button" value="Clear" on:click|preventDefault={() => data.cover = undefined} />
     {/if}
   </p>
   <h3>Description</h3>

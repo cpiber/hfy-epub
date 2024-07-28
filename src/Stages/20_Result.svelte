@@ -20,6 +20,7 @@
       title: $bookDataStore.title,
       author: $bookDataStore.author,
       description: $bookDataStore.description,
+      cover: $bookDataStore.cover,
       ignoreFailedDownloads: true,
       verbose: (type, msg, ...more) => {
         const strMsg = [msg, ...more].join(' ');

@@ -12,7 +12,7 @@
     display: grid;
     grid-template-columns: 150px auto;
     gap: 10px;
-    align-items: baseline;
+    align-items: start;
 
     @include mobile {
       grid-template-columns: 100%;
