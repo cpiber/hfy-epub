@@ -174,9 +174,10 @@ export const loadFromHistory = () => {
 };
 export const loadBookData = () => {
   try {
-    const bookData = JSON.parse(localStorage.getItem('book') ?? '');
+    const bookData = bookDataFromJSON(localStorage.getItem('book') ?? '');
     bookDataStore.update(() => bookData);
-  } catch {
+  } catch (err) {
+    console.error(err);
   }
 };
 const loadStateFromLocalStorage = () => {
@@ -195,4 +196,32 @@ const handlePopState = () => {
   const state = { ...localState, ...(history.state || {}) };
   if (stage in Stage) return nextFromEnum(Stage[stage as keyof typeof Stage], state);
   return nextFromEnum(Stage._404);
+};
+
+export const bookDataFromObject = (intermediate: Bookdata & { cover?: { name: string, data: number[]; }; }) => {
+  const data: Bookdata = { ...intermediate, cover: undefined };
+  if (intermediate.cover) {
+    data.cover = new File([new Uint8Array(intermediate.cover.data)], intermediate.cover.name);
+  }
+  return data;
+};
+export const bookDataFromJSON = (input: string) => {
+  const intermediate: Bookdata & { cover?: { name: string, data: number[]; }; } = JSON.parse(input);
+  return bookDataFromObject(intermediate);
+};
+
+export const bookDataToObject = async (data: Bookdata) => {
+  const intermediate: Bookdata | { cover?: { name: string, data: number[]; }; } = { ...data, cover: undefined };
+  if (data.cover) {
+    const buffer = await data.cover.arrayBuffer();
+    intermediate.cover = {
+      name: data.cover.name,
+      data: Array.from(new Uint8Array(buffer)),
+    };
+  }
+  return intermediate;
+};
+export const bookDataToJSON = async (data?: Bookdata): Promise<string> => {
+  if (!data) return 'undefined';
+  return JSON.stringify(await bookDataToObject(data));
 };

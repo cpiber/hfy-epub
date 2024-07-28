@@ -5,7 +5,7 @@
   import { fade } from 'svelte/transition';
   import Radio from '../Components/Radio.svelte';
   import { getAllSeries } from '../sources/hfy';
-  import type { Input } from '../stages';
+  import { bookDataFromObject, type Input } from '../stages';
   import { apiToRegular } from '../util';
 
   enum Mode {
@@ -49,7 +49,9 @@ https://example.com/chapter2`;
     reader.readAsText(file);
     await promise;
     disabled = false;
-    return JSON.parse(reader.result as string);
+    const obj = JSON.parse(reader.result as string);
+    obj.bookData = bookDataFromObject(obj.bookData);
+    return obj;
   };
 </script>
 

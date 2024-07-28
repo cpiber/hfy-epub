@@ -34,12 +34,19 @@
 
   $: localStorage.setItem('config', JSON.stringify($config));
   $: localStorage.setItem('state', JSON.stringify({ data: $store.stage.dump(), search: $store.search, series: $store.series }));
-  $: try {
-    localStorage.setItem('book', JSON.stringify($bookDataStore));
-  } catch {
-    localStorage.removeItem('book');
-    console.error('Data too large! Caution, reloading won\'t work as expected!');
-  }
+  $: Stages.bookDataToJSON($bookDataStore).then(
+    data => {
+      try {
+        localStorage.setItem('book', data);
+      } catch (err) {
+        return err;
+      }
+    },
+    () => {
+      localStorage.removeItem('book');
+      console.error('Data too large! Caution, reloading won\'t work as expected!');
+    }
+  );
 </script>
 
 <style lang="postcss">

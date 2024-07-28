@@ -11,7 +11,7 @@
   import { config } from '../configstore';
   import { fetchBookData, transformChapters } from '../sources';
   import type { BookData } from '../stages';
-  import { bookDataStore, store } from '../stages';
+  import { bookDataStore, bookDataToObject, store } from '../stages';
   import { fold } from '../util';
 
   let showChapters = false;
@@ -25,9 +25,9 @@
     });
   let fetchPromise = fetchData();
 
-  const exportBook = () => {
+  const exportBook = async () => {
     if (!$bookDataStore) throw new Error('Inconsistent state, expected to have book data');
-    const json = JSON.stringify({ bookData: $bookDataStore, series: $store.series });
+    const json = JSON.stringify({ bookData: await bookDataToObject($bookDataStore), series: $store.series });
     download(new Blob([json]), `${$bookDataStore.author} - ${$bookDataStore.title}.json`, 'application/json');
   };
 </script>
