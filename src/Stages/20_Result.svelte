@@ -8,7 +8,6 @@
   import Loading from '../Components/Loading.svelte';
   import type { Result } from '../stages';
   import { bookDataStore } from '../stages';
-  import { decode } from '../util';
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
   if (!$bookDataStore) throw new Error('Inconsistent state, expected to have book data');
@@ -18,8 +17,8 @@
     logs = [];
     const { default: epub } = await epubPromise;
     return await epub({
-      title: decode($bookDataStore.title),
-      author: decode($bookDataStore.author),
+      title: $bookDataStore.title,
+      author: $bookDataStore.author,
       ignoreFailedDownloads: true,
       verbose: (type, msg, ...more) => {
         const strMsg = [msg, ...more].join(' ');
@@ -29,7 +28,7 @@
         if (DEV) (type === 'warn' ? console.warn : console.log)(msg, ...more);
         logs = logs; // tell svelte to update
       },
-    }, $bookDataStore.chapters.map(c => ({ title: decode(c.title), content: c.transformedContent ?? '<i>Content missing</i>', url: c.displayUrl })));
+    }, $bookDataStore.chapters.map(c => ({ title: c.title, content: c.transformedContent ?? '<i>Content missing</i>', url: c.displayUrl })));
   };
   let promise = generate();
 </script>
@@ -59,7 +58,7 @@
   </div>
 {:then book}
   <h3 class="valid">Your e-book is ready!</h3>
-  <button on:click="{() => download(book, `${decode($bookDataStore.author)} - ${decode($bookDataStore.title)}.epub`, 'application/epub+zip')}">Download</button>
+  <button on:click="{() => download(book, `${$bookDataStore.author} - ${$bookDataStore.title}.epub`, 'application/epub+zip')}">Download</button>
   <button on:click="{stage.next.bind(stage)}">Back to book</button>
   <BackToSearch {backToSearch} />
 

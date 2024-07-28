@@ -12,7 +12,7 @@
   import { fetchBookData, transformChapters } from '../sources';
   import type { BookData } from '../stages';
   import { bookDataStore, store } from '../stages';
-  import { decode, fold } from '../util';
+  import { fold } from '../util';
 
   let showChapters = false;
   
@@ -28,7 +28,7 @@
   const exportBook = () => {
     if (!$bookDataStore) throw new Error('Inconsistent state, expected to have book data');
     const json = JSON.stringify({ bookData: $bookDataStore, series: $store.series });
-    download(new Blob([json]), `${decode($bookDataStore.author)} - ${decode($bookDataStore.title)}.json`, 'application/json');
+    download(new Blob([json]), `${$bookDataStore.author} - ${$bookDataStore.title}.json`, 'application/json');
   };
 </script>
 
@@ -84,7 +84,7 @@
       {#if showChapters}
         <div class="chapter-list" transition:fold>
           {#each data.chapters as chapter (chapter.id)}
-            <a href="{chapter.displayUrl}" target="_blank" class="small">{decode(chapter.title)}</a>
+            <a href="{chapter.displayUrl}" target="_blank" class="small">{chapter.title}</a>
           {/each}
         </div>
       {/if}
