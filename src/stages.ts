@@ -78,6 +78,7 @@ export class EditData extends StageData {
   stage: Stage.EDIT_DATA = Stage.EDIT_DATA;
   needsSaving = true;
   next(data: Bookdata) { bookDataStore.update(() => data); return next(BookData); }
+  fetch(data: Bookdata) { bookDataStore.update(() => data); return next(DownloadChapters); }
 }
 export class FindChapters extends StageData {
   stage: Stage.FIND_CHAPTERS = Stage.FIND_CHAPTERS;

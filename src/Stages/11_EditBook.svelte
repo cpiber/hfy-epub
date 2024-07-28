@@ -90,6 +90,12 @@
     data.chapters = transformChapters($config, data.chapters);
   };
 
+  const fetchAll = () => {
+    if (!window.confirm('Really continue? This will discard all changes!')) return;
+    data.chapters = data.chapters.map(c => ({ ...c, content: undefined, transformedContent: undefined, needsFetching: true }));
+    stage.fetch(data);
+  };
+
   let pageConf: { pre: number | null, pages: number[], post: number | null } = { pre: null, pages: [], post: null };
   $: {
     pageConf.pages = range(Math.max(0, page - 3), Math.min(maxPage, page + 3));
@@ -167,7 +173,7 @@ You are editing:
 
 <div class="list">
   <div class:hide>
-    <SeriesCard {data} edit={true} onSubmit={() => stage.next(data)} onTransformAll={transformAll}>
+    <SeriesCard {data} edit={true} onSubmit={() => stage.next(data)} onTransformAll={transformAll} onFetchAll={fetchAll}>
       <div class="chapters" use:dndzone={{ items: chapterSlice, flipDurationMs }} on:consider={handleConsiderFinalize} on:finalize={handleConsiderFinalize}>
         {#each chapterSlice as chapter, i (chapter.id)}
           <ChapterSelect

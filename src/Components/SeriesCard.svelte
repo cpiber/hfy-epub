@@ -4,6 +4,7 @@
   export let url = '';
   export let onSubmit: (() => void) | undefined = undefined;
   export let onTransformAll: (() => void) | undefined = undefined;
+  export let onFetchAll: (() => void) | undefined = undefined;
 
   import { apiToRegular } from '../util';
   import Column from './Column.svelte';
@@ -45,6 +46,7 @@
   <h3>Actions</h3>
   <p>
     <button on:click|preventDefault="{onTransformAll}">Transform all</button>
+    <button on:click|preventDefault="{onFetchAll}">Fetch all</button>
   </p>
   {/if}
   {#if $$slots.default}
