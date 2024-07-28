@@ -11,16 +11,12 @@ interface Series {
 interface Bookdata {
   author: string,
   title: string,
+  description?: string,
   chapters: Chapter[],
 }
 
 interface Chapter {
   id: string,
-  /**
-   * HTML string (as-is)
-   * 
-   * Needs to be unescaped once more, because it's escaped by EJS (and Svelte)
-   */
   title: string,
   /**
    * HTML string (Decoded when fetching)

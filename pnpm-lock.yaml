@@ -15,8 +15,8 @@ importers:
         specifier: ^1.4.7
         version: 1.4.7
       epub-gen-memory:
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.1.1
+        version: 1.1.1
       nanoid:
         specifier: ^5.0.7
         version: 5.0.7
@@ -1174,8 +1174,8 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
-  epub-gen-memory@1.1.0:
-    resolution: {integrity: sha512-dMxwvvXKV2pgkAw71vfl/K3yhSqF7DczPd2HqWv9M79kVZXr+V7gGatOJhfi4CLX6dFDxkEGX1i4AEQOYEdVpw==}
+  epub-gen-memory@1.1.1:
+    resolution: {integrity: sha512-T40BL7vORmKLt5NoF/lPSZQp9+09ayIRlktM+hUEBslHZD0+KnEXwdZ/9eyO2DxhdVtw+51hCxMA26iTNJLXcg==}
     engines: {node: '>=10.0.0'}
 
   err-code@2.0.3:
@@ -4657,7 +4657,7 @@ snapshots:
 
   envinfo@7.8.1: {}
 
-  epub-gen-memory@1.1.0:
+  epub-gen-memory@1.1.1:
     dependencies:
       abort-controller: 3.0.0
       css-select: 4.1.3

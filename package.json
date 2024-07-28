@@ -40,7 +40,7 @@
   "dependencies": {
     "@tinymce/tinymce-svelte": "^3.0.0",
     "downloadjs": "^1.4.7",
-    "epub-gen-memory": "^1.1.0",
+    "epub-gen-memory": "^1.1.1",
     "nanoid": "^5.0.7",
     "path-browserify": "^1.0.1",
     "svelte": "^4.2.18",
