@@ -12,7 +12,7 @@
   const epubPromise = import(/* webpackPrefetch: true */ 'epub-gen-memory');
 
   if (!$bookDataStore) throw new Error('Inconsistent state, expected to have book data');
-  let logs: ['log' | 'warn', any][] = [];
+  let logs: ['log' | 'warn', any, number][] = [];
 
   const generate = async () => {
     logs = [];
@@ -22,7 +22,10 @@
       author: decode($bookDataStore.author),
       ignoreFailedDownloads: true,
       verbose: (type, msg, ...more) => {
-        logs.push([type, msg]);
+        const strMsg = [msg, ...more].join(' ');
+        const found = logs.find(x => x[1] === strMsg);
+        if (found) ++found[2];
+        else logs.push([type, strMsg, 1]);
         if (DEV) (type === 'warn' ? console.warn : console.log)(msg, ...more);
         logs = logs; // tell svelte to update
       },
@@ -50,8 +53,8 @@
   <Loading>Please wait, generating e-book...</Loading>
 
   <div class="logs">
-    {#each logs as [type, msg]}
-      <p class="small" class:warning={type === 'warn'}>{msg}</p>
+    {#each logs as [type, msg, count]}
+      <p class="small" class:warning={type === 'warn'}>{msg}{#if count > 1}&nbsp;({count} times){/if}</p>
     {/each}
   </div>
 {:then book}
@@ -62,9 +65,9 @@
 
   {#if logs.find(([type]) => type === 'warn')}
     <div class="logs">
-      {#each logs as [type, msg]}
+      {#each logs as [type, msg, count]}
         {#if type === 'warn'}
-          <p class="small warning">{msg}</p>
+          <p class="small warning">{msg}{#if count > 1}&nbsp;({count} times){/if}</p>
         {/if}
       {/each}
     </div>

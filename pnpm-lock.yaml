@@ -15,8 +15,8 @@ importers:
         specifier: ^1.4.7
         version: 1.4.7
       epub-gen-memory:
-        specifier: ^1.0.10
-        version: 1.0.10
+        specifier: ^1.1.0
+        version: 1.1.0
       nanoid:
         specifier: ^5.0.7
         version: 5.0.7
@@ -38,10 +38,10 @@ importers:
         version: 1.4.6
       copy-webpack-plugin:
         specifier: ^12.0.2
-        version: 12.0.2(webpack@5.93.0)
+        version: 12.0.2(webpack@5.93.0(webpack-cli@5.1.4))
       css-loader:
         specifier: ^7.1.2
-        version: 7.1.2(webpack@5.93.0)
+        version: 7.1.2(webpack@5.93.0(webpack-cli@5.1.4))
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -50,10 +50,10 @@ importers:
         version: 6.1.1
       html-webpack-plugin:
         specifier: ^5.6.0
-        version: 5.6.0(webpack@5.93.0)
+        version: 5.6.0(webpack@5.93.0(webpack-cli@5.1.4))
       mini-css-extract-plugin:
         specifier: ^2.9.0
-        version: 2.9.0(webpack@5.93.0)
+        version: 2.9.0(webpack@5.93.0(webpack-cli@5.1.4))
       postcss:
         specifier: ^8.4.40
         version: 8.4.40
@@ -83,7 +83,7 @@ importers:
         version: 6.0.2(postcss@8.4.40)(svelte@4.2.18)(typescript@5.5.4)
       ts-loader:
         specifier: ^9.5.1
-        version: 9.5.1(typescript@5.5.4)(webpack@5.93.0)
+        version: 9.5.1(typescript@5.5.4)(webpack@5.93.0(webpack-cli@5.1.4))
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -95,7 +95,7 @@ importers:
         version: 5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0)
       webpack-dev-server:
         specifier: ^5.0.4
-        version: 5.0.4(webpack-cli@5.1.4)(webpack@5.93.0)
+        version: 5.0.4(bufferutil@4.0.3)(utf-8-validate@5.0.5)(webpack-cli@5.1.4)(webpack@5.93.0)
 
 packages:
 
@@ -1174,8 +1174,8 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
-  epub-gen-memory@1.0.10:
-    resolution: {integrity: sha512-QS4rEGCO/AUaaofhvAzXAxz0bJ/u23ZGdsdfjVBsWE6LHqM1Mi4R0rs+f6BbGDrHWBvASZkadvrfMc73TFpC6Q==}
+  epub-gen-memory@1.1.0:
+    resolution: {integrity: sha512-dMxwvvXKV2pgkAw71vfl/K3yhSqF7DczPd2HqWv9M79kVZXr+V7gGatOJhfi4CLX6dFDxkEGX1i4AEQOYEdVpw==}
     engines: {node: '>=10.0.0'}
 
   err-code@2.0.3:
@@ -3935,21 +3935,22 @@ snapshots:
       '@webassemblyjs/ast': 1.12.1
       '@xtuc/long': 4.2.2
 
-  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4)(webpack@5.93.0)':
+  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(webpack-cli@5.1.4))':
     dependencies:
       webpack: 5.93.0(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0)
 
-  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4)(webpack@5.93.0)':
+  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(webpack-cli@5.1.4))':
     dependencies:
       webpack: 5.93.0(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0)
 
-  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.0.4)(webpack@5.93.0)':
+  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack-dev-server@5.0.4(bufferutil@4.0.3)(utf-8-validate@5.0.5)(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(webpack-cli@5.1.4))':
     dependencies:
       webpack: 5.93.0(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0)
-      webpack-dev-server: 5.0.4(webpack-cli@5.1.4)(webpack@5.93.0)
+    optionalDependencies:
+      webpack-dev-server: 5.0.4(bufferutil@4.0.3)(utf-8-validate@5.0.5)(webpack-cli@5.1.4)(webpack@5.93.0)
 
   '@xtuc/ieee754@1.2.0': {}
 
@@ -3996,7 +3997,7 @@ snapshots:
       indent-string: 4.0.0
 
   ajv-formats@2.1.1(ajv@8.11.0):
-    dependencies:
+    optionalDependencies:
       ajv: 8.11.0
 
   ajv-keywords@3.5.2(ajv@6.12.6):
@@ -4417,7 +4418,7 @@ snapshots:
 
   cookie@0.5.0: {}
 
-  copy-webpack-plugin@12.0.2(webpack@5.93.0):
+  copy-webpack-plugin@12.0.2(webpack@5.93.0(webpack-cli@5.1.4)):
     dependencies:
       fast-glob: 3.3.2
       glob-parent: 6.0.2
@@ -4454,7 +4455,7 @@ snapshots:
       postcss: 7.0.38
       postcss-selector-parser: 5.0.0
 
-  css-loader@7.1.2(webpack@5.93.0):
+  css-loader@7.1.2(webpack@5.93.0(webpack-cli@5.1.4)):
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.40)
       postcss: 8.4.40
@@ -4464,6 +4465,7 @@ snapshots:
       postcss-modules-values: 4.0.0(postcss@8.4.40)
       postcss-value-parser: 4.2.0
       semver: 7.6.3
+    optionalDependencies:
       webpack: 5.93.0(webpack-cli@5.1.4)
 
   css-prefers-color-scheme@3.1.1:
@@ -4655,7 +4657,7 @@ snapshots:
 
   envinfo@7.8.1: {}
 
-  epub-gen-memory@1.0.10:
+  epub-gen-memory@1.1.0:
     dependencies:
       abort-controller: 3.0.0
       css-select: 4.1.3
@@ -4820,7 +4822,7 @@ snapshots:
       websocket-driver: 0.7.4
 
   fdir@5.1.0(picomatch@2.3.0):
-    dependencies:
+    optionalDependencies:
       picomatch: 2.3.0
 
   filelist@1.0.2:
@@ -5073,13 +5075,14 @@ snapshots:
       relateurl: 0.2.7
       terser: 5.14.2
 
-  html-webpack-plugin@5.6.0(webpack@5.93.0):
+  html-webpack-plugin@5.6.0(webpack@5.93.0(webpack-cli@5.1.4)):
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
       lodash: 4.17.21
       pretty-error: 4.0.0
       tapable: 2.2.1
+    optionalDependencies:
       webpack: 5.93.0(webpack-cli@5.1.4)
 
   htmlparser2@6.1.0:
@@ -5127,12 +5130,13 @@ snapshots:
 
   http-proxy-middleware@2.0.6(@types/express@4.17.21):
     dependencies:
-      '@types/express': 4.17.21
       '@types/http-proxy': 1.17.9
       http-proxy: 1.18.1
       is-glob: 4.0.3
       is-plain-obj: 3.0.0
       micromatch: 4.0.4
+    optionalDependencies:
+      '@types/express': 4.17.21
     transitivePeerDependencies:
       - debug
 
@@ -5546,7 +5550,7 @@ snapshots:
 
   mimic-response@3.1.0: {}
 
-  mini-css-extract-plugin@2.9.0(webpack@5.93.0):
+  mini-css-extract-plugin@2.9.0(webpack@5.93.0(webpack-cli@5.1.4)):
     dependencies:
       schema-utils: 4.0.0
       tapable: 2.2.1
@@ -6829,8 +6833,9 @@ snapshots:
 
   svelte-preprocess@6.0.2(postcss@8.4.40)(svelte@4.2.18)(typescript@5.5.4):
     dependencies:
-      postcss: 8.4.40
       svelte: 4.2.18
+    optionalDependencies:
+      postcss: 8.4.40
       typescript: 5.5.4
 
   svelte@4.2.18:
@@ -6863,7 +6868,7 @@ snapshots:
 
   tcomb@3.2.29: {}
 
-  terser-webpack-plugin@5.3.10(webpack@5.93.0):
+  terser-webpack-plugin@5.3.10(webpack@5.93.0(webpack-cli@5.1.4)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
@@ -6915,7 +6920,7 @@ snapshots:
     dependencies:
       escape-string-regexp: 1.0.5
 
-  ts-loader@9.5.1(typescript@5.5.4)(webpack@5.93.0):
+  ts-loader@9.5.1(typescript@5.5.4)(webpack@5.93.0(webpack-cli@5.1.4)):
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.10.0
@@ -7026,9 +7031,9 @@ snapshots:
   webpack-cli@5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0):
     dependencies:
       '@discoveryjs/json-ext': 0.5.5
-      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4)(webpack@5.93.0)
-      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4)(webpack@5.93.0)
-      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.0.4)(webpack@5.93.0)
+      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(webpack-cli@5.1.4))
+      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack@5.93.0(webpack-cli@5.1.4))
+      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0))(webpack-dev-server@5.0.4(bufferutil@4.0.3)(utf-8-validate@5.0.5)(webpack-cli@5.1.4)(webpack@5.93.0))(webpack@5.93.0(webpack-cli@5.1.4))
       colorette: 2.0.19
       commander: 10.0.1
       cross-spawn: 7.0.3
@@ -7038,10 +7043,11 @@ snapshots:
       interpret: 3.1.1
       rechoir: 0.8.0
       webpack: 5.93.0(webpack-cli@5.1.4)
-      webpack-dev-server: 5.0.4(webpack-cli@5.1.4)(webpack@5.93.0)
       webpack-merge: 5.8.0
+    optionalDependencies:
+      webpack-dev-server: 5.0.4(bufferutil@4.0.3)(utf-8-validate@5.0.5)(webpack-cli@5.1.4)(webpack@5.93.0)
 
-  webpack-dev-middleware@7.3.0(webpack@5.93.0):
+  webpack-dev-middleware@7.3.0(webpack@5.93.0(webpack-cli@5.1.4)):
     dependencies:
       colorette: 2.0.19
       memfs: 4.9.4
@@ -7049,9 +7055,10 @@ snapshots:
       on-finished: 2.4.1
       range-parser: 1.2.1
       schema-utils: 4.2.0
+    optionalDependencies:
       webpack: 5.93.0(webpack-cli@5.1.4)
 
-  webpack-dev-server@5.0.4(webpack-cli@5.1.4)(webpack@5.93.0):
+  webpack-dev-server@5.0.4(bufferutil@4.0.3)(utf-8-validate@5.0.5)(webpack-cli@5.1.4)(webpack@5.93.0):
     dependencies:
       '@types/bonjour': 3.5.13
       '@types/connect-history-api-fallback': 1.5.4
@@ -7081,10 +7088,11 @@ snapshots:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
+      webpack-dev-middleware: 7.3.0(webpack@5.93.0(webpack-cli@5.1.4))
+      ws: 8.18.0(bufferutil@4.0.3)(utf-8-validate@5.0.5)
+    optionalDependencies:
       webpack: 5.93.0(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0)
-      webpack-dev-middleware: 7.3.0(webpack@5.93.0)
-      ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -7121,10 +7129,11 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(webpack@5.93.0)
+      terser-webpack-plugin: 5.3.10(webpack@5.93.0(webpack-cli@5.1.4))
       watchpack: 2.4.1
-      webpack-cli: 5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0)
       webpack-sources: 3.2.3
+    optionalDependencies:
+      webpack-cli: 5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0)
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
@@ -7175,11 +7184,14 @@ snapshots:
       typedarray-to-buffer: 3.1.5
 
   ws@7.5.5(bufferutil@4.0.3)(utf-8-validate@5.0.5):
-    dependencies:
+    optionalDependencies:
       bufferutil: 4.0.3
       utf-8-validate: 5.0.5
 
-  ws@8.18.0: {}
+  ws@8.18.0(bufferutil@4.0.3)(utf-8-validate@5.0.5):
+    optionalDependencies:
+      bufferutil: 4.0.3
+      utf-8-validate: 5.0.5
 
   yallist@4.0.0: {}
 
