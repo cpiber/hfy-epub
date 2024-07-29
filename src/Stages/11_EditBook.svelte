@@ -1,12 +1,15 @@
 <script lang="ts">
   export let stage: EditData;
     
+  import { nanoid } from 'nanoid';
   import { dndzone } from "svelte-dnd-action";
   import { fly } from 'svelte/transition';
   import ChapterEdit from '../Components/ChapterEdit.svelte';
   import ChapterSelect from '../Components/ChapterSelect.svelte';
+  import Column from '../Components/Column.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { config } from '../configstore';
+  import BackArrow from '../icons/back-arrow.svg';
   import { Source, transformChapters } from '../sources/index';
   import type { EditData } from '../stages';
   import { bookDataStore, store } from '../stages';
@@ -32,6 +35,8 @@
   $: selectedChapter = selectedChapterIndex >= 0 ? data.chapters[selectedChapterIndex] : undefined;
 
   let newChapter: Bookdata['chapters'][number] | undefined = undefined;
+
+  let bulkURLs: string | undefined = undefined;
 
   const absIdx = (i: number) => i + pageSize * page;
 
@@ -94,6 +99,13 @@
     if (!window.confirm('Really continue? This will discard all changes!')) return;
     data.chapters = data.chapters.map(c => ({ ...c, content: undefined, transformedContent: undefined, needsFetching: true }));
     stage.fetch(data);
+  };
+
+  const createChaptersForURLs = () => {
+    const offset = data.chapters.length;
+    const urls = bulkURLs!.split('\n');
+    data.chapters = data.chapters.concat(urls.map((u, i) => ({ apiUrl: u, id: nanoid(), title: `Chapter ${i + offset}`, displayUrl: u, })));
+    bulkURLs = undefined;
   };
 
   let pageConf: { pre: number | null, pages: number[], post: number | null } = { pre: null, pages: [], post: null };
@@ -166,6 +178,25 @@
       text-decoration: underline;
     }
   }
+
+  .back {
+    :global svg {
+      height: 0.65em;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+
+      @include hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  textarea {
+    width: 100%;
+  }
 </style>
 
 
@@ -206,6 +237,7 @@ You are editing:
         </nav>
       {/if}
       <button on:click|preventDefault="{() => {newChapter = blankChapter()}}">Add new</button>
+      <button on:click|preventDefault="{() => {bulkURLs = ''}}">Add bulk</button>
       <a class="small remove" href="#clear" on:click|preventDefault="{() => data.chapters = []}">Remove all</a>
     </SeriesCard>
   </div>
@@ -241,6 +273,22 @@ You are editing:
           hideControls
           close={() => {if (!newChapter) throw ''; closeChapter(newChapter); data.chapters.push(newChapter); data.chapters = data.chapters; newChapter = undefined;}}
       />
+    </div>
+  {/if}
+  {#if bulkURLs !== undefined}
+    <div transition:fly|local={{ x: 50, duration: 200 }}
+        on:introend="{() => {hide = true; float = false}}"
+        on:outrostart="{() => {float = true}}" on:outroend="{() => {hide = false}}" class:float
+    >
+      <Column onSubmit={createChaptersForURLs}>
+        <h3 class="back"><a href="#home" on:click|preventDefault="{() => bulkURLs = undefined}" class="homelink"><BackArrow /> back</a></h3>
+        <div>
+          <p>Enter list of URLs:</p>
+          <textarea bind:value={bulkURLs} rows="5"></textarea>
+          <p class="small">One URL per line</p>
+          <p><input type="submit" value="Add all" class="submit" disabled={bulkURLs === undefined || !bulkURLs.trim().length} /></p>
+        </div>
+      </Column>
     </div>
   {/if}
 </div>
