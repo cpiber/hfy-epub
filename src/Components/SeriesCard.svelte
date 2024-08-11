@@ -6,19 +6,14 @@
   export let onTransformAll: (() => void) | undefined = undefined;
   export let onFetchAll: (() => void) | undefined = undefined;
 
-  import Editor from '@tinymce/tinymce-svelte';
   import type { ChangeEventHandler } from 'svelte/elements';
   import { config } from '../configstore';
   import { apiToRegular } from '../util';
   import Column from './Column.svelte';
+  import Editor from './Editor.svelte';
 
   const keydownDisableEnter = (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.keyCode === 13) e.preventDefault(); // prevent newlines
-  };
-
-  const conf = {
-    plugins: 'code',
-    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | code',
   };
   
   const storeFile: ChangeEventHandler<HTMLInputElement> = async (e) => {
@@ -112,8 +107,7 @@
     {:else if !edit}
       <i>None set</i>
     {:else if $config.useTiny}
-      <!-- svelte-ignore missing-declaration -->
-      <Editor bind:value={data.description} apiKey={TINY_API_KEY} {conf} />
+      <Editor bind:value="{data.description}" />
     {:else}
       <textarea bind:value="{data.description}"></textarea>
     {/if}

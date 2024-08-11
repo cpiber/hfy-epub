@@ -10,22 +10,17 @@
   export let remove: (() => void) | undefined = undefined;
   export let hideControls = false;
 
-  import Editor from '@tinymce/tinymce-svelte';
   import { config } from '../configstore';
   import BackArrow from '../icons/back-arrow.svg';
   import ChapterControls from './ChapterControls.svelte';
   import Column from './Column.svelte';
+  import Editor from './Editor.svelte';
 
   needsFetching = needsFetching ?? true;
   content = content ?? '';
 
   const keydownDisableEnter = (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.keyCode === 13) e.preventDefault(); // prevent newlines
-  };
-
-  const conf = {
-    plugins: 'code',
-    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | code',
   };
 </script>
 
@@ -160,8 +155,7 @@
       </div>
     {/if}
     {#if $config.useTiny}
-      <!-- svelte-ignore missing-declaration -->
-      <Editor bind:value={content} disabled={needsFetching && canFetch} apiKey={TINY_API_KEY} {conf} />
+      <Editor bind:value="{content}" disabled={needsFetching && canFetch} />
     {:else}
       <textarea bind:value="{content}" disabled={needsFetching && canFetch}></textarea>
     {/if}

@@ -29,6 +29,9 @@ importers:
       svelte-dnd-action:
         specifier: ^0.9.49
         version: 0.9.49(svelte@4.2.18)
+      tinymce:
+        specifier: ^7.3.0
+        version: 7.3.0
     devDependencies:
       '@tsconfig/svelte':
         specifier: ^5.0.4
@@ -3174,6 +3177,9 @@ packages:
 
   thunky@1.1.0:
     resolution: {integrity: sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA==}
+
+  tinymce@7.3.0:
+    resolution: {integrity: sha512-Ls4PgYlpk73XAxBSBqbVmSl8Mb3DuNfgF01GZ0lY6/MOEVRl3IL+VxC1Oe6165e8WqbqVsxO3Qj/PmoYNvQKGQ==}
 
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
@@ -6896,6 +6902,8 @@ snapshots:
       tslib: 2.3.1
 
   thunky@1.1.0: {}
+
+  tinymce@7.3.0: {}
 
   to-regex-range@5.0.1:
     dependencies:

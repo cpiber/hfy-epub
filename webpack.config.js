@@ -90,6 +90,7 @@ module.exports = (_ /* env */, argv) => ({
     new CopyPlugin({
       patterns: [
         { from: "public", filter: (pth) => !pth.endsWith('favicon_orig.png') },
+        { from: "node_modules/tinymce", filter: (pth) => pth.endsWith('.min.js') || pth.endsWith('.min.css'), to: "tinymce" },
       ],
     }),
     new HtmlWebpackPlugin({

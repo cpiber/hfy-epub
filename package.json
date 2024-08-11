@@ -44,7 +44,8 @@
     "nanoid": "^5.0.7",
     "path-browserify": "^1.0.1",
     "svelte": "^4.2.18",
-    "svelte-dnd-action": "^0.9.49"
+    "svelte-dnd-action": "^0.9.49",
+    "tinymce": "^7.3.0"
   },
   "keywords": [
     "epub",
