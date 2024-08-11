@@ -13,7 +13,7 @@
   };
   // remove the / at the beginning, since it confuses the editor
   // assumes the define ends in a trailing slash
-  const scriptSrc = `${__webpack_public_path__.slice(1)}tinymce/tinymce.min.js`
+  const scriptSrc = `tinymce/tinymce.min.js`
 </script>
 
 <!-- svelte-ignore missing-declaration -->
