@@ -1,3 +1,17 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+body:not(.standalone) {
+  max-width: 400px;
+}
+
 label {
   font-weight: bold;
   display: block;
@@ -8,5 +22,20 @@ label {
 
   &:has(input:not([type="checkbox"]), textarea) {
     cursor: text;
+  }
+
+  input:not([type="checkbox"]), select, textarea {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+div.disabled {
+  background: rgba(33, 33, 33, 0.2);
+}
+
+section {
+  div + div {
+    margin-top: 12px;
   }
 }

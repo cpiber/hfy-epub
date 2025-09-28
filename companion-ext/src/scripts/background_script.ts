@@ -15,7 +15,7 @@ const fetchable = async (url: string | URL, timeout: number = 10000) => {
 };
 
 const fetchUrlForUser = async (url: string) => {
-  const { useTab } = await getBrowserInstance().storage.local.get({ useTab: false });
+  const { useTab, waitForSelector } = await getBrowserInstance().storage.local.get({ useTab: false, waitForSelector: '' });
   if (!useTab) {
     const r = await fetchable(url);
     if (!r.ok) throw '' + (r.statusText ?? r.status);
@@ -43,10 +43,35 @@ const fetchUrlForUser = async (url: string) => {
       };
       getBrowserInstance().tabs.onUpdated.addListener(listener);
     });
-    const res = await getBrowserInstance().tabs.executeScript(activeTab.id, {
-      code: 'document.body.parentElement.outerHTML',
-    });
-    return res[0];
+    if (!waitForSelector) {
+      const res = await getBrowserInstance().tabs.executeScript(activeTab.id, {
+        code: 'document.body.parentElement.outerHTML',
+      });
+      return res[0];
+    } else {
+      return await new Promise((resolve, reject) => {
+        let iter = 0;
+        const i = window.setInterval(async () => {
+          if (iter++ > 100) {
+            window.clearInterval(i);
+            reject("timeout waiting for selector");
+            return;
+          }
+          const code = '!!document.querySelector("' + (new String(waitForSelector).replace(/"/g, '\\"')) + '")';
+          console.dev.log('Executing', code);
+          const res = await getBrowserInstance().tabs.executeScript(activeTab.id, {
+            code,
+          });
+          console.dev.log('Page result:', res);
+          if (!res[0]) return;
+          const res2 = await getBrowserInstance().tabs.executeScript(activeTab.id, {
+            code: 'document.body.parentElement.outerHTML',
+          });
+          window.clearInterval(i);
+          resolve(res2[0]);
+        }, 500);
+      });
+    }
   });
 };
 

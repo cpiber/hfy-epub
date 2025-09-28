@@ -30,5 +30,11 @@
   },
   "optionsUseTabDetails": {
     "message": "This uses a tab to fetch the chapter contents, as if a regular user accssed the page."
+  },
+  "optionsWaitSelector": {
+    "message": "Wait for this selector"
+  },
+  "optionsWaitSelectorDetails": {
+    "message": "Wait for the specified CSS selector to be available (i.e. `document.querySelector(...)` returns an element)."
   }
 }

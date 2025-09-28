@@ -54,7 +54,7 @@ const manifest: browser._manifest.WebExtensionManifest = {
     default_popup: 'options.html',
   },
   options_ui: {
-    page: 'options.html',
+    page: 'options.html#standalone',
     browser_style: true,
   },
   browser_specific_settings: {

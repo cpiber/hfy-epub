@@ -21,8 +21,18 @@ Array.from(document.querySelectorAll<HTMLElement>('[data-i18n]')).forEach(e => {
 const useTab = document.querySelector<HTMLInputElement>('[name="use-tab"]');
 useTab.addEventListener('change', e => {
   getBrowserInstance().storage.local.set({ useTab: (e.target as HTMLInputElement).checked });
+  waitForSelector.disabled = !useTab.checked;
+  waitForSelector.parentElement.parentElement.classList.toggle('disabled', !useTab.checked);
+});
+const waitForSelector = document.querySelector<HTMLInputElement>('[name="wait-selector"]');
+waitForSelector.addEventListener('change', e => {
+  getBrowserInstance().storage.local.set({ waitForSelector: (e.target as HTMLInputElement).value });
 });
 
 (async () => {
-  useTab.checked = (await getBrowserInstance().storage.local.get({ useTab: false })).useTab;
+  const opt = await getBrowserInstance().storage.local.get({ useTab: false, waitForSelector: '' });
+  useTab.checked = opt.useTab;
+  waitForSelector.value = opt.waitForSelector;
+  waitForSelector.disabled = !useTab.checked;
+  waitForSelector.parentElement.parentElement.classList.toggle('disabled', !useTab.checked);
 })();
