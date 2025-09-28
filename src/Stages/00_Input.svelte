@@ -37,7 +37,10 @@ https://example.com/chapter2`;
     return filtered;
   };
   const update = () => {
-    series = series || getAllSeries().finally(update);
+    series = series || getAllSeries().catch(e => {
+      console.warn(e);
+      return undefined;
+    }).finally(update);
     open = !!series && !!search;
   };
   const readUpload = async () => {

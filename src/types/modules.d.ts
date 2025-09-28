@@ -1,4 +1,5 @@
 declare module '*.svg' {
-  class Svg extends ATypedSvelteComponent { }
+  import type { SvelteComponent } from "svelte";
+  class Svg extends SvelteComponent { }
   export default Svg;
 }
