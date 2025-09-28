@@ -30,13 +30,13 @@ const fetchUrlForUser = async (url: string) => {
       url,
     });
     await new Promise((resolve, reject) => {
-      const timeout = window.setTimeout(() => {
+      const timeout = setTimeout(() => {
         getBrowserInstance().tabs.onUpdated.removeListener(listener);
         reject('timeout');
       }, 10000);
       const listener = (tabId: number, details: browser.tabs._OnUpdatedChangeInfo) => {
         if (activeTab && tabId === activeTab.id && details.status === 'complete') {
-          window.clearTimeout(timeout);
+          clearTimeout(timeout);
           getBrowserInstance().tabs.onUpdated.removeListener(listener);
           resolve(void 0);
         }
@@ -51,9 +51,9 @@ const fetchUrlForUser = async (url: string) => {
     } else {
       return await new Promise((resolve, reject) => {
         let iter = 0;
-        const i = window.setInterval(async () => {
+        const i = setInterval(async () => {
           if (iter++ > 100) {
-            window.clearInterval(i);
+            clearInterval(i);
             reject('timeout waiting for selector');
             return;
           }
@@ -68,10 +68,10 @@ const fetchUrlForUser = async (url: string) => {
             const res2 = await getBrowserInstance().tabs.executeScript(activeTab.id, {
               code: 'document.body.parentElement.outerHTML',
             });
-            window.clearInterval(i);
+            clearInterval(i);
             resolve(res2[0]);
           } catch (err) {
-            window.clearInterval(i);
+            clearInterval(i);
             reject(err);
           }
         }, 500);
