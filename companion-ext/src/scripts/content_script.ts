@@ -1,4 +1,7 @@
-import { BrowserMessage, getBrowserInstance, injectScript, Message, parseTypeObject, replyMessage } from './helpers/sharedExt';
+import { permissionModal } from './helpers/modal';
+import { getBrowserInstance, injectScript, Message, parseTypeObject, replyMessage } from './helpers/sharedExt';
+
+const authorized_origins: string[] = [];
 
 const fetchable = async (url: string | URL, timeout: number = 10000) => {
   const controller = typeof AbortController !== "undefined" ? new AbortController() : {} as AbortController;
@@ -28,23 +31,39 @@ const handle = (e: MessageEvent) => {
   console.dev.debug('Handling message', msg);
 
   let promise: Promise<any> = null;
-  switch (msg.type) {
-    case Message.GET_MESSAGE:
-      promise = Promise.resolve(getBrowserInstance().i18n.getMessage(msg.message));
-      break;
-    case Message.AUTHORIZE:
-      console.log('Authorize:', msg.origin);
-      promise = Promise.resolve(true);
-      break;
-    case Message.FETCH:
-      console.log('Fetch:', msg.url);
-      promise = fetchable(msg.url).then(r => { if (!r.ok) throw '' + (r.statusText ?? r.status); return r; }).then(r => r.text());
-      break;
-    case Message.REGISTER_LISTENER:
-      registerListener(e, msg);
-      return true;
-    default:
-      return msg;
+  try {
+    switch (msg.type) {
+      case Message.GET_MESSAGE:
+        promise = Promise.resolve(getBrowserInstance().i18n.getMessage(msg.message));
+        break;
+      case Message.AUTHORIZE:
+        console.log('Authorize:', msg.origin);
+        if (!/^https?:\/\/.*$/.test(msg.origin))
+          throw new Error('Invalid origin');
+        if (authorized_origins.indexOf(msg.origin) >= 0) promise = Promise.resolve(true);
+        else promise = permissionModal(msg.origin).then(r => {
+          let idx = authorized_origins.indexOf(msg.origin);
+          if (r && idx < 0) authorized_origins.push(msg.origin);
+          else if (!r && idx >= 0) authorized_origins.splice(idx, 1);
+          return r;
+        });
+        break;
+      case Message.FETCH:
+        console.log('Fetch:', msg.url);
+        const u = new URL(msg.url);
+        if (authorized_origins.indexOf(u.origin) < 0)
+          throw new Error(`Origin ${u.origin} not authorized through extension`);
+        promise = fetchable(u).then(r => { if (!r.ok) throw '' + (r.statusText ?? r.status); return r; }).then(r => r.text());
+        break;
+      case Message.REGISTER_LISTENER:
+        registerListener(e, msg);
+        return true;
+      default:
+        return msg;
+    }
+  } catch (err) {
+    replyMessage(e, msg.name, null, err);
+    return true;
   }
   // use raw promises here because we don't care about the return value, let the rest of the handler continue
   promise.then(val => replyMessage(e, msg.name, val, null)).catch(err => replyMessage(e, msg.name, null, err));
@@ -61,6 +80,6 @@ const registerListener = (e: MessageEvent, msg: Msg) => {
   if (window.origin !== "https://cpiber.github.io" && (__DEV__ ? window.origin !== "http://localhost:8080" : true)) return;
 
   window.addEventListener('message', handle);
-  getBrowserInstance().runtime.sendMessage(BrowserMessage.INIT_PAGE);
+  // getBrowserInstance().runtime.sendMessage(BrowserMessage.INIT_PAGE);
   await injectScript(getBrowserInstance().runtime.getURL('/scripts/page_script.js'), document.body);
 })();

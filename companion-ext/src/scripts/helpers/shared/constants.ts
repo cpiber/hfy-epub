@@ -12,4 +12,5 @@ export const enum Event {
 
 export const enum BrowserMessage {
   INIT_PAGE = 'initPageScript',
+  REQUEST_PERMISSON = 'requestPermission',
 }

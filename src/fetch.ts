@@ -29,6 +29,10 @@ export const retryFetch = async (url: string, origin: string, timeout = 10000, r
 };
 
 export const retryFetchText = async (fetchStore: FetchStore, url: URL, timeout = 10000, retry = 3) => {
+  if (fetchStore.authorize) {
+    if (!await fetchStore.authorize(url.origin))
+      throw new Error('Extension did not authorize');
+  }
   for (let i = 0; i < retry - 1; i++) {
     try {
       if (fetchStore.fetch) return await fetchStore.fetch(url.toString());

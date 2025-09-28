@@ -1,0 +1,49 @@
+@use "helpers/variables";
+
+:host {
+  all: initial; /* Reverts all properties to HTML spec defaults */
+}
+
+.modal-outer {
+  position: fixed;
+  inset: 0;
+  background: rgba(33, 33, 33, 0.6);
+}
+
+.modal {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  border: 2px solid variables.$border_dark;
+  border-radius: 5px;
+  background: white;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  max-width: calc(min(100% - 40px, 500px));
+
+  & > :first-child {
+    margin-top: 0;
+  }
+  & > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 4px;
+  margin: 8px 0;
+
+  button {
+    all: unset;
+    padding: 4px;
+    border-radius: 2px;
+    border: 1px solid variables.$border_light;
+    background: variables.$blueish;
+    cursor: pointer;
+
+    &:hover, &:focus {
+      background: variables.$blueish_transparent;
+    }
+  }
+}

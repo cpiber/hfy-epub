@@ -6,5 +6,23 @@
   "extensionDescription": {
     "message": "Companion to r/HFY epub generator. Allows to expand the functionality and bypass CORS restrictions.",
     "description": "Description of the extension."
+  },
+  "pageRequestsAuth": {
+    "message": "Requesting access"
+  },
+  "pageRequestsAuthDetails": {
+    "message": "This page is requesting access to <code>$URL$</code>. Keep in mind that this includes all cookies and other identifying tokens.",
+    "placeholders": {
+      "url": {
+        "content": "$1",
+        "example": "https://wuxiaworld.com"
+      }
+    }
+  },
+  "pageRequestsAuthGrant": {
+    "message": "Grant"
+  },
+  "pageRequestsAuthReject": {
+    "message": "Reject"
   }
 }
