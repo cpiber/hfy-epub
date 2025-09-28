@@ -4,6 +4,7 @@
 
   import { fade } from 'svelte/transition';
   import Alert from '../Components/Alert.svelte';
+  import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Radio from '../Components/Radio.svelte';
   import { fetchStore } from '../fetchstore';
   import { getAllSeries } from '../sources/hfy';
@@ -22,6 +23,7 @@
   let mode: Mode = Mode.Search;
   let file: File | undefined = undefined;
   let disabled = false;
+  let urlError: Error | undefined = undefined;
 
   let placeholder = `https://example.com/chapter1
 https://example.com/chapter2`;
@@ -58,6 +60,13 @@ https://example.com/chapter2`;
     obj.bookData = bookDataFromObject(obj.bookData);
     return obj;
   };
+  const nextList = () => {
+    try {
+      stage.fromList(list || '');
+    } catch (err: any) {
+      urlError = err;
+    }
+  }
 </script>
 
 <style lang="postcss">
@@ -221,10 +230,15 @@ https://example.com/chapter2`;
       </ul>
     </div>
   {:else if mode == Mode.List}
-    <form class="form" on:submit|preventDefault="{() => stage.fromList(list || '')}">
+    {#if urlError}
+      <ErrorMessage error={urlError}/>
+    {/if}
+    <form class="form" on:submit|preventDefault="{nextList}">
       <p>Enter list of URLs:</p>
       <textarea bind:value={list} rows="5" placeholder="{placeholder}" disabled={disabled}></textarea>
-      <p class="small">One URL per line</p>
+      <p class="small">
+        One Chapter URL per line. You can add more chapters later in Edit Book &gt; Add bulk. Use this when you have an external list of chapters.
+      </p>
       <p><input type="submit" value="Go" class="submit" disabled={list === undefined || !list.trim().length || disabled} /></p>
     </form>
   {:else if mode == Mode.Import}

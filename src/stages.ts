@@ -46,7 +46,14 @@ export class Input extends StageData {
     }
   }
   fromList(list: string) {
-    const urls = list.split('\n');
+    const urls = list.split('\n').map(x => x.trim()).filter(x => !!x);
+    urls.forEach(x => {
+      try {
+        new URL(x);
+      } catch (err: any) {
+        throw new Error(`${x}: ${err.message || err}`);
+      }
+    }); // check validity
     store.update(s => ({ ...s, series: { url: urls[0], type: Source.GENERIC } }));
     bookDataStore.update(() => ({ author: 'unknown', title: 'unknown', chapters: urls.map((u, i) => ({ apiUrl: u, id: nanoid(), title: `Chapter ${i}`, displayUrl: u, })) }));
     return next(BookData);
