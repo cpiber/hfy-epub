@@ -2,6 +2,8 @@
 export const enum Message {
   GET_MESSAGE = 'getI18nMessage',
   REGISTER_LISTENER = 'registerListener',
+  AUTHORIZE = 'authorize',
+  FETCH = 'fetch',
 }
 
 export const enum Event {

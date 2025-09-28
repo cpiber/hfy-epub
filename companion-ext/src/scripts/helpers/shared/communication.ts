@@ -3,16 +3,15 @@ import { clone, parseTypeObject } from './helpers';
 
 export function sendMessage(name: Message.GET_MESSAGE, data: { message: string; }): Promise<string>;
 export function sendMessage<T>(name: Exclude<Message, Message.GET_MESSAGE>, data?: { [key: string]: any; }, expectAnswer?: boolean, skipOriginCheck?: boolean): Promise<T>;
-export function sendMessage<T>(name: Message, data?: { [key: string]: any; }, expectAnswer = true, skipOriginCheck = false) {
+export function sendMessage<T>(name: Message, data?: { [key: string]: any; }, expectAnswer = true) {
   console.dev.debug('Sending message', name, 'with data', data);
   if (!expectAnswer) {
     window.parent.postMessage(JSON.stringify({ ...data, type: name }), '*');
     return Promise.resolve(undefined as T);
   }
   return new Promise<T>((resolve, reject) => {
-    const e = `enhancer-message-${Math.random().toString().substring(2)}`;
+    const e = `companion-message-${Math.random().toString().substring(2)}`;
     const c = (ev: MessageEvent) => {
-      if (!skipOriginCheck && !ev.origin.match(/https?:\/\/(?:watchnebula\.com|(?:.+\.)?nebula\.(?:app|tv))|https?:\/\/(?:m\.|www\.)youtube\.com/)) return;
       try {
         const msg = parseTypeObject<{ type: string, err?: any, res?: any; }>(ev.data);
         if (msg.type !== e) return;
@@ -29,11 +28,10 @@ export function sendMessage<T>(name: Message, data?: { [key: string]: any; }, ex
 }
 
 export type Listener<R = any, E = any> = (res: R, err: E) => void;
-export function sendEventHandler(event: Event, listener: Listener, skipOriginCheck = false) {
+export function sendEventHandler(event: Event, listener: Listener) {
   console.dev.debug('Registering remote listener for', event);
-  const e = `enhancer-event-${event}-${Math.random().toString().substring(2)}`;
+  const e = `companion-event-${event}-${Math.random().toString().substring(2)}`;
   const c = (ev: MessageEvent) => {
-    if (!skipOriginCheck && !ev.origin.match(/https?:\/\/(?:watchnebula\.com|(?:.+\.)?nebula\.(?:app|tv))/)) return;
     try {
       const msg = parseTypeObject<{ type: string, err?: any, res?: any; }>(ev.data);
       if (msg.type !== e) return;

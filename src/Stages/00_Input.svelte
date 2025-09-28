@@ -5,6 +5,7 @@
   import { fade } from 'svelte/transition';
   import Alert from '../Components/Alert.svelte';
   import Radio from '../Components/Radio.svelte';
+  import { fetchStore } from '../fetchstore';
   import { getAllSeries } from '../sources/hfy';
   import { bookDataFromObject, type Input } from '../stages';
   import { apiToRegular } from '../util';
@@ -169,7 +170,11 @@ https://example.com/chapter2`;
 </style>
 
 <Alert>Due to <a href="https://www.redditinc.com/blog/apifacts" target="_blank">recent API changes on reddit</a>, creating ebooks has become limited. If you run into a "Too many requests" error, please wait 10 minutes before trying again.</Alert>
-<Alert>When generating an ebook via URL, please be aware of <code>NetworkError</code>s, see <a href="https://github.com/cpiber/hfy-epub/blob/master/docs/other/cors.md" target="_blank">CORS</a>.</Alert>
+{#if !$fetchStore.authorize}
+  <Alert>When generating an ebook via URL, please be aware of <code>NetworkError</code>s, see <a href="https://github.com/cpiber/hfy-epub/blob/master/docs/other/cors.md" target="_blank">CORS</a>.</Alert>
+{:else}
+  <Alert>Extension detected. When downloading URL-based ebooks, we will attempt to use the extension to bypass <a href="https://github.com/cpiber/hfy-epub/blob/master/docs/other/cors.md" target="_blank">CORS</a>.</Alert>
+{/if}
 
 <Radio options="{[
   { value: Mode.Search, label: 'Search' },

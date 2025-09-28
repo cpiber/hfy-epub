@@ -1,0 +1,10 @@
+{
+  "title": {
+    "message": "r/HFY epub companion",
+    "description": "Name/Title of the extension."
+  },
+  "extensionDescription": {
+    "message": "Companion to r/HFY epub generator. Allows to expand the functionality and bypass CORS restrictions.",
+    "description": "Description of the extension."
+  }
+}

@@ -88,7 +88,7 @@
     "sourceDir": "./extension-dist",
     "run": {
       "startUrl": [
-        "https://cpiber.github.io/hfy-epub/"
+        "http://localhost:8080"
       ]
     }
   },

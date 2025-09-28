@@ -1,5 +1,6 @@
 import { ChapterTransformType, config, NextLinkType, type Config } from '../configstore';
-import { retryFetchURL } from '../fetch';
+import { retryFetchText, retryFetchURL } from '../fetch';
+import { type FetchStore } from '../fetchstore';
 import { isString, toApiCall } from '../util';
 import { getGenericContent, getGenericData } from './cors';
 import { sandboxFn } from './fn';
@@ -178,7 +179,15 @@ config.subscribe(conf => {
   }
 });
 
-export const fetchBookData = async (series: Series) => {
+export const fetchBookData = async (fetchStore: FetchStore, series: Series) => {
+  if (series.type == Source.GENERIC) {
+    const text = await retryFetchText(fetchStore, new URL(series.url));
+    const data = getDataFromSource(series.type, text);
+    if (!data?.chapters?.length)
+      throw new Error('No chapters found');
+    return data;
+  }
+
   const res = await retryFetchURL(new URL(series.url));
   const json = await requestToResource(series, res);
   if (!res.ok) throw '' + (json.message ?? res.statusText ?? res.status);

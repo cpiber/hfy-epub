@@ -10,6 +10,7 @@
   import Loading from '../Components/Loading.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
   import { config } from '../configstore';
+  import { fetchStore } from '../fetchstore';
   import { fetchBookData, transformChapters } from '../sources';
   import type { BookData } from '../stages';
   import { bookDataStore, bookDataToObject, store } from '../stages';
@@ -19,7 +20,7 @@
   
   const fetchData = (): Promise<Bookdata> => $bookDataStore
     ? Promise.resolve($bookDataStore)
-    : fetchBookData(series).then(data => {
+    : fetchBookData($fetchStore, series).then(data => {
       const bookData = { ...data, chapters: transformChapters($config, data.chapters) };
       bookDataStore.update(() => bookData);
       return bookData;

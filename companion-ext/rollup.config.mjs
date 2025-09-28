@@ -137,6 +137,7 @@ const other = (args) => {
         sourceMap: false,
       }),
       replace({
+        __DEV__: JSON.stringify(!process.env.BUILD),
         __VERSION__: JSON.stringify(process.env.npm_package_version),
         preventAssignment: true,
       }),

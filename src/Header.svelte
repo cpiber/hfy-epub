@@ -1,3 +1,6 @@
+<script lang="ts">
+</script>
+
 <style lang="postcss">
   header {
     margin-bottom: 2.5rem;

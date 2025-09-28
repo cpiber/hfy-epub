@@ -1,3 +1,4 @@
+import { type FetchStore } from './fetchstore';
 
 const fetchable = async (url: string | URL, timeout: number) => {
   const controller = typeof AbortController !== "undefined" ? new AbortController() : {} as AbortController;
@@ -24,13 +25,23 @@ export const retryFetchURL = async (url: URL, timeout = 10000, retry = 3) => {
 
 export const retryFetch = async (url: string, origin: string, timeout = 10000, retry = 3) => {
   const u = new URL(url, origin);
+  return retryFetchURL(u, timeout, retry);
+};
+
+export const retryFetchText = async (fetchStore: FetchStore, url: URL, timeout = 10000, retry = 3) => {
   for (let i = 0; i < retry - 1; i++) {
     try {
-      return await fetchable(u, timeout);
+      if (fetchStore.fetch) return await fetchStore.fetch(url.toString());
+      return await fetchable(url, timeout)
+        .then(r => { if (!r.ok) throw '' + (r.statusText ?? r.status); return r; })
+        .then(r => r.text());
     } catch {
-      console.log(`Failed to fetch \`${u}\` ${i + 1} ${i === 0 ? 'time' : 'times'}. Retrying...`);
+      console.log(`Failed to fetch \`${url}\` ${i + 1} ${i === 0 ? 'time' : 'times'}. Retrying...`);
     }
   }
   // last try, no catching
-  return fetchable(u, timeout);
+  if (fetchStore.fetch) return await fetchStore.fetch(url.toString());
+  return fetchable(url, timeout)
+    .then(r => { if (!r.ok) throw '' + (r.statusText ?? r.status); return r; })
+    .then(r => r.text());
 };

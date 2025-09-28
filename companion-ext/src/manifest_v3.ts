@@ -13,7 +13,7 @@ const manifest: browser._manifest.WebExtensionManifest = {
     {
       matches: [
         '*://cpiber.github.io/hfy-epub/*',
-        '*://localhost:8080/*',
+        ...(__DEV__ ? ['*://*/*'] : []),
       ],
       js: [
         'scripts/content_script.js',
@@ -22,6 +22,15 @@ const manifest: browser._manifest.WebExtensionManifest = {
         'styles/content.css',
       ],
       all_frames: true,
+    },
+  ],
+  web_accessible_resources: [
+    {
+      resources: ['scripts/page_script.js'],
+      matches: [
+        '*://cpiber.github.io/hfy-epub/*',
+        ...(__DEV__ ? ['*://*/*'] : []),
+      ],
     },
   ],
   permissions: [

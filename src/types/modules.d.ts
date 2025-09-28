@@ -1,4 +1,4 @@
 declare module '*.svg' {
-  class Svg extends Svelte2TsxComponent {}
+  class Svg extends ATypedSvelteComponent { }
   export default Svg;
 }

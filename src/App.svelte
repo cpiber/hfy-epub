@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
   import { config, loadConfig } from './configstore';
+  import { fetchStore } from './fetchstore';
   import Footer from './Footer.svelte';
   import Header from './Header.svelte';
   import BackArrow from './icons/back-arrow.svg';
@@ -18,6 +19,7 @@
   loadConfig();
   Stages.loadBookData();
   Stages.loadFromHistory();
+  fetchStore.subscribe(() => console.log('Extension status changed'));
 </script>
 
 <script lang="ts">
