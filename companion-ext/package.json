@@ -7,6 +7,7 @@
   "scripts": {
     "prebuild": "npm run clean && npm run build:all",
     "build": "web-ext build",
+    "build3": "npm run clean && npm run build:all -- --configV3 true && web-ext build",
     "build:light": "rollup -c --configType all",
     "start": "npm run watch:all",
     "start:firefox": "[ -d extension-dist ] || npm run build:light && concurrently \"npm:start\" \"npm:ext:firefox\"",
