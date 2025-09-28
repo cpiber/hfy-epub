@@ -38,6 +38,7 @@ const manifest: browser._manifest.WebExtensionManifest = {
   ],
   permissions: [
     'storage',
+    'scripting',
     '<all_urls>',
   ],
   browser_action: {

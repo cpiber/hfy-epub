@@ -44,10 +44,13 @@ const fetchUrlForUser = async (url: string) => {
       getBrowserInstance().tabs.onUpdated.addListener(listener);
     });
     if (!waitForSelector) {
-      const res = await getBrowserInstance().tabs.executeScript(activeTab.id, {
-        code: 'document.body.parentElement.outerHTML',
+      const res = await getBrowserInstance().scripting.executeScript({
+        target: {
+          tabId: activeTab.id,
+        },
+        func: () => document.body.parentElement.outerHTML,
       });
-      return res[0];
+      return res[0].result;
     } else {
       return await new Promise((resolve, reject) => {
         let iter = 0;
@@ -58,18 +61,23 @@ const fetchUrlForUser = async (url: string) => {
             return;
           }
           try {
-            const code = '!!document.querySelector("' + (new String(waitForSelector).replace(/"/g, '\\"')) + '")';
-            console.dev.log('Executing', code);
-            const res = await getBrowserInstance().tabs.executeScript(activeTab.id, {
-              code,
+            const res = await getBrowserInstance().scripting.executeScript({
+              target: {
+                tabId: activeTab.id,
+              },
+              func: ((sel: string) => !!document.querySelector(sel)) as unknown as () => void,
+              args: [waitForSelector],
             });
             console.dev.log('Page result:', res);
-            if (!res[0]) return;
-            const res2 = await getBrowserInstance().tabs.executeScript(activeTab.id, {
-              code: 'document.body.parentElement.outerHTML',
+            if (!res[0].result) return;
+            const res2 = await getBrowserInstance().scripting.executeScript({
+              target: {
+                tabId: activeTab.id,
+              },
+              func: () => document.body.parentElement.outerHTML,
             });
             clearInterval(i);
-            resolve(res2[0]);
+            resolve(res2[0].result);
           } catch (err) {
             clearInterval(i);
             reject(err);
