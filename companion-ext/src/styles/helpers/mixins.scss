@@ -1,0 +1,34 @@
+@mixin hov() {
+  &:hover, &:focus, &:active {
+    @content;
+  }
+}
+
+// not always correct, see https://patrickhlauke.github.io/touch/pointer-hover-any-pointer-any-hover/results/
+@mixin mobile() {
+  @media (any-hover: none) {
+    @content;
+  }
+}
+
+@mixin light() {
+  html[data-theme='light'] & {
+    @content;
+  }
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) & {
+      @content;
+    }
+  }
+}
+
+@mixin dark() {
+  html[data-theme='dark'] & {
+    @content;
+  }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme]) & {
+      @content;
+    }
+  }
+}

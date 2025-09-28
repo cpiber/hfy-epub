@@ -1,0 +1,96 @@
+{
+  "name": "hfy-epub-ext",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Companion extension for hfy-epub. Used to allow access to generic pages.",
+  "type": "module",
+  "scripts": {
+    "prebuild": "npm run clean && npm run build:all",
+    "build": "web-ext build",
+    "build:light": "rollup -c --configType all",
+    "postbuild": "npm run test",
+    "start": "npm run watch:all",
+    "start:firefox": "[ -d extension-dist ] || npm run build:light && concurrently \"npm:start\" \"npm:ext:firefox\"",
+    "start:chromium": "[ -d extension-dist ] || npm run build:light && concurrently \"npm:start\" \"npm:ext:chromium\"",
+    "ext:firefox": "web-ext run",
+    "ext:android": "web-ext run --target firefox-android",
+    "ext:chromium": "web-ext run --target chromium",
+    "watch:all": "rollup -c --configType all -w",
+    "watch:js": "rollup -c --configType js -w",
+    "watch:css": "rollup -c --configType css -w",
+    "watch:other": "rollup -c --configType other -w",
+    "build:all": "rollup -c --configType all --environment BUILD",
+    "build:js": "rollup -c --configType js --environment BUILD",
+    "build:css": "rollup -c --configType css --environment BUILD",
+    "build:other": "rollup -c --configType other --environment BUILD",
+    "lint": "npm run lint:js && npm run lint:css && npm run lint:ext",
+    "lint:js": "eslint '**/*.ts' '.*.?(c)js'",
+    "lint:css": "stylelint '**/*.scss'",
+    "lint:ext": "web-ext lint",
+    "lint-fix": "npm run lint:js -- --fix && npm run lint:css -- --fix && npm run lint:ext",
+    "clean": "rimraf extension-dist"
+  },
+  "keywords": [
+    "epub",
+    "firefox",
+    "chrome",
+    "addon",
+    "extension",
+    "webextension"
+  ],
+  "author": "cpiber",
+  "license": "ISC",
+  "dependencies": {
+    "webextension-polyfill": "^0.12.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.36.0",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-replace": "^6.0.2",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.4",
+    "@types/firefox-webext-browser": "^120.0.4",
+    "@types/node": "^24.5.2",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "chalk": "^5.6.2",
+    "chalk-template": "^1.1.2",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.36.0",
+    "glob": "^11.0.3",
+    "node-eval": "^2.0.0",
+    "postcss": "^8.5.6",
+    "postcss-preset-env": "^10.4.0",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.52.3",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-string": "^3.0.0",
+    "sass": "^1.93.2",
+    "stylelint": "^16.24.0",
+    "stylelint-config-standard-scss": "^16.0.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.2",
+    "web-ext": "^8.10.0"
+  },
+  "homepage": "https://github.com/cpiber/hfy-epub#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cpiber/hfy-epub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cpiber/hfy-epub/issues",
+    "email": "cp.piber@gmail.com"
+  },
+  "webExt": {
+    "sourceDir": "./extension-dist",
+    "run": {
+      "startUrl": [
+        "https://cpiber.github.io/hfy-epub/"
+      ]
+    }
+  },
+  "packageManager": "pnpm@10.17.1"
+}

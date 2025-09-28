@@ -1,0 +1,25 @@
+@use 'mixins';
+@use "variables";
+
+%hidden {
+  display: none;
+}
+
+%box-shadow {
+  @include mixins.light {
+    box-shadow: variables.$shadow_light 0 6px 24px;
+  }
+
+  @include mixins.dark {
+    box-shadow: variables.$shadow_dark 0 6px 20px;
+  }
+}
+
+%panel {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 12px 20px;
+  font-size: 13px;
+}
