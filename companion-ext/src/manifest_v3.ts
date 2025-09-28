@@ -34,7 +34,7 @@ const manifest: browser._manifest.WebExtensionManifest = {
         'styles/modal.css',
       ],
       matches: [
-        '*://cpiber.github.io/hfy-epub/*',
+        '*://cpiber.github.io/*',
         ...(__DEV__ ? ['*://localhost/*'] : []),
       ],
     },
