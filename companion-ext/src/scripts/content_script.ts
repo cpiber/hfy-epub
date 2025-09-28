@@ -29,7 +29,7 @@ const handle = (e: MessageEvent) => {
       case Message.AUTHORIZE:
         console.log('Authorize:', msg.origin);
         activeAuthPromise ??= Promise.resolve(true);
-        promise = activeAuthPromise = activeAuthPromise.then(() => {
+        promise = activeAuthPromise = activeAuthPromise.catch(() => true).then(() => {
           if (!/^https?:\/\/.*$/.test(msg.origin))
             throw new Error('Invalid origin');
           if (authorized_origins.indexOf(msg.origin) >= 0) return Promise.resolve(true);

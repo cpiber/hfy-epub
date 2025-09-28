@@ -1,0 +1,12 @@
+label {
+  font-weight: bold;
+  display: block;
+
+  &:has(input[type="checkbox"], select) {
+    cursor: pointer;
+  }
+
+  &:has(input:not([type="checkbox"]), textarea) {
+    cursor: text;
+  }
+}

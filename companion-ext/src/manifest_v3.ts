@@ -43,7 +43,7 @@ const manifest: browser._manifest.WebExtensionManifest = {
     'storage',
   ],
   host_permissions: [
-    '*://*/*',
+    '<all_urls>',
   ],
   action: {
     default_icon: {
@@ -51,6 +51,11 @@ const manifest: browser._manifest.WebExtensionManifest = {
       64: 'icons/icon_64.png',
     },
     default_title: '__MSG_title__',
+    default_popup: 'options.html',
+  },
+  options_ui: {
+    page: 'options.html',
+    browser_style: true,
   },
   browser_specific_settings: {
     gecko: {

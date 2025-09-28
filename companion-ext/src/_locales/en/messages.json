@@ -24,5 +24,11 @@
   },
   "pageRequestsAuthReject": {
     "message": "Reject"
+  },
+  "optionsUseTab": {
+    "message": "Use tab to fetch chapters"
+  },
+  "optionsUseTabDetails": {
+    "message": "This uses a tab to fetch the chapter contents, as if a regular user accssed the page."
   }
 }

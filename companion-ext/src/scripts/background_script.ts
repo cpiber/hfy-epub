@@ -1,5 +1,8 @@
 import { BrowserMessage, getBrowserInstance, parseTypeObject } from './helpers/sharedExt';
 
+let activeTab: browser.tabs.Tab | undefined = undefined;
+let activeTabPromise: Promise<string> | undefined = undefined;
+
 const fetchable = async (url: string | URL, timeout: number = 10000) => {
   const controller = typeof AbortController !== "undefined" ? new AbortController() : {} as AbortController;
   const out = setTimeout(() => controller.abort && controller.abort(), timeout);
@@ -9,6 +12,42 @@ const fetchable = async (url: string | URL, timeout: number = 10000) => {
   } finally {
     clearTimeout(out);
   }
+};
+
+const fetchUrlForUser = async (url: string) => {
+  const { useTab } = await getBrowserInstance().storage.local.get({ useTab: false });
+  if (!useTab) {
+    const r = await fetchable(url);
+    if (!r.ok) throw '' + (r.statusText ?? r.status);
+    return await r.text();
+  }
+
+  console.log('Fetch:', url, 'using tab (interactive)');
+  activeTabPromise ??= Promise.resolve("");
+  return activeTabPromise = activeTabPromise.catch(() => "").then(async () => {
+    activeTab ??= await getBrowserInstance().tabs.create({ active: false });
+    await getBrowserInstance().tabs.update(activeTab.id, {
+      url,
+    });
+    await new Promise((resolve, reject) => {
+      const timeout = window.setTimeout(() => {
+        getBrowserInstance().tabs.onUpdated.removeListener(listener);
+        reject("timeout");
+      }, 10000);
+      const listener = (tabId: number, details: browser.tabs._OnUpdatedChangeInfo) => {
+        if (activeTab && tabId === activeTab.id && details.status === "complete") {
+          window.clearTimeout(timeout);
+          getBrowserInstance().tabs.onUpdated.removeListener(listener);
+          resolve(void 0);
+        }
+      };
+      getBrowserInstance().tabs.onUpdated.addListener(listener);
+    });
+    const res = await getBrowserInstance().tabs.executeScript(activeTab.id, {
+      code: 'document.body.parentElement.outerHTML',
+    });
+    return res[0];
+  });
 };
 
 getBrowserInstance().runtime.onMessage.addListener((message: string | { [key: string]: any; }, sender, sendResponse) => {
@@ -25,7 +64,7 @@ getBrowserInstance().runtime.onMessage.addListener((message: string | { [key: st
     if (__DEV__) console.log('Handling message', msg);
     switch (msg.type) {
       case BrowserMessage.FETCH:
-        ret = fetchable(msg.url).then(r => { if (!r.ok) throw '' + (r.statusText ?? r.status); return r; }).then(r => r.text());
+        ret = fetchUrlForUser(msg.url);
         break;
     }
     if (ret) {
@@ -45,4 +84,9 @@ getBrowserInstance().runtime.onMessage.addListener((message: string | { [key: st
   } finally {
     clearInterval(keepAlive);
   }
+});
+
+getBrowserInstance().tabs.onRemoved.addListener((tabId) => {
+  if (activeTab && activeTab.id === tabId)
+    activeTab = undefined;
 });
