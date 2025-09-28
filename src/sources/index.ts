@@ -124,7 +124,7 @@ export const transformChapterRegexp = (html: string) => {
   return html;
 };
 export const transformChapterSelector = (sel: string, html: string) => {
-  return parser.parseFromString(html, 'text/html').querySelector(sel)?.innerHTML;
+  return parser.parseFromString(html, 'text/html').querySelector(sel)?.innerHTML ?? html;
 };
 let userTransformFn: ReturnType<typeof sandboxFn>;
 export const transformChapterFn = (chapter: Chapter): Chapter => {

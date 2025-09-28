@@ -17,9 +17,9 @@ export const defaultConfig = {
   nextLink: NextLinkType.DEFAULT,
   nextLinkRegex: `href="([^"]+)"[^>]*>\\s*Next`,
   nextLinkFn: `return "https://www.reddit.com/r/HFY/comments/f94rak/oc_pthok_eats_an_ice_cream_cone/" // use \`document\` or \`html\` to extract`,
-  transform: ChapterTransformType.NONE,
+  transform: ChapterTransformType.SELECTOR,
   transformRegex: '.md',
-  transformSelector: '',
+  transformSelector: '.chapter-content, #content, .wp-content, main, body',
   transformFn: `title = "P'Thok Eats an Ice Cream Cone" // or read from \`title\`
 html = "https://www.reddit.com/r/HFY/comments/f94rak/oc_pthok_eats_an_ice_cream_cone/" // use \`document\`, \`html\`, \`url\``,
 };
