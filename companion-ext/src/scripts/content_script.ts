@@ -1,19 +1,8 @@
 import { permissionModal } from './helpers/modal';
-import { getBrowserInstance, injectScript, Message, parseTypeObject, replyMessage } from './helpers/sharedExt';
+import { BrowserMessage, getBrowserInstance, injectScript, Message, parseTypeObject, replyMessage } from './helpers/sharedExt';
 
 const authorized_origins: string[] = [];
 let activeAuthPromise: Promise<boolean> | undefined = undefined;
-
-const fetchable = async (url: string | URL, timeout: number = 10000) => {
-  const controller = typeof AbortController !== "undefined" ? new AbortController() : {} as AbortController;
-  const out = setTimeout(() => controller.abort && controller.abort(), timeout);
-
-  try {
-    return await fetch(url, { signal: controller.signal });
-  } finally {
-    clearTimeout(out);
-  }
-};
 
 type Msg = { type: string, name?: string, [key: string]: any; };
 
@@ -57,7 +46,11 @@ const handle = (e: MessageEvent) => {
         const u = new URL(msg.url);
         if (authorized_origins.indexOf(u.origin) < 0)
           throw new Error(`Origin ${u.origin} not authorized through extension`);
-        promise = fetchable(u).then(r => { if (!r.ok) throw '' + (r.statusText ?? r.status); return r; }).then(r => r.text());
+        promise = getBrowserInstance().runtime.sendMessage({ type: BrowserMessage.FETCH, url: msg.url })
+          .then(r => {
+            if (r.err !== undefined && r.err !== null) throw new Error(r.err);
+            else return r.res;
+          });
         break;
       case Message.REGISTER_LISTENER:
         registerListener(e, msg);

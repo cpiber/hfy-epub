@@ -20,7 +20,7 @@
 
 <p>
   {#each errors as err}
-    <span class="error">Sorry, can't process that{err ? ': ' : ''}{err.message || err}</span>
+    <span class="error">Sorry, can't process that{err ? ': ' : ''}{err?.message || err || ''}</span>
   {/each}
 </p>
 

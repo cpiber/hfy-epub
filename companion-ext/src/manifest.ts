@@ -12,6 +12,11 @@ const manifest: browser._manifest.WebExtensionManifest = {
     128: 'icons/icon_128.png',
     64: 'icons/icon_64.png',
   },
+  background: {
+    scripts: [
+      'scripts/background_script.js',
+    ],
+  },
   content_scripts: [
     {
       matches: [
