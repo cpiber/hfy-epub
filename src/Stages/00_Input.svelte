@@ -3,6 +3,7 @@
   export let search: string | undefined = undefined;
 
   import { fade } from 'svelte/transition';
+  import Alert from '../Components/Alert.svelte';
   import Radio from '../Components/Radio.svelte';
   import { getAllSeries } from '../sources/hfy';
   import { bookDataFromObject, type Input } from '../stages';
@@ -166,6 +167,9 @@ https://example.com/chapter2`;
     padding: 14px 8px;
   }
 </style>
+
+<Alert>Due to <a href="https://www.redditinc.com/blog/apifacts" target="_blank">recent API changes on reddit</a>, creating ebooks has become limited. If you run into a "Too many requests" error, please wait 10 minutes before trying again.</Alert>
+<Alert>When generating an ebook via URL, please be aware of <code>NetworkError</code>s, see <a href="https://github.com/cpiber/hfy-epub/blob/master/docs/other/cors.md" target="_blank">CORS</a>.</Alert>
 
 <Radio options="{[
   { value: Mode.Search, label: 'Search' },

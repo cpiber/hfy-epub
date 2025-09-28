@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Alert from '../Components/Alert.svelte';
+
   export let stage: DownloadChapters;
 
   import ErrorMessage from '../Components/ErrorMessage.svelte';
@@ -60,6 +62,8 @@
   }
 </style>
 
+
+<Alert>Due to <a href="https://www.redditinc.com/blog/apifacts" target="_blank">recent API changes on reddit</a>, creating ebooks has become limited. If you run into a "Too many requests" error, please wait 10 minutes before trying again.</Alert>
 
 {#await fetchPromise}
   <Loading>Please wait, fetching chapters...</Loading>

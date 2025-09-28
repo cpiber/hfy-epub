@@ -3,6 +3,7 @@
 
   export let stage: FindChapters;
   
+  import Alert from '../Components/Alert.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import { config } from '../configstore';
@@ -73,6 +74,8 @@
   @include valid;
 </style>
 
+
+<Alert>Due to <a href="https://www.redditinc.com/blog/apifacts" target="_blank">recent API changes on reddit</a>, creating ebooks has become limited. If you run into a "Too many requests" error, please wait 10 minutes before trying again.</Alert>
 
 {#await fetchPromise}
   <Loading>Please wait, fetching chapters...</Loading>
