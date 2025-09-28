@@ -5,8 +5,9 @@
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import { config } from '../configstore';
-  import { retryFetch } from '../fetch';
-  import { getChapterDataFromSource, requestToResource, transformChapter } from '../sources';
+  import { retryFetchChapter } from '../fetch';
+  import { fetchStore } from '../fetchstore';
+  import { getChapterDataFromSource, transformChapter } from '../sources';
   import type { DownloadChapters } from '../stages';
   import { bookDataStore, store } from '../stages';
 
@@ -27,9 +28,7 @@
       await Promise.all(prev.slice(i, i + batchSize).map(async (chapter, index) => {
         finishedChapters[index + i] = { ...prev[index + i] };
         if (chapter.needsFetching !== false) try {
-          const res = await retryFetch(chapter.apiUrl, new URL($store.series.url).origin);
-          const json = await requestToResource($store.series, res);
-          if (!res.ok) throw '' + (json.message ?? res.statusText ?? res.status);
+          const json = await retryFetchChapter($fetchStore, $store.series, chapter.apiUrl);
           finishedChapters[index + i] = { ...transformChapter($config, getChapterDataFromSource($store.series.type, json, chapter.apiUrl)), new: true };
           finishedChapters = finishedChapters; // tell svelte to update
         } catch (err) {

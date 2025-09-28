@@ -16,7 +16,7 @@ export function sendMessage<T>(name: Message, data?: { [key: string]: any; }, ex
         const msg = parseTypeObject<{ type: string, err?: any, res?: any; }>(ev.data);
         if (msg.type !== e) return;
         window.removeEventListener('message', c);
-        if (msg.err)
+        if (msg.err !== undefined)
           reject(msg.err);
         else
           resolve(msg.res);

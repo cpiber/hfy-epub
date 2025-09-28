@@ -7,8 +7,9 @@
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import { config } from '../configstore';
-  import { retryFetch } from '../fetch';
-  import { findNextLink, getChapterDataFromSource, getFetchUrlForSource, requestToResource, transformChapter } from '../sources';
+  import { retryFetchChapter } from '../fetch';
+  import { fetchStore } from '../fetchstore';
+  import { findNextLink, getChapterDataFromSource, getFetchUrlForSource, transformChapter } from '../sources';
   import type { FindChapters } from '../stages';
   import { bookDataStore, store } from '../stages';
   
@@ -23,9 +24,7 @@
     while (!stop) {
       let cur = chapters[chapters.length - 1];
       if (cur.needsFetching !== false) {
-        const res = await retryFetch(cur.apiUrl, new URL($store.series.url).origin);
-        const json = await requestToResource($store.series, res);
-        if (!res.ok) throw '' + (json.message ?? res.statusText ?? res.status);
+        const json = await retryFetchChapter($fetchStore, $store.series, cur.apiUrl);
         chapters.splice(-1, 1, cur = transformChapter($config, getChapterDataFromSource($store.series.type, json, cur.apiUrl)));
       }
 
@@ -40,9 +39,7 @@
       newchapters.push({ from: cur.title, url: next });
       newchapters = newchapters; // tell svelte to update
 
-      const res = await retryFetch(n, new URL($store.series.url).origin);
-      const json = await requestToResource($store.series, res);
-      if (!res.ok) throw '' + (json.message ?? res.statusText ?? res.status);
+      const json = await retryFetchChapter($fetchStore, $store.series, n);
       chapters.push(transformChapter($config, getChapterDataFromSource($store.series.type, json, n)));
     }
     return { ...$bookDataStore, chapters };

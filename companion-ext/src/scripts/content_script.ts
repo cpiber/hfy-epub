@@ -2,6 +2,7 @@ import { permissionModal } from './helpers/modal';
 import { getBrowserInstance, injectScript, Message, parseTypeObject, replyMessage } from './helpers/sharedExt';
 
 const authorized_origins: string[] = [];
+let activeAuthPromise: Promise<boolean> | undefined = undefined;
 
 const fetchable = async (url: string | URL, timeout: number = 10000) => {
   const controller = typeof AbortController !== "undefined" ? new AbortController() : {} as AbortController;
@@ -38,14 +39,17 @@ const handle = (e: MessageEvent) => {
         break;
       case Message.AUTHORIZE:
         console.log('Authorize:', msg.origin);
-        if (!/^https?:\/\/.*$/.test(msg.origin))
-          throw new Error('Invalid origin');
-        if (authorized_origins.indexOf(msg.origin) >= 0) promise = Promise.resolve(true);
-        else promise = permissionModal(msg.origin).then(r => {
-          let idx = authorized_origins.indexOf(msg.origin);
-          if (r && idx < 0) authorized_origins.push(msg.origin);
-          else if (!r && idx >= 0) authorized_origins.splice(idx, 1);
-          return r;
+        activeAuthPromise ??= Promise.resolve(true);
+        promise = activeAuthPromise = activeAuthPromise.then(() => {
+          if (!/^https?:\/\/.*$/.test(msg.origin))
+            throw new Error('Invalid origin');
+          if (authorized_origins.indexOf(msg.origin) >= 0) return Promise.resolve(true);
+          else return permissionModal(msg.origin).then(r => {
+            let idx = authorized_origins.indexOf(msg.origin);
+            if (r && idx < 0) authorized_origins.push(msg.origin);
+            else if (!r && idx >= 0) authorized_origins.splice(idx, 1);
+            return r;
+          });
         });
         break;
       case Message.FETCH:

@@ -1,4 +1,5 @@
 import { type FetchStore } from './fetchstore';
+import { requestToResource, Source } from './sources';
 
 const fetchable = async (url: string | URL, timeout: number) => {
   const controller = typeof AbortController !== "undefined" ? new AbortController() : {} as AbortController;
@@ -48,4 +49,15 @@ export const retryFetchText = async (fetchStore: FetchStore, url: URL, timeout =
   return fetchable(url, timeout)
     .then(r => { if (!r.ok) throw '' + (r.statusText ?? r.status); return r; })
     .then(r => r.text());
+};
+
+export const retryFetchChapter = async (fetchStore: FetchStore, series: Series, url: string, timeout = 10000, retry = 3) => {
+  if (series.type === Source.GENERIC) {
+    return await retryFetchText(fetchStore, new URL(url, new URL(series.url).origin), timeout, retry);
+  }
+
+  const res = await retryFetch(url, new URL(series.url).origin);
+  const json = await requestToResource(series, res);
+  if (!res.ok) throw '' + (json.message ?? res.statusText ?? res.status);
+  return json;
 };
