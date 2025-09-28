@@ -1,3 +1,6 @@
+<script lang="ts">
+</script>
+
 <style lang="postcss">
   @import '../loading';
   @include info;
