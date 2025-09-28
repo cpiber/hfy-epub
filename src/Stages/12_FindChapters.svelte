@@ -3,7 +3,7 @@
 
   export let stage: FindChapters;
   
-  import Alert from '../Components/Alert.svelte';
+  import ChapterAlert from '../Components/ChapterAlert.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import { config } from '../configstore';
@@ -75,7 +75,9 @@
 </style>
 
 
-<Alert>Due to <a href="https://www.redditinc.com/blog/apifacts" target="_blank">recent API changes on reddit</a>, creating ebooks has become limited. If you run into a "Too many requests" error, please wait 10 minutes before trying again.</Alert>
+<ChapterAlert
+  hasReddit={!!$bookDataStore.chapters.find(x => x.apiUrl.indexOf('reddit.com') >= 0) || !!newchapters.find(x => x.url.indexOf('reddit.com') >= 0)}
+  hasOther={!!$bookDataStore.chapters.find(x => x.apiUrl.indexOf('reddit.com') < 0) || !!newchapters.find(x => x.url.indexOf('reddit.com') < 0)}/>
 
 {#await fetchPromise}
   <Loading>Please wait, fetching chapters...</Loading>

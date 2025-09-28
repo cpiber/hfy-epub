@@ -5,6 +5,7 @@
   
   import download from 'downloadjs';
   import BackToSearch from '../Components/BackToSearch.svelte';
+  import ChapterAlert from '../Components/ChapterAlert.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
   import Loading from '../Components/Loading.svelte';
   import SeriesCard from '../Components/SeriesCard.svelte';
@@ -64,6 +65,8 @@
   }
 </style>
 
+
+<ChapterAlert hasReddit={series.url.indexOf('reddit.com') >= 0} hasOther={series.url.indexOf('reddit.com') < 0}/>
 
 {#await fetchPromise}
   <Loading>Please wait, fetching data...</Loading>
