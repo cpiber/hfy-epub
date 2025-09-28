@@ -57,18 +57,23 @@ const fetchUrlForUser = async (url: string) => {
             reject("timeout waiting for selector");
             return;
           }
-          const code = '!!document.querySelector("' + (new String(waitForSelector).replace(/"/g, '\\"')) + '")';
-          console.dev.log('Executing', code);
-          const res = await getBrowserInstance().tabs.executeScript(activeTab.id, {
-            code,
-          });
-          console.dev.log('Page result:', res);
-          if (!res[0]) return;
-          const res2 = await getBrowserInstance().tabs.executeScript(activeTab.id, {
-            code: 'document.body.parentElement.outerHTML',
-          });
-          window.clearInterval(i);
-          resolve(res2[0]);
+          try {
+            const code = '!!document.querySelector("' + (new String(waitForSelector).replace(/"/g, '\\"')) + '")';
+            console.dev.log('Executing', code);
+            const res = await getBrowserInstance().tabs.executeScript(activeTab.id, {
+              code,
+            });
+            console.dev.log('Page result:', res);
+            if (!res[0]) return;
+            const res2 = await getBrowserInstance().tabs.executeScript(activeTab.id, {
+              code: 'document.body.parentElement.outerHTML',
+            });
+            window.clearInterval(i);
+            resolve(res2[0]);
+          } catch (err) {
+            window.clearInterval(i);
+            reject(err);
+          }
         }, 500);
       });
     }

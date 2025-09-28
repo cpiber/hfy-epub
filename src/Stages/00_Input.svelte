@@ -33,6 +33,7 @@ https://example.com/chapter2`;
   const searchSeries = async (series: ReturnType<typeof getAllSeries>, search: string) => {
     if (!series) return [];
     const all = await series;
+    if (!all) return [];
     const searchSmall = search.toLowerCase();
     const filtered = all.filter(s => s.title.toLowerCase().indexOf(searchSmall) !== -1);
     if (!filtered.length) open = false;
