@@ -7,7 +7,7 @@
 .modal-outer {
   position: fixed;
   inset: 0;
-  background: rgba(33, 33, 33, 0.6);
+  background: rgb(33 33 33 / 0.6);
 }
 
 .modal {
@@ -24,6 +24,7 @@
   & > :first-child {
     margin-top: 0;
   }
+
   & > :last-child {
     margin-bottom: 0;
   }

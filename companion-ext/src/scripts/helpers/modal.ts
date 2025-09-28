@@ -7,7 +7,7 @@ const create = <K extends keyof HTMLElementTagNameMap>(tag: K, keys?: { textCont
   if (keys.textContent) e.textContent = keys.textContent;
   if (keys.innerHTML) e.innerHTML = keys.innerHTML;
   if (keys.className) e.className = keys.className;
-  for (let k of Object.keys(keys)) {
+  for (const k of Object.keys(keys)) {
     if (k === 'textContent' || k === 'children' || k === 'className' || k === 'innerHTML') continue;
     e.setAttribute(k as string, keys[k]);
   }
@@ -24,7 +24,7 @@ export const permissionModal = (origin: string): Promise<boolean> => {
   fetch(getBrowserInstance().runtime.getURL('/styles/modal.css')).then(r => r.text()).then(s => style.textContent = s);
   shadow.append(style);
 
-  return new Promise<boolean>((resolve, reject) => {
+  return new Promise<boolean>(resolve => {
     const grant = create('button', { textContent: msg('pageRequestsAuthGrant') });
     const disallow = create('button', { textContent: msg('pageRequestsAuthReject') });
     grant.addEventListener('click', () => resolve(true));

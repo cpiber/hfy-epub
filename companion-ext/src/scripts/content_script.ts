@@ -1,7 +1,7 @@
 import { permissionModal } from './helpers/modal';
-import { BrowserMessage, getBrowserInstance, injectScript, Message, parseTypeObject, replyMessage } from './helpers/sharedExt';
+import { BrowserMessage, Message, getBrowserInstance, injectScript, parseTypeObject, replyMessage } from './helpers/sharedExt';
 
-const authorized_origins: string[] = [];
+const authorizedOrigins: string[] = [];
 let activeAuthPromise: Promise<boolean> | undefined = undefined;
 
 type Msg = { type: string, name?: string, [key: string]: any; };
@@ -32,26 +32,26 @@ const handle = (e: MessageEvent) => {
         promise = activeAuthPromise = activeAuthPromise.catch(() => true).then(() => {
           if (!/^https?:\/\/.*$/.test(msg.origin))
             throw new Error('Invalid origin');
-          if (authorized_origins.indexOf(msg.origin) >= 0) return Promise.resolve(true);
+          if (authorizedOrigins.indexOf(msg.origin) >= 0) return Promise.resolve(true);
           else return permissionModal(msg.origin).then(r => {
-            let idx = authorized_origins.indexOf(msg.origin);
-            if (r && idx < 0) authorized_origins.push(msg.origin);
-            else if (!r && idx >= 0) authorized_origins.splice(idx, 1);
+            const idx = authorizedOrigins.indexOf(msg.origin);
+            if (r && idx < 0) authorizedOrigins.push(msg.origin);
+            else if (!r && idx >= 0) authorizedOrigins.splice(idx, 1);
             return r;
           });
         });
         break;
-      case Message.FETCH:
+      case Message.FETCH: {
         console.log('Fetch:', msg.url);
         const u = new URL(msg.url);
-        if (authorized_origins.indexOf(u.origin) < 0)
+        if (authorizedOrigins.indexOf(u.origin) < 0)
           throw new Error(`Origin ${u.origin} not authorized through extension`);
         promise = getBrowserInstance().runtime.sendMessage({ type: BrowserMessage.FETCH, url: msg.url })
           .then(r => {
             if (r.err !== undefined && r.err !== null) throw new Error(r.err);
             else return r.res;
           });
-        break;
+      } break;
       case Message.REGISTER_LISTENER:
         registerListener(e, msg);
         return true;
@@ -74,7 +74,7 @@ const registerListener = (e: MessageEvent, msg: Msg) => {
 
 (async () => {
   console.log(window.origin);
-  if (window.origin !== "https://cpiber.github.io" && (__DEV__ ? window.origin !== "http://localhost:8080" : true)) return;
+  if (window.origin !== 'https://cpiber.github.io' && (__DEV__ ? window.origin !== 'http://localhost:8080' : true)) return;
 
   window.addEventListener('message', handle);
   // getBrowserInstance().runtime.sendMessage(BrowserMessage.INIT_PAGE);

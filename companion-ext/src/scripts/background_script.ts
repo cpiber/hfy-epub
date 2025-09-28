@@ -4,11 +4,11 @@ let activeTab: browser.tabs.Tab | undefined = undefined;
 let activeTabPromise: Promise<string> | undefined = undefined;
 
 const fetchable = async (url: string | URL, timeout: number = 10000) => {
-  const controller = typeof AbortController !== "undefined" ? new AbortController() : {} as AbortController;
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : {} as AbortController;
   const out = setTimeout(() => controller.abort && controller.abort(), timeout);
 
   try {
-    return await fetch(url, { signal: controller.signal, credentials: "include" });
+    return await fetch(url, { signal: controller.signal, credentials: 'include' });
   } finally {
     clearTimeout(out);
   }
@@ -23,8 +23,8 @@ const fetchUrlForUser = async (url: string) => {
   }
 
   console.log('Fetch:', url, 'using tab (interactive)');
-  activeTabPromise ??= Promise.resolve("");
-  return activeTabPromise = activeTabPromise.catch(() => "").then(async () => {
+  activeTabPromise ??= Promise.resolve('');
+  return activeTabPromise = activeTabPromise.catch(() => '').then(async () => {
     activeTab ??= await getBrowserInstance().tabs.create({ active: false });
     await getBrowserInstance().tabs.update(activeTab.id, {
       url,
@@ -32,10 +32,10 @@ const fetchUrlForUser = async (url: string) => {
     await new Promise((resolve, reject) => {
       const timeout = window.setTimeout(() => {
         getBrowserInstance().tabs.onUpdated.removeListener(listener);
-        reject("timeout");
+        reject('timeout');
       }, 10000);
       const listener = (tabId: number, details: browser.tabs._OnUpdatedChangeInfo) => {
-        if (activeTab && tabId === activeTab.id && details.status === "complete") {
+        if (activeTab && tabId === activeTab.id && details.status === 'complete') {
           window.clearTimeout(timeout);
           getBrowserInstance().tabs.onUpdated.removeListener(listener);
           resolve(void 0);
@@ -54,7 +54,7 @@ const fetchUrlForUser = async (url: string) => {
         const i = window.setInterval(async () => {
           if (iter++ > 100) {
             window.clearInterval(i);
-            reject("timeout waiting for selector");
+            reject('timeout waiting for selector');
             return;
           }
           try {
