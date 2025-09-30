@@ -2,12 +2,19 @@
   export let visible: boolean = false;
   export let done: ((urls: string[]) => void) | undefined = undefined;
 
-  let template = "";
+  let template = "https://example.com/page-{0}";
   let start = 1;
   let end = 10;
+  let formatToLength = 1;
 
-  const format = (templ: string, num: number) => templ.replace(/(?<!\{)\{0\}/g, num.toString()).replace(/\{\{0\}\}/g, "{0}");
-  const go = () => done?.(Array.from({ length: Math.max(0, end - start + 1) }).map((_, i) => format(template, i + start)));
+  const formatNumber = (num: number, digits: number) => {
+    let str = num.toString();
+    while (str.length < digits)
+      str = '0' + str;
+    return str;
+  }
+  const format = (templ: string, num: number, digits: number) => templ.replace(/(?<!\{)\{0\}/g, formatNumber(num, digits)).replace(/\{\{0\}\}/g, "{0}");
+  const go = () => done?.(Array.from({ length: Math.max(0, end - start + 1) }).map((_, i) => format(template, i + start, formatToLength)));
 </script>
 
 <style lang="postcss">
@@ -103,9 +110,9 @@
     </label>
     {#if template}
       <div class="example">
-        <pre>{format(template, 1)}</pre>
-        <pre>{format(template, 2)}</pre>
-        <pre>{format(template, 3)}</pre>
+        <pre>{format(template, 1, formatToLength)}</pre>
+        <pre>{format(template, 2, formatToLength)}</pre>
+        <pre>{format(template, 3, formatToLength)}</pre>
       </div>
     {/if}
     <div class="row">
@@ -116,6 +123,12 @@
       <label>
         <span>End:</span>
         <input type="number" bind:value={end} min="0" step="1"/>
+      </label>
+    </div>
+    <div class="row">
+      <label>
+        <span>Format minimum digits:</span>
+        <input type="number" bind:value={formatToLength} min="0" step="1"/>
       </label>
     </div>
     <br/>
