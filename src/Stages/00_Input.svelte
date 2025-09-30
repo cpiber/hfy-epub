@@ -5,6 +5,7 @@
   import { fade } from 'svelte/transition';
   import Alert from '../Components/Alert.svelte';
   import ErrorMessage from '../Components/ErrorMessage.svelte';
+  import GenerateUrls from '../Components/GenerateUrls.svelte';
   import Radio from '../Components/Radio.svelte';
   import { fetchStore } from '../fetchstore';
   import { getAllSeries } from '../sources/hfy';
@@ -24,6 +25,7 @@
   let file: File | undefined = undefined;
   let disabled = false;
   let urlError: Error | undefined = undefined;
+  let showGenModal = false;
 
   let placeholder = `https://example.com/chapter1
 https://example.com/chapter2`;
@@ -180,6 +182,11 @@ https://example.com/chapter2`;
     border: 0.5px solid rgba(20, 20, 20, 0.3);
     padding: 14px 8px;
   }
+
+  .gen-button {
+    margin-left: auto;
+    font-size: 0.9em;
+  }
 </style>
 
 <Alert>Due to <a href="https://www.redditinc.com/blog/apifacts" target="_blank">recent API changes on reddit</a>, creating ebooks has become limited. If you run into a "Too many requests" error, please wait 10 minutes before trying again.</Alert>
@@ -239,6 +246,7 @@ https://example.com/chapter2`;
       <textarea bind:value={list} rows="5" placeholder="{placeholder}" disabled={disabled}></textarea>
       <p class="small">
         One Chapter URL per line. You can add more chapters later in Edit Book &gt; Add bulk. Use this when you have an external list of chapters.
+        <button type="button" class="gen-button" on:click={() => showGenModal = true}>Generate</button>
       </p>
       <p><input type="submit" value="Go" class="submit" disabled={list === undefined || !list.trim().length || disabled} /></p>
     </form>
@@ -256,3 +264,8 @@ https://example.com/chapter2`;
     </form>
   {/if}
 </div>
+<GenerateUrls bind:visible={showGenModal} done={(u) => {
+  if (list) list += '\n';
+  list += u.join('\n');
+  showGenModal = false;
+}}/>
