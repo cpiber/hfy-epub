@@ -15,7 +15,7 @@ For reddit, there is an API which exposes this, and this app uses the API to get
 To safely allow access to such pages, the app supports a extension to bypass these limits.
 The extension is supported since version 0.4.0.
 
-The extension is available for [Chrome](https://chromewebstore.google.com/detail/enhancer-for-nebula/fmoepccbjpaebcmpbcokdcbleedcfhni) and [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rhfy-epub-companion/).
+The extension is available for [Chrome](https://chromewebstore.google.com/detail/enhancer-for-nebula/fmoepccbjpaebcmpbcokdcbleedcfhni) and [Firefox](https://addons.mozilla.org/en-US/firefox/addon/r-hfy-epub-companion/).
 It is known to work in Firefox for Android.
 
 Using the extension, the user may try to load any URL.
